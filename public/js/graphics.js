@@ -8,6 +8,7 @@
         resources: null,
         resourcesReady: null,
         resourceList: null,
+        elements: [],
 
         pallette: {
             color1:'#f4bc42', // Font color
@@ -154,7 +155,18 @@
             }
             this.app.renderer.view.style.width = w + 'px';
             this.app.renderer.view.style.height = h + 'px';
+            var previous = [this.actualRatio[0],this.actualRatio[1]];
             this.actualRatio = [w/this.baseWidth,h/this.baseHeight];
+            var change = [this.actualRatio[0] - previous[0],this.actualRatio[1] - previous[1]];
+            for (var e = 0; e < this.elements.length;e++){
+                try{
+                    var element = document.getElementById(this.elements[e]);
+                    element.style.transform = ' translate(-50%,-50%)';
+                }catch(e){
+                    console.log("error resizing html elements");
+                    console.log(e);
+                }
+            }
         },
         startLoad: function(){
             Graphics.app.loader

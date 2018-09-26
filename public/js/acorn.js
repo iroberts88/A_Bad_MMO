@@ -49,16 +49,9 @@
             DOWN: 1,
             LEFT: 2,
             RIGHT: 3,
-            INVENTORY: 4,
-            CHARSHEET: 5,
-            POKEDEX: 6,
-            POKEMON: 7,
-            INTERACT: 8,
-            CANCEL: 9,
-            ENTER: 10,
-            COMMAND: 11,
-            SPACE: 12,
-            TALK: 13
+            //MOD_CTRL: 4,
+            //MOD_ALT: 5,
+            //MOD_SHIFT: 6
         },
         keysPressed: [],
         keyBindings: [],
@@ -92,16 +85,6 @@
             this.keyBindings[83] = Acorn.Input.Key.DOWN; //S
             this.keyBindings[65] = Acorn.Input.Key.LEFT; //A
             this.keyBindings[68] = Acorn.Input.Key.RIGHT; //D
-            this.keyBindings[73] = Acorn.Input.Key.INVENTORY; //I
-            this.keyBindings[67] = Acorn.Input.Key.CHARSHEET; //C
-            this.keyBindings[80] = Acorn.Input.Key.POKEDEX; //P
-            this.keyBindings[81] = Acorn.Input.Key.POKEMON; //Q
-            this.keyBindings[69] = Acorn.Input.Key.INTERACT; //E
-            this.keyBindings[27] = Acorn.Input.Key.CANCEL; //ESC
-            this.keyBindings[13] = Acorn.Input.Key.ENTER; //RETURN
-            this.keyBindings[191] = Acorn.Input.Key.COMMAND; //F SLASH
-            this.keyBindings[32] = Acorn.Input.Key.SPACE; //SPACE
-            this.keyBindings[84] = Acorn.Input.Key.TALK; //T
         },
         getBinding: function(keyCode) {
             return this.keyBindings[keyCode];

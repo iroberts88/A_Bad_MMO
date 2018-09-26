@@ -34,7 +34,7 @@ function init() {
     rc.require('dbMaps');
 
     // ---- Load Maps ----
-    fs.readdir( './mapTool/maps', function( err, files ) {
+    fs.readdir( './mapgen_tool/maps', function( err, files ) {
         if( err ) {
             console.error( "Could not list the directory.", err );
             process.exit( 1 );
@@ -95,7 +95,7 @@ function webResponse(req, res) {
 
     //console.log('HTTP Request: ' + filename);
 
-    fs.readFile(__dirname + '/public_data' + filename, function(err, data) {
+    fs.readFile(__dirname + '/public' + filename, function(err, data) {
         if (err) {
             console.log('Couldn\'t find file: ' + req.url);
             res.writeHead(500);

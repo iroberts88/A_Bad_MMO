@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "raceid": "human",
+      "attributes": {
+        "dexterity": 100,
+        "strength": 100,
+        "wisdom": 100,
+        "stamina": 100,
+        "agility": 100,
+        "charisma": 100,
+        "intelligence": 100,
+        "perception": 100
+      },
+      "name": "Human"
+    },
+    {
+      "raceid": "elf",
+      "attributes": {
+        "dexterity": 120,
+        "strength": 75,
+        "wisdom": 130,
+        "stamina": 65,
+        "agility": 130,
+        "charisma": 85,
+        "intelligence": 95,
+        "perception": 120
+      },
+      "name": "Elf"
+    },
+    {
+      "raceid": "dwarf",
+      "attributes": {
+        "dexterity": 100,
+        "strength": 135,
+        "wisdom": 115,
+        "stamina": 130,
+        "agility": 75,
+        "charisma": 55,
+        "intelligence": 75,
+        "perception": 115
+      },
+      "name": "Dwarf"
+    },
+    {
+      "raceid": "gnome",
+      "attributes": {
+        "dexterity": 125,
+        "strength": 65,
+        "wisdom": 95,
+        "stamina": 75,
+        "agility": 120,
+        "charisma": 75,
+        "intelligence": 135,
+        "perception": 110
+      },
+      "name": "Gnome"
+    }
+  ]
+}

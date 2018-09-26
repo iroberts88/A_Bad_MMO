@@ -4,7 +4,6 @@
 
 var Player = require('./player.js').Player,
     Zone = require('./zone.js').Zone,
-    Attack = require('./attack.js').Attack,
     fs = require('fs'),
     AWS = require("aws-sdk");
 
@@ -34,11 +33,13 @@ var GameEngine = function() {
     this.debugList = {}; //used avoid multiple debug chains in tick()
     this.ready = false;
 
-    this.debugWriteStream = fs.createWriteStream('debug.txt');
+    fs.truncate('debug.txt', 0, function(){console.log('debug.txt cleared')})
+    this.debugWriteStream = fs.createWriteStream('debug.txt', {AutoClose: true});
 }
 
 GameEngine.prototype.init = function () {
     this.start();
+
 };
 
 GameEngine.prototype.start = function () {
@@ -47,8 +48,6 @@ GameEngine.prototype.start = function () {
     self = this;
     setInterval(this.tick, this.gameTickInterval);
 }
-
-
 
 GameEngine.prototype.tick = function() {
     var now = Date.now();
@@ -92,7 +91,7 @@ GameEngine.prototype.loadMaps = function(arr) {
     for (var i = 0; i < arr.length;i++){
         var d;
         console.log(arr[i]);
-        fs.readFile('./mapTool/maps/' + arr[i], "utf8",function read(err, data) {
+        fs.readFile('./mapgen_tool/maps/' + arr[i], "utf8",function read(err, data) {
             if (err) {
                 throw err;
             }
@@ -230,25 +229,25 @@ GameEngine.prototype.queuePlayer = function(player, c, d) {
 }
 
 //Queue DEBUG data to a specific player
-GameEngine.prototype.debug = function(player, d) {
-    var data = { call: 'debug', data: d};
-    console.log(data);
-    if (typeof this.debugList[d.id] == 'undefined'){
+GameEngine.prototype.debug = function(id,e,d) {
+    if (typeof this.debugList[id] == 'undefined'){
         //new debug error
         //add to debug list and send to client
-        this.debugList[d.id] = {
-            id: d.id,
+        this.debugList[id] = {
+            id: id,
             n: 1,
-            t: 1.0
+            t: 5.0
         }
         d.n = 1;
-        this.debugWriteStream.write(JSON.parse(d));
+        console.log('debug.txt updated');
+        this.debugWriteStream.write(new Date().toJSON() + ' - ' + id.toUpperCase() + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
     }else{
-        this.debugList[d.id].n += 1;
-        d.n = this.debugList[d.id].n
-        if (this.debugList[d.id].t <= 0){
-            this.debugWriteStream.write(JSON.parse(d));
-            this.debugList[d.id].t = 1.0;
+        this.debugList[id].n += 1;
+        d.n = this.debugList[id].n
+        if (this.debugList[id].t <= 0){
+            console.log('debug.txt updated (duplicate error)');
+            this.debugWriteStream.write(new Date().toJSON() + ' - ' + id.toUpperCase() + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
+            this.debugList[id].t = 5.0;
         }
     }
 }

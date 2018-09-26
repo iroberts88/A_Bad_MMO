@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "classid": "thief",
+      "name": "Thief"
+    },
+    {
+      "classid": "mage",
+      "name": "Mage"
+    },
+    {
+      "classid": "priest",
+      "name": "Priest"
+    },
+    {
+      "classid": "fighter",
+      "name": "Fighter"
+    }
+  ]
+}

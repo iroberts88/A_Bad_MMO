@@ -153,7 +153,6 @@ function init() {
         Acorn.Sound.update(Graphics.app.ticker.elapsedMS/1000)
         Graphics.app.renderer.render(Graphics.app.stage);
 
-        //TODO Put this stuff in the correct state!
         Settings.stats.end();
     })
 }

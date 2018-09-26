@@ -1,0 +1,19 @@
+{
+  "name": "a_bad_mmo",
+  "version": "1.0.0",
+  "description": "A Terrible MMO Experience",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iroberts88/A_Bad_MMO.git"
+  },
+  "author": "Ian ROberts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iroberts88/A_Bad_MMO/issues"
+  },
+  "homepage": "https://github.com/iroberts88/A_Bad_MMO#readme"
+}

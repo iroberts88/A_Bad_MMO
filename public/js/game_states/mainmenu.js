@@ -1,7 +1,6 @@
 
 (function(window) {
     MainMenu = {
-        bgMap: null,
         loginType: null,
 
         errorTicker: 0,
@@ -20,32 +19,10 @@
             this.fadeOut = false;
             this.fadeOutTicker = 0;
 
-            //draw the map BG
-            for (var i = 0; i < this.bgMap.length;i++){
-                for (var j = 0; j < this.bgMap[i].length;j++){
-                    var sprite = Graphics.getSprite(this.bgMap[i][j].tex);
-                    sprite.scale.x = 2;
-                    sprite.scale.y = 2;
-                    sprite.position.x = j*32;
-                    sprite.position.y = i*32;
-                    Graphics.bgContainer.addChild(sprite);
-                    if (this.bgMap[i][j].oTex){
-                        var sprite = Graphics.getSprite(this.bgMap[i][j].oTex);
-                        sprite.scale.x = 2;
-                        sprite.scale.y = 2;
-                        sprite.position.x = j*32;
-                        sprite.position.y = i*32;
-                        Graphics.bgContainer.addChild(sprite);
-                    }
-                    Graphics.bgContainer.scale.x = 1.3;
-                    Graphics.bgContainer.scale.y = 1.3;
-                }
-            }
-
-            Graphics.worldPrimitives.lineStyle(1,0x000000,0.3);
-            Graphics.worldPrimitives.beginFill(0x000000,0.3)
+            Graphics.worldPrimitives.lineStyle(1,0x000000,1);
+            Graphics.worldPrimitives.beginFill(0x000000,1);
             Graphics.worldPrimitives.drawRect(0,0,Graphics.width,Graphics.height);
-            Graphics.worldPrimitives.endFill()
+            Graphics.worldPrimitives.endFill();
 
             this.mainPanel = document.createElement('div');
             this.mainPanel.id = 'mainPanel'
@@ -58,14 +35,15 @@
             this.logoText = document.createElement( 'div' );
             this.logoText.id = 'logoText';
             this.logoText.type = 'text';
-            this.logoText.style.cssText = 'position:absolute;background-color: #FFF;text-align: center;display: inline-block;font-size: 24px;top:35px;left:50px;color:#484848;font-family:Pokemon,Lato;font-weight:bold;line-height:15px';
-            this.logoText.innerHTML = 'PROJECT POK|MON';
+            this.logoText.style.cssText = 'position:absolute;background-color: #FFF;text-align: center;display: inline-block;font-size: 24px;top:15%;left:50%;color:#484848;font-family:Helvetica,Lato;font-weight:bold;line-height:15px';
+            this.logoText.innerHTML = 'A BAD MMO';
+            Graphics.elements.push('logoText');
             this.mainPanel.appendChild( this.logoText );
             //Logo Text
             this.errorText = document.createElement( 'div' );
             this.errorText.id = 'errorText';
             this.errorText.type = 'text';
-            this.errorText.style.cssText = 'position:absolute;background-color: #FFF;text-align: center;display: inline-block;font-size: 10px;top:75px;left:80px;color:#FF0000;font-family:Pokemon;font-weight:bold;line-height:15px';
+            this.errorText.style.cssText = 'position:absolute;background-color: #FFF;text-align: center;display: inline-block;font-size: 10px;top:75px;left:80px;color:#FF0000;font-family:Helvetica;font-weight:bold;line-height:15px';
             this.errorText.innerHTML = '';
             this.mainPanel.appendChild( this.errorText );
             //Username input box
@@ -89,8 +67,9 @@
             this.guestButton = document.createElement( 'div' );
             this.guestButton.id = 'guestButton';
             this.guestButton.type = 'button';
-            this.guestButton.style.cssText = 'top:155px;left:75px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Pokemon;font-size:24px;font-weight:bold;line-height:15px';
+            this.guestButton.style.cssText = 'top:75%;left:50%;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;display: inline-block;color:#D2D2D2;font-family:Helvetica;font-size:22px;font-weight:bold;line-height:15px';
             this.guestButton.innerHTML = 'play as guest ';
+            Graphics.elements.push('guestButton');
             this.guestButton.onpointerup = function(){
                 MainMenu.loginType = 'guest';
                 Acorn.Sound.play('select');
@@ -110,8 +89,9 @@
             this.loginButton = document.createElement( 'div' );
             this.loginButton.id = 'loginButton';
             this.loginButton.type = 'button';
-            this.loginButton.style.cssText = 'top:100px;left:75px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Pokemon;font-size:14px;font-weight:bold;line-height:15px';
+            this.loginButton.style.cssText = 'top:50%;left:35%;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Helvetica;font-size:14px;font-weight:bold;line-height:15px';
             this.loginButton.innerHTML = 'login';
+            Graphics.elements.push('loginButton');
             this.loginButton.onpointerup = function(){
                 MainMenu.loginType = 'normal';
                 Acorn.Sound.play('select');
@@ -132,8 +112,9 @@
             this.createButton = document.createElement( 'div' );
             this.createButton.id = 'createButton';
             this.createButton.type = 'button';
-            this.createButton.style.cssText = 'top:100px;left:195px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Pokemon;font-size:14px;font-weight:bold;line-height:15px';
-            this.createButton.innerHTML = 'new player';
+            this.createButton.style.cssText = 'top:50%;left:65%;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Helvetica;font-size:14px;font-weight:bold;line-height:15px';
+            this.createButton.innerHTML = 'new ';
+            Graphics.elements.push('createButton');
             this.createButton.onpointerup = function(){
                 MainMenu.loginType = 'new';
                 Acorn.Sound.play('select');
@@ -154,7 +135,7 @@
             this.submitButton = document.createElement( 'div' );
             this.submitButton.id = 'submitButton';
             this.submitButton.type = 'button';
-            this.submitButton.style.cssText = 'top:150px;left:83px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Pokemon;font-size:14px;font-weight:bold;line-height:15px';
+            this.submitButton.style.cssText = 'top:150px;left:83px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Helvetica;font-size:14px;font-weight:bold;line-height:15px';
             this.submitButton.innerHTML = 'submit';
             this.submitButton.onpointerup = function(){
                 //check for valid sn/pw;
@@ -176,7 +157,7 @@
             this.cancelButton = document.createElement( 'div' );
             this.cancelButton.id = 'cancelButton';
             this.cancelButton.type = 'button';
-            this.cancelButton.style.cssText = 'top:150px;left:215px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Pokemon;font-size:14px;font-weight:bold;line-height:15px';
+            this.cancelButton.style.cssText = 'top:150px;left:215px;cursor: pointer;position:absolute;border-radius:10px;background-color: #484848;border: none;color: gray;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;color:#D2D2D2;font-family:Helvetica;font-size:14px;font-weight:bold;line-height:15px';
             this.cancelButton.innerHTML = 'cancel';
             this.cancelButton.onpointerup = function(){
                 MainMenu.mainPanel.style.height = '225px';
@@ -209,27 +190,27 @@
             this.charSelect = true;
             Graphics.uiPrimitives.lineStyle(1,0xFFFFFF,1);
             Graphics.uiPrimitives.beginFill(0xFFFFFF,1)
-            Graphics.uiPrimitives.drawRoundedRect(Graphics.width/2-200,Graphics.height/2-200,400,400,12);
+            Graphics.uiPrimitives.drawRoundedRect(Graphics.width/2-200,Graphics.height/2-400,400,800,12);
             Graphics.uiPrimitives.endFill()
             var charSelection = new PIXI.Text('SELECT A CHARACTER',AcornSetup.style2);
             charSelection.anchor.x = 0.5;
             charSelection.anchor.y = 0.5;
             charSelection.position.x = Graphics.width/2;
-            charSelection.position.y = Graphics.height/2 - 175;
+            charSelection.position.y = Graphics.height/2 - 375;
             Graphics.uiContainer.addChild(charSelection);
-            for (var i = 0; i < 3;i++){
+            for (var i = 0; i < 10;i++){
                 var num = new PIXI.Text(i+1,AcornSetup.style2);
                 num.anchor.y = 0.5;
                 num.position.x = Graphics.width/2 - 190;
-                num.position.y = Graphics.height/2 - 120 + i*60;
+                num.position.y = Graphics.height/2 - 320 + i*60;
                 Graphics.uiContainer.addChild(num);
                 //check if character exists
                 if (typeof data.characters[i] == 'undefined'){
                     button = Graphics.makeUiElement({
                         text: 'NEW CHARACTER',
-                        style: AcornSetup.baseStyle,
+                        style: AcornSetup.style1,
                         interactive: true,buttonMode: true,
-                        position: [(Graphics.width/2 - 150),Graphics.height/2 - 120 + i*60],
+                        position: [(Graphics.width/2 - 150),Graphics.height/2 - 320 + i*60],
                         anchor: [0,0.5],
                         clickFunc: function onClick(e){
                             //new character!
@@ -267,7 +248,7 @@
                 text: 'PLAY!',
                 style: AcornSetup.style2,
                 interactive: true,buttonMode: true,
-                position: [(Graphics.width/2),Graphics.height/2 +60],
+                position: [(Graphics.width/2),Graphics.height/2 +260],
                 anchor: [0.5,0.5],
                 clickFunc: function onClick(){
                     console.log('play')
@@ -286,7 +267,7 @@
                 text: 'DELETE',
                 style: AcornSetup.style2,
                 interactive: true,buttonMode: true,
-                position: [(Graphics.width/2-190),Graphics.height/2 +190],
+                position: [(Graphics.width/2-190),Graphics.height/2 +390],
                 anchor: [0,1],
                 clickFunc: function onClick(){
                     console.log('delete')
@@ -300,7 +281,7 @@
                 text: 'LOGOUT',
                 style: AcornSetup.style2,
                 interactive: true,buttonMode: true,
-                position: [Graphics.width/2+190,Graphics.height/2+190],
+                position: [Graphics.width/2+190,Graphics.height/2+390],
                 anchor: [1,1],
                 clickFunc: function onClick(){
                         Acorn.Net.socket_.emit('playerUpdate',{command: 'logout'});
