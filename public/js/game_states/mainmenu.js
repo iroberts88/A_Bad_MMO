@@ -246,9 +246,9 @@
             }
             this.playButton = Graphics.makeUiElement({
                 text: 'PLAY!',
-                style: AcornSetup.style2,
+                style: AcornSetup.style3,
                 interactive: true,buttonMode: true,
-                position: [(Graphics.width/2),Graphics.height/2 +260],
+                position: [(Graphics.width/2),Graphics.height/2 +290],
                 anchor: [0.5,0.5],
                 clickFunc: function onClick(){
                     console.log('play')
@@ -259,7 +259,7 @@
                     MainMenu.fadeOut = true;
                 }
             });
-            this.playButton.style.fontSize = 24;
+            this.playButton.style.fontSize = 36;
             this.playButton.visible = false;
             Graphics.uiContainer.addChild(this.playButton);
 

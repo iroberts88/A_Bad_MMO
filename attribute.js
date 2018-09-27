@@ -1,5 +1,9 @@
 
-    
+var utils = require('./utils.js').Utils,
+    Utils = new utils();
+
+//attribute.js
+//an alterable attribute  
 
 var Attribute = function(){
     this.owner = null;
@@ -28,15 +32,15 @@ Attribute.prototype.init = function(data){
 	this.setBool = false; //the attribute is forced to change to this value if true
 	this.setValue = 0;
     //this is a stat that can be updated on the client (hidden or not?)
-    this.updateClient = (typeof data.clientUpdate == 'undefined') ? true : data.clientUpdate;
+    this.updateClient = Utils.udCheck(data.clientUpdate,true,data.clientUpdate);
 	//formula for setting the attribute
-	if (typeof data.formula == 'undefined'){
+	if (Utils._udCheck(data.formula)){
 		this.formula = function(){return Math.round((this.base+this.nMod)*this.pMod);};
     }else{
     	this.formula = data.formula;
     }
     //function to be executed after the attribute is set
-    if (typeof data.next == 'undefined'){
+    if (Utils._udCheck(data.next)){
     	this.next = function(){};
     }else{
     	this.next = data.next;
@@ -50,12 +54,12 @@ Attribute.prototype.set = function(updateClient){
 		//normal set value
 		this.value = this.formula();
 		//check bounds
-		if (typeof this.min != 'undefined'){
+		if (!Utils._udCheck(this.min)){
     		if (this.value < this.min){
     			this.value = this.min;
     		}
     	}
-    	if (typeof this.max != 'undefined'){
+        if (!Utils._udCheck(this.max)){
     		if (this.value > this.max){
     			this.value = this.max;
     		}

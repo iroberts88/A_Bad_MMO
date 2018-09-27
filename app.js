@@ -31,7 +31,7 @@ function init() {
     // ----------------------------------------------------------
 
     rc.ready();
-    rc.require('dbMaps');
+    rc.require('dbMaps','dbClasses','dbRaces','dbUsers');
 
     // ---- Load Maps ----
     fs.readdir( './mapgen_tool/maps', function( err, files ) {
@@ -43,6 +43,28 @@ function init() {
         ge.loadMaps(files);
         rc.ready('dbMaps');
     });
+
+    // ---- Load Races ----
+    fs.readFile('./db/races.json', "utf8",function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        var obj = JSON.parse(data);
+
+        ge.loadRaces(obj.items);
+        rc.ready('dbRaces');
+    });
+    // ---- Load Classes ----
+    fs.readFile('./db/classes.json', "utf8",function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        var obj = JSON.parse(data);
+
+        ge.loadClasses(obj.items);
+        rc.ready('dbClasses');
+    });
+
 
     // ---- Load Userbase ----
     docClient.scan({TableName: 'users'}, function(err, data) {

@@ -4,7 +4,11 @@
 
 var Player = require('./player.js').Player,
     Zone = require('./zone.js').Zone,
+    Race = require('./race.js').Race,
+    CharClass = require('./charclass.js').CharClass, 
     fs = require('fs'),
+    utils = require('./utils.js').Utils,
+    Utils = new utils(),
     AWS = require("aws-sdk");
 
 var self = null;
@@ -17,6 +21,8 @@ var GameEngine = function() {
     this.players = {};
     this.playerCount = 0;
 
+    this.classes = {};
+    this.races = {};
     this.items = {};
 
     //database objects
@@ -35,6 +41,28 @@ var GameEngine = function() {
 
     fs.truncate('debug.txt', 0, function(){console.log('debug.txt cleared')})
     this.debugWriteStream = fs.createWriteStream('debug.txt', {AutoClose: true});
+
+    this.enums = {
+        //client and database enums
+        //calls
+        DISCONNECT: 'disconnect',
+        CLIENTCOMMAND: 'clientCommand',
+        CONNINFO: 'connInfo',
+        LOGINATTEMPT: 'loginAttempt',
+        LOGOUT: 'logout',
+        MAPDATA: 'mapData',
+        PLAYERUPDATE: 'playerUpdate',
+        SETLOGINERRORTEXT: 'setLoginErrorText',
+        //var names
+        ID: 'id',
+        RACES: 'races',
+        CLASSES: 'classes',
+        RACEID: 'raceid',
+        CLASSID: 'classid',
+        NAME: 'name',
+        ATTRIBUTES: 'attributes',
+        AVAILABLECLASSES: 'availableClasses'
+    }
 }
 
 GameEngine.prototype.init = function () {
@@ -52,7 +80,6 @@ GameEngine.prototype.start = function () {
 GameEngine.prototype.tick = function() {
     var now = Date.now();
     var deltaTime = (now-self.lastTime) / 1000.0;
-    
     //update all zones with players
     for (var z in self.zoneUpdateList){
         var zone = self.zones[z];
@@ -90,7 +117,6 @@ GameEngine.prototype.getId = function() {
 GameEngine.prototype.loadMaps = function(arr) {
     for (var i = 0; i < arr.length;i++){
         var d;
-        console.log(arr[i]);
         fs.readFile('./mapgen_tool/maps/' + arr[i], "utf8",function read(err, data) {
             if (err) {
                 throw err;
@@ -110,27 +136,21 @@ GameEngine.prototype.loadMaps = function(arr) {
     console.log('loaded ' + arr.length + ' Maps from file');
 }
 
-GameEngine.prototype.loadItems = function(arr){
+GameEngine.prototype.loadRaces = function(arr){
     for (var i = 0; i < arr.length;i++){
-        self.items[arr[i].itemid] = arr[i];
+        var race = new Race(self);
+        race.init(arr[i]);
+        self.races[arr[i].raceid] = race;
     }
-    console.log('loaded ' + arr.length + ' Items from file');
+    console.log('loaded ' + arr.length + ' Races from file');
 }
-
-GameEngine.prototype.loadPokemon = function(arr) {
+GameEngine.prototype.loadClasses = function(arr){
     for (var i = 0; i < arr.length;i++){
-        self.pokemon[arr[i].number] = arr[i];
+        var charclass = new CharClass(self);
+        charclass.init(arr[i]);
+        self.classes[arr[i].classid] = charclass;
     }
-    console.log('loaded ' + arr.length + ' Pokemon from file');
-}
-
-GameEngine.prototype.loadAttacks = function(arr) {
-    for (var i = 0; i < arr.length;i++){
-        var atk = new Attack();
-        atk.init(arr[i])
-        self.attacks[arr[i].attackid] = atk;
-    }
-    console.log('loaded ' + arr.length + ' Attacks from file');
+    console.log('loaded ' + arr.length + ' Classes from file');
 }
 
 //Player functions
@@ -189,7 +209,19 @@ GameEngine.prototype.newConnection = function(socket) {
         p.setGameEngine(self);
         console.log('Player ID: ' + p.id);
         p.init({socket:socket});
-        self.queuePlayer(p,'connInfo', {id:p.id});
+        //sned down initial client data
+        var data = {}
+        data[self.enums.ID] = p.id;
+        data[self.enums.CLASSES] = {};
+        for (var i in self.classes){
+            data[self.enums.CLASSES][i] = self.classes[i].getClientObj();
+        }
+        data[self.enums.RACES] = {};
+        for (var i in self.races){
+            data[self.enums.RACES][i] = self.races[i].getClientObj();
+        }
+        console.log(data);
+        self.queuePlayer(p,self.enums.CONNINFO, data);
         self.addPlayer(p);
     }
 }
@@ -230,7 +262,7 @@ GameEngine.prototype.queuePlayer = function(player, c, d) {
 
 //Queue DEBUG data to a specific player
 GameEngine.prototype.debug = function(id,e,d) {
-    if (typeof this.debugList[id] == 'undefined'){
+    if (Utils._udCheck(this.debugList[id])){
         //new debug error
         //add to debug list and send to client
         this.debugList[id] = {
@@ -240,13 +272,13 @@ GameEngine.prototype.debug = function(id,e,d) {
         }
         d.n = 1;
         console.log('debug.txt updated');
-        this.debugWriteStream.write(new Date().toJSON() + ' - ' + id.toUpperCase() + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
+        this.debugWriteStream.write(new Date().toJSON() + ' - ' + id + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
     }else{
         this.debugList[id].n += 1;
         d.n = this.debugList[id].n
         if (this.debugList[id].t <= 0){
             console.log('debug.txt updated (duplicate error)');
-            this.debugWriteStream.write(new Date().toJSON() + ' - ' + id.toUpperCase() + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
+            this.debugWriteStream.write(new Date().toJSON() + ' - ' + id + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
             this.debugList[id].t = 5.0;
         }
     }

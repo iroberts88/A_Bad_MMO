@@ -7,4 +7,12 @@ Utils.prototype.armorReduce = function(dmg,armor, attackerLevel) {
     return newDmg;
 }
 
+Utils.prototype.udCheck = function(val,tVal,fVal) {
+	var result = typeof val == 'undefined' ? tVal : fVal;
+    return result;
+}
+Utils.prototype._udCheck = function(val) {
+	return (typeof val == 'undefined');
+}
+
 exports.Utils = Utils;

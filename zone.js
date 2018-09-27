@@ -7,7 +7,7 @@ var Player = require('./player.js').Player,
 
 var Zone = function(ge) {
 
-    this.gameEngine = ge;
+    this.engine = ge;
 
     //map info
     this.mapid = null;
@@ -103,7 +103,7 @@ Zone.prototype.changeSector = function(p,arr,id,tile){
             if (addList[i] == null){continue;}
             for (var pl in addList[i].players){
                 var player = addList[i].players[pl];
-                this.gameEngine.queuePlayer(player,'addPC',{
+                this.engine.queuePlayer(player,'addPC',{
                     id: p.id,
                     name:p.user.userData.username,
                     user: p.user.userData.username,
@@ -111,7 +111,7 @@ Zone.prototype.changeSector = function(p,arr,id,tile){
                     tile: [tile.x,tile.y],
                     sector: id
                 });
-                this.gameEngine.queuePlayer(p,'addPC',{
+                this.engine.queuePlayer(p,'addPC',{
                     id: player.id,
                     user: player.user.userData.username,
                     name:player.user.userData.username,
@@ -129,8 +129,8 @@ Zone.prototype.changeSector = function(p,arr,id,tile){
             if (removeList[i] == null){continue;}
             for (var pl in removeList[i].players){
                 var player = removeList[i].players[pl];
-                this.gameEngine.queuePlayer(player,'removePC',{id: p.id})
-                this.gameEngine.queuePlayer(p,'removePC',{id: player.id})
+                this.engine.queuePlayer(player,'removePC',{id: p.id})
+                this.engine.queuePlayer(p,'removePC',{id: player.id})
             }
         }catch(e){
             console.log(e);
@@ -180,7 +180,7 @@ Zone.prototype.addPlayer = function(p){
             }
             for (var pl in this.map[(coords.x+i) + 'x' + (coords.y+j)].players){
                 var player = this.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                this.gameEngine.queuePlayer(player,'addPC',{
+                this.engine.queuePlayer(player,'addPC',{
                     id: p.id,
                     name:p.user.userData.username,
                     user: p.user.userData.username,
@@ -205,7 +205,7 @@ Zone.prototype.removePlayer = function(p){
             }
             for (var pl in this.map[(coords.x+i) + 'x' + (coords.y+j)].players){
                 var player = this.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                this.gameEngine.queuePlayer(player,'removePC',{id: p.id})
+                this.engine.queuePlayer(player,'removePC',{id: p.id})
             }
         }
     }

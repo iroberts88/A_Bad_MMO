@@ -171,6 +171,7 @@
         startLoad: function(){
             Graphics.app.loader
                 .add('img/mapSprites.json')
+                .add('img/sprites.json')
                 .load(Graphics.loadResources);
             
         },
@@ -212,8 +213,16 @@
 
             }
 
+            var r = Graphics.app._loader.resources['img/sprites.json'];
+            for (var i in r.textures){
+                var texture = PIXI.Texture.fromFrame(i);
+                var name = i.slice(0,i.length-4);
+                if (typeof Graphics.animationSpeeds[name] == 'undefined'){
+                    Graphics.resources[name] = texture;
+                }
+            }
 
-            //add all base textures to resources
+            //add all base map tiles
             for(var i = 0; i <= 27; i++) {
                 try{
                     var texture = PIXI.Texture.fromFrame(i + ".png");
@@ -225,7 +234,7 @@
             }
 
             //add all overlay textures to resources
-            for(var i = 0; i <= 20; i++) {
+            for(var i = 1; i <= 20; i++) {
                 try{
                     var texture = PIXI.Texture.fromFrame('ov_' + i + ".png");
                     texture.isAMapTexture = true;
@@ -236,7 +245,7 @@
             }
 
             //add all clip textures to resources
-            for(var i = 0; i <= 8; i++) {
+            for(var i = 1; i <= 8; i++) {
                 try{
                     var texture = PIXI.Texture.fromFrame('e_' + i + ".png");
                     texture.isAMapTexture = true;

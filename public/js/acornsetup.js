@@ -13,11 +13,41 @@
             align: 'left'
         },
 
+        style3: {
+            font: '18px Permanent Marker',
+            fill: Graphics.pallette.color1,
+            align: 'left'
+        },
+
+        enums: {
+            //client and database enums
+            //calls
+            DISCONNECT: 'disconnect',
+            CLIENTCOMMAND: 'clientCommand',
+            CONNINFO: 'connInfo',
+            LOGINATTEMPT: 'loginAttempt',
+            LOGOUT: 'logout',
+            MAPDATA: 'mapData',
+            PLAYERUPDATE: 'playerUpdate',
+            SETLOGINERRORTEXT: 'setLoginErrorText',
+            //var names
+            ID: 'id',
+            RACES: 'races',
+            CLASSES: 'classes',
+            RACEID: 'raceid',
+            CLASSID: 'classid',
+            NAME: 'name',
+            ATTRIBUTES: 'attributes',
+            AVAILABLECLASSES: 'availableClasses'
+        },
+
         net: function() {
-            Acorn.Net.on('connInfo', function (data) {
+            Acorn.Net.on(this.enums.CONNINFO, function (data) {
                 console.log('Connected to server: Info Received');
                 console.log(data);
-                mainObj.id = data.id;
+                mainObj.id = data[AcornSetup.enums.ID];
+                NewChar.raceInfo = data[AcornSetup.enums.RACES];
+                NewChar.CLASSInfo = data[AcornSetup.enums.CLASSES];
                 Acorn.Net.ready = true;
                 checkReady();
             });

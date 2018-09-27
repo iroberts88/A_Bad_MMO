@@ -12,7 +12,13 @@
         "intelligence": 100,
         "perception": 100
       },
-      "name": "Human"
+      "name": "Human",
+      "availableClasses":{
+        "rogue":true,
+        "mage":true,
+        "warrior":true,
+        "priest":true
+      }
     },
     {
       "raceid": "elf",
@@ -26,7 +32,13 @@
         "intelligence": 95,
         "perception": 120
       },
-      "name": "Elf"
+      "name": "Elf",
+      "availableClasses": {
+        "rogue":true,
+        "mage":true,
+        "warrior":true,
+        "priest":true
+      }
     },
     {
       "raceid": "dwarf",
@@ -40,7 +52,12 @@
         "intelligence": 75,
         "perception": 115
       },
-      "name": "Dwarf"
+      "name": "Dwarf",
+      "availableClasses": {
+        "rogue":true,
+        "warrior":true,
+        "priest":true
+      }
     },
     {
       "raceid": "gnome",
@@ -54,7 +71,12 @@
         "intelligence": 135,
         "perception": 110
       },
-      "name": "Gnome"
+      "name": "Gnome",
+      "availableClasses": {
+        "rogue":true,
+        "mage":true,
+        "warrior":true
+      }
     }
   ]
 }

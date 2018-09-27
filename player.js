@@ -14,7 +14,7 @@ AWS.config.update({
 });
 
 var Player = function(){
-    this.gameEngine = null;
+    this.engine = null;
     this.user = null;
     this.id = null;
     this.ready = null;
@@ -42,7 +42,7 @@ Player.prototype.onDisconnect = function(callback) {
 };
 
 Player.prototype.setGameEngine = function(ge){
-    this.gameEngine = ge;
+    this.engine = ge;
     this.id = ge.getId();
 };
 Player.prototype.setupSocket = function() {
@@ -51,7 +51,7 @@ Player.prototype.setupSocket = function() {
     var that = this;
 
 
-    this.socket.on('playerUpdate', function (data) {
+    this.socket.on(this.engine.enums.PLAYERUPDATE, function (data) {
         try{
             if (that.battle != null){
                 //player updates during an active battle are ignored
@@ -59,19 +59,20 @@ Player.prototype.setupSocket = function() {
             }
             switch(data.command){
                 case 'logout':
-                    that.gameEngine.playerLogout(that);
-                    that.gameEngine.queuePlayer(that,'logout', {});
+                    that.engine.playerLogout(that);
+                    that.engine.queuePlayer(that,this.engine.enums.LOGOUT, {});
                     break;
                
                 case 'requestMapData':
+                    //TODO - zone data to client obj???
                     try{
-                        var zoneData = that.gameEngine.zones[data.name].zoneData;
-                        that.gameEngine.queuePlayer(that,'mapData',{
+                        var zoneData = that.engine.zones[data.name].zoneData;
+                        that.engine.queuePlayer(that,this.engine.enums.MAPDATA,{
                             zoneData: zoneData,
                             name: data.name
                         });
                     }catch(e){
-                        that.gameEngine.debug(that,{id: 'requestMapDataError', error: e.stack});
+                        that.engine.debug(that,{id: 'requestMapDataError', error: e.stack});
                     }
                     break;
             }
@@ -82,11 +83,11 @@ Player.prototype.setupSocket = function() {
     });
 
 
-    this.socket.on('clientCommand', function(data) {
+    this.socket.on(this.engine.enums.CLIENTCOMMAND, function(data) {
         // this needs to be parsed: data.cString
         // format: >COMMAND ID AMOUNT
         //commands:
-        if (data.cString.length > 128){
+        /*if (data.cString.length > 128){
             return;
         }
         try{
@@ -103,17 +104,17 @@ Player.prototype.setupSocket = function() {
                 console.log('Say: ' + data.cString);
                 var players = [];
                 //send a move command to all players in adjacent sectors
-                var zone = that.gameEngine.zones[that.character.currentMap];
+                var zone = that.engine.zones[that.character.currentMap];
                 var coords = zone.getSectorXY(that.character.currentSector);
                 for (var i = -1;i < 2;i++){
                     for (var j = -1;j < 2;j++){
                         try{
                             for (var pl in zone.map[(coords.x+i) + 'x' + (coords.y+j)].players){
                                 var player = zone.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                                that.gameEngine.queuePlayer(player,"say", {id: that.id,text: data.cString});
+                                that.engine.queuePlayer(player,"say", {id: that.id,text: data.cString});
                             }
                         }catch(e){
-                            that.gameEngine.debug(that,{id: 'chatAttempt', error: e.stack});
+                            that.engine.debug(that,{id: 'chatAttempt', error: e.stack});
                         }
                     }
                 }
@@ -138,13 +139,13 @@ Player.prototype.setupSocket = function() {
                     var pokemon = [Math.ceil(Math.random()*15)];
                     var levels = [5];//[Math.ceil(Math.random()*20)];
 
-                    var battle = new Battle(that.gameEngine);
-                    var pkmn = new Trainer(that.gameEngine);
+                    var battle = new Battle(that.engine);
+                    var pkmn = new Trainer(that.engine);
                     pkmn.init({wild: true,pokemon:pokemon,levels:levels});
                     if (battle.init({team1: [that.character],team2: [pkmn],type: '1v1'})){
                         console.log("Battle successfully initialized!!");
                         that.battle = battle;
-                        that.gameEngine.activeBattles[battle.id] = battle;
+                        that.engine.activeBattles[battle.id] = battle;
                     }
                     break;
                 case 'arp':
@@ -153,11 +154,11 @@ Player.prototype.setupSocket = function() {
                     var level = Math.ceil(Math.random()*100);
 
                     var newPoke = new Pokemon();
-                    newPoke.init(that.gameEngine.pokemon[pokemon],{
+                    newPoke.init(that.engine.pokemon[pokemon],{
                         character: that.character,
                         nickname: '',
                         level: level,
-                        id: that.gameEngine.getId()
+                        id: that.engine.getId()
                     })
                     that.character.addPokemon(newPoke);
                     break;
@@ -165,14 +166,15 @@ Player.prototype.setupSocket = function() {
         }catch(e){
             console.log(e);
         }
+        */
     });
 
-    this.socket.on('disconnect', function () {
+    this.socket.on(this.engine.enums.disconnect, function () {
         try{
             that.user.unlock();
             console.log('Player ' + that.id + ' (' + that.user.userData.username + ') has disconnected.');
             that.user.updateDB();
-            that.gameEngine.removePlayer(that);
+            that.engine.removePlayer(that);
             // If callback exists, call it
             if(that.onDisconnectHandler != null && typeof that.onDisconnectHandler == 'function' ) {
                 that.onDisconnectHandler();
@@ -183,7 +185,7 @@ Player.prototype.setupSocket = function() {
     });
 
     
-    this.socket.on('loginAttempt', function (d) {
+    this.socket.on(this.engine.enums.LOGINATTEMPT, function (d) {
         if (that.user){return;}
         try{
             if (d.sn && d.pw){
@@ -208,13 +210,13 @@ Player.prototype.setupSocket = function() {
                                     that.user.setOwner(that);
                                     that.user.init(data.Item);
                                     that.user.lock();
-                                    that.gameEngine.users[d.sn] = that.user;
-                                    that.gameEngine.queuePlayer(that,"loggedIn", {name:data.Item.username, characters: that.user.characters});
+                                    that.engine.users[d.sn] = that.user;
+                                    that.engine.queuePlayer(that,"loggedIn", {name:data.Item.username, characters: that.user.characters});
                                 }else{
-                                    that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'wrongpass'});
+                                    that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
                                 }
                             }else{
-                                that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'wrongpass'});
+                                that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
                             }
                         }
                     }catch(e){
@@ -225,7 +227,7 @@ Player.prototype.setupSocket = function() {
         }catch(e){
             console.log('Login Attempt failed');
             console.log(e);
-            that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'wrongpass'});
+            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
         }
     });
     this.socket.on('guestLogin', function (d) {
@@ -244,7 +246,7 @@ Player.prototype.setupSocket = function() {
                 if (err) {
                 } else {
                     console.log("Attempting guest logon...");
-                    if (d.sn.length >= 3 && d.sn.length <= 16 && typeof data.Item == 'undefined' && typeof that.gameEngine.users[d.sn] == 'undefined'){
+                    if (d.sn.length >= 3 && d.sn.length <= 16 && typeof data.Item == 'undefined' && typeof that.engine.users[d.sn] == 'undefined'){
                         console.log('valid username - adding guest');
                         var u = {
                             username: d.sn,
@@ -253,12 +255,12 @@ Player.prototype.setupSocket = function() {
                         that.user = User();
                         that.user.setOwner(that);
                         that.user.init(u);
-                        that.gameEngine.users[d.sn] = that.user;
-                        that.gameEngine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
-                    }else if (typeof data.Item != 'undefined' || typeof that.gameEngine.users[d.sn] != 'undefined'){
-                        that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'userexists'});
+                        that.engine.users[d.sn] = that.user;
+                        that.engine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
+                    }else if (typeof data.Item != 'undefined' || typeof that.engine.users[d.sn] != 'undefined'){
+                        that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
                     }else{
-                        that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'snlength'});
+                        that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'snlength'});
                     }
                 }
             });
@@ -272,7 +274,7 @@ Player.prototype.setupSocket = function() {
         if (that.user){return;}
         try{
             d.sn = d.sn.toLowerCase();
-            if (typeof that.gameEngine.users[d.sn] == 'undefined'){
+            if (typeof that.engine.users[d.sn] == 'undefined'){
                 var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
                 var params = {
                     TableName: 'users',
@@ -310,8 +312,8 @@ Player.prototype.setupSocket = function() {
                                     that.user = User();
                                     that.user.setOwner(that);
                                     that.user.init(u);
-                                    that.gameEngine.users[d.sn] = that.user;
-                                    that.gameEngine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
+                                    that.engine.users[d.sn] = that.user;
+                                    that.engine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
                                     var params3 = {
                                         TableName: 'users',
                                         Item: {
@@ -334,17 +336,17 @@ Player.prototype.setupSocket = function() {
                             });
                             
                         }else if (typeof data.Item != 'undefined'){
-                            that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'userexists'});
+                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
                         }else if (d.sn.length < 3 || d.sn.length > 16){
-                            that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'snlength'});
+                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'snlength'});
                         }else if (d.pw.length < 8 || d.pw.length > 16){
-                            that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'plength'});
+                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'plength'});
                         }
                     }
                 });
             }else{
                 //user exists
-                that.gameEngine.queuePlayer(that,"setLoginErrorText", {text: 'userexists'});
+                that.engine.queuePlayer(that,"setLoginErrorText", {text: 'userexists'});
             }
         }catch(e){
             console.log('error creating user');
