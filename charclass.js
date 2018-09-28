@@ -8,12 +8,13 @@ var CharClass = function(ge) {
 
     this.classid = null;
     this.name = null;
+    this.description = null;
 }
 
 CharClass.prototype.init = function (data) {
     this.classid = data[this.engine.enums.CLASSID];
     this.name = data[this.engine.enums.NAME];
-
+    this.description = data[this.engine.enums.DESCRIPTION];
 };
 
 CharClass.prototype.getClientObj = function (data) {
@@ -21,6 +22,7 @@ CharClass.prototype.getClientObj = function (data) {
     var data = {}
     data[this.engine.enums.CLASSID] = this.classid;
     data[this.engine.enums.NAME] = this.name;
+    data[this.engine.enums.DESCRIPTION] = this.description;
     return data;
 };
 

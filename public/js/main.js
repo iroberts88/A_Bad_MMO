@@ -61,6 +61,9 @@ $(function() {
     // Set up keyboard bindings
 
     $(document).keypress(function(e) {
+        if (Graphics.currentTextBox){
+            Graphics.textBoxes[Graphics.currentTextBox].keyPress(e.which);
+        }
         if(e.keyCode === 32) {
             e.preventDefault();
         }
@@ -75,19 +78,24 @@ $(function() {
             document.body.removeChild(tmp);
         }
 
-        Acorn.Input.keyDown(key);
-
-        // Prevent system wide stops
-        /*if (
-                key === 8 || // Backspace
-                key === 16// Delete
-            ){
-            e.preventDefault();
-        }*/
+        if (Graphics.currentTextBox){
+            Graphics.textBoxes[Graphics.currentTextBox].keyDown(key);
+        }else{
+            Acorn.Input.keyDown(key);
+        }
 
         if ((key === 32 || key === 38 || key === 37 || key === 39 || key === 40 || key === 127) ){
             e.preventDefault();
         }
+
+        // Prevent system wide stops
+        if (
+                key === 8 || // Backspace
+                key === 16
+            ){
+            e.preventDefault();
+        }
+
     });
 
     $(document).keyup(function(e) {
@@ -149,8 +157,10 @@ function init() {
 
     Graphics.app.ticker.add(function update(){
         Settings.stats.begin();
-        Acorn.states[Acorn.currentState].update(Graphics.app.ticker.elapsedMS/1000); //update the current state
-        Acorn.Sound.update(Graphics.app.ticker.elapsedMS/1000)
+        var deltaTime = Graphics.app.ticker.elapsedMS/1000
+        Acorn.states[Acorn.currentState].update(deltaTime); //update the current state
+        Acorn.Sound.update(deltaTime);
+        Graphics.update(deltaTime);
         Graphics.app.renderer.render(Graphics.app.stage);
 
         Settings.stats.end();

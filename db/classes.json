@@ -2,19 +2,23 @@
   "items": [
     {
       "classid": "thief",
-      "name": "Thief"
+      "name": "Thief",
+      "description": "This is a description of the THIEF class......................................................................................"
     },
     {
       "classid": "mage",
-      "name": "Mage"
+      "name": "Mage",
+      "description": "This is a description of the MAGE class"
     },
     {
       "classid": "priest",
-      "name": "Priest"
+      "name": "Priest",
+      "description": "This is a description of the PRIEST class"
     },
     {
       "classid": "fighter",
-      "name": "Fighter"
+      "name": "Fighter",
+      "description": "This is a description of the FIGHTER class"
     }
   ]
 }

@@ -10,7 +10,9 @@
         style2: {
             font: '18px Lato',
             fill: Graphics.pallette.color1,
-            align: 'left'
+            align: 'left',
+            wordWrap: true,
+            wordWrapWidth: 425
         },
 
         style3: {
@@ -47,7 +49,7 @@
                 console.log(data);
                 mainObj.id = data[AcornSetup.enums.ID];
                 NewChar.raceInfo = data[AcornSetup.enums.RACES];
-                NewChar.CLASSInfo = data[AcornSetup.enums.CLASSES];
+                NewChar.classInfo = data[AcornSetup.enums.CLASSES];
                 Acorn.Net.ready = true;
                 checkReady();
             });
@@ -168,6 +170,11 @@
         input: function(){
             Acorn.Input.onMouseClick(function(e) {
                 Acorn.Input.mouseDown = true;
+                if (Graphics.currentTextBox){
+                    if (!Graphics.textBoxes[Graphics.currentTextBox].pointerOver){
+                        Graphics.textBoxes[Graphics.currentTextBox].deactivate();
+                    }
+                }
             });
             Acorn.Input.onMouseUp(function(e) {
                 Acorn.Input.mouseDown = false;

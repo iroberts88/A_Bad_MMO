@@ -14,11 +14,12 @@
       },
       "name": "Human",
       "availableClasses":{
-        "rogue":true,
+        "thief":true,
         "mage":true,
-        "warrior":true,
+        "fighter":true,
         "priest":true
-      }
+      },
+      "description": "This is a description of the HUMAN race"
     },
     {
       "raceid": "elf",
@@ -34,11 +35,12 @@
       },
       "name": "Elf",
       "availableClasses": {
-        "rogue":true,
+        "thief":true,
         "mage":true,
-        "warrior":true,
+        "fighter":true,
         "priest":true
-      }
+      },
+      "description": "This is a description of the ELF race"
     },
     {
       "raceid": "dwarf",
@@ -54,10 +56,11 @@
       },
       "name": "Dwarf",
       "availableClasses": {
-        "rogue":true,
-        "warrior":true,
+        "thief":true,
+        "fighter":true,
         "priest":true
-      }
+      },
+      "description": "This is a description of the DWARF race"
     },
     {
       "raceid": "gnome",
@@ -73,10 +76,11 @@
       },
       "name": "Gnome",
       "availableClasses": {
-        "rogue":true,
+        "thief":true,
         "mage":true,
-        "warrior":true
-      }
+        "fighter":true
+      },
+      "description": "This is a description of the GNOME race"
     }
   ]
 }

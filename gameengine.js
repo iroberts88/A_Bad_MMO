@@ -60,6 +60,7 @@ var GameEngine = function() {
         RACEID: 'raceid',
         CLASSID: 'classid',
         NAME: 'name',
+        DESCRIPTION: 'description',
         ATTRIBUTES: 'attributes',
         AVAILABLECLASSES: 'availableClasses'
     }
@@ -220,7 +221,6 @@ GameEngine.prototype.newConnection = function(socket) {
         for (var i in self.races){
             data[self.enums.RACES][i] = self.races[i].getClientObj();
         }
-        console.log(data);
         self.queuePlayer(p,self.enums.CONNINFO, data);
         self.addPlayer(p);
     }

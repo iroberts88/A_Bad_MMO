@@ -9,6 +9,8 @@
         resourcesReady: null,
         resourceList: null,
         elements: [],
+        textBoxes: {},
+        currentTextBox: null,
 
         pallette: {
             color1:'#f4bc42', // Font color
@@ -562,6 +564,11 @@
                 }
             });
         },
+        update: function(deltaTime){
+            if (this.currentTextBox){
+                this.textBoxes[this.currentTextBox].update(deltaTime);
+            }
+        }
     }
 
     window.Graphics = Graphics;
