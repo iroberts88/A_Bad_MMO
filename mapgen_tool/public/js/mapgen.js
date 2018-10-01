@@ -55,7 +55,7 @@
             var gotTile = false;
             var tile;
             while(!gotTile){
-                this.data.tile = prompt("Please enter a default tile for this map", '1');
+                this.data.tile = prompt("Please enter a default tile for this map", '0x0');
                 if (typeof Graphics.resources[this.data.tile] != 'undefined'){
                     var sprite = Graphics.resources[this.data.tile];
                     this.map.defaultTile = this.data.tile;
@@ -566,7 +566,7 @@
 
             var ypos = 100;
             var xpos = 100;
-            var mapanims = {'deep_water': true};
+            var mapanims = {'deep_water': '0x12'};
             for(var i in Graphics.resources) {
                 if (typeof Graphics.resources[i].isAMapTexture == 'undefined'){
                     if (typeof mapanims[i] == 'undefined'){
@@ -593,10 +593,32 @@
                             Graphics.uiContainer.addChild(MapGen.currentTileSprite);
                         }
                     });
-                    s.scale.x = 1;
-                    s.scale.y = 1;
-                    s.position.x = xpos;
-                    s.position.y = ypos;
+                    var string = i;
+                    if (typeof mapanims[i] != 'undefined'){
+                        string = mapanims[i]
+                    }
+                    var tilex = '';
+                    var tiley = '';
+                    var onX = true;
+                    for (var j = 0; j < string.length;j++){
+                        console.log(j)
+                        console.log(string.charAt(j))
+                        if (typeof Graphics.numbers[string.charAt(j)] != 'undefined'){
+                            if (onX){
+                                tilex += string.charAt(j);
+                            }else{
+                                tiley += string.charAt(j);
+                            }
+                        }else if (string.charAt(j) == 'x'){
+                            onX = false;
+                        }else{
+                            break;
+                        }
+                    }
+                    s.scale.x = 2;
+                    s.scale.y = 2;
+                    s.position.x = 100 + 40* parseInt(tilex);
+                    s.position.y = 100 + 40* parseInt(tiley);
                     s.resource = i;
                     Graphics.uiContainer2.addChild(s);
                     xpos += 20;
@@ -605,7 +627,7 @@
                         ypos += 20;
                     }
                 }catch(e){
-
+                    console.log(e);
                 }
             }
         },
@@ -675,7 +697,7 @@
                             Acorn.Input.buttons = {};
                             break;
                         }
-                        if (this.currentPlaceTile.charAt(0) == 'o' || this.currentPlaceTile.charAt(0) == 'e'){
+                        if (this.currentPlaceTile.charAt(this.currentPlaceTile.length-1) == 'o' || this.currentPlaceTile.charAt(this.currentPlaceTile.length-1) == 'e'){
                             //set overlay sprite
                             var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
                             var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));

@@ -19,7 +19,7 @@
         sayBubbleDuration: 5.0,
 
         init: function(data){
-        	userData = data;
+        	this.userData = data;
         },
 
         initCharacter: function(data){

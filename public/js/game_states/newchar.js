@@ -5,8 +5,18 @@
         prompted: false,
         classInfo: null,
         raceInfo: null,
+        raceDescText: null,
+        classDescText: null,
+
         currentClass: 'fighter',
         currentRace: 'human',
+
+        nameValid: false,
+        waitingForNameAvailability: false,
+        nameAvailability: false,
+        nameAvailabilitySymbol: null,
+        nameAvailabilityText: null,
+
         init: function() {
             this.nameText = new PIXI.Text("Choose a name:",AcornSetup.style1);
             this.nameText.anchor.x = 0;
@@ -25,12 +35,67 @@
                 font: '20px Verdana',
                 name: '',
                 max: 18,
-                letterOnly: true
+                letterOnly: true,
+                onChange: function(){
+                    if (NewChar.nameBox.text.length >=3 && NewChar.nameBox.text.length < 16){
+                        NewChar.waitingForNameAvailability = true;
+                        var data = {};
+                        data[AcornSetup.enums.COMMAND] = AcornSetup.enums.CHECKNAME;
+                        data[AcornSetup.enums.TEXT] = NewChar.nameBox.text;
+                        Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                    }else{
+                        NewChar.waitingForNameAvailability = false;
+                    }
+                }
             });
+
+            this.nameAvailableSymbol = new PIXI.Text('',AcornSetup.style2);
+            this.nameAvailableSymbol.anchor.y = 0.5;
+            this.nameAvailableSymbol.position.x = Graphics.width/2 + 225;
+            this.nameAvailableSymbol.position.y = this.nameText.height + 26;
+            this.nameAvailableSymbol.style.fontSize = 32;
+
+            this.nameAvailableText = new PIXI.Text('',AcornSetup.style2);
+            this.nameAvailableText.anchor.y = 0.5;
+            this.nameAvailableText.position.x = Graphics.width/2 + 275;
+            this.nameAvailableText.position.y = this.nameText.height + 26;
+
+            this.enterWorldButton = Graphics.makeUiElement({
+                text: 'ENTER WORLD!',
+                style: AcornSetup.style3,
+                interactive: true,buttonMode: true,
+                position: [(Graphics.width/2),this.nameAvailableText.position.y + 100],
+                anchor: [0.5,0.5],
+                clickFunc: function onClick(e){
+                    var data = {};
+                    data[AcornSetup.enums.COMMAND] = AcornSetup.enums.CREATECHAR;
+                    data[AcornSetup.enums.NAME] = NewChar.nameBox.text;
+                    data[AcornSetup.enums.RACE] = NewChar.currentRace;
+                    data[AcornSetup.enums.CLASS] = NewChar.currentClass;
+                    data[AcornSetup.enums.SLOT] = NewChar.slot;
+                    Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                }
+            });
+            this.enterWorldButton.visible = false;
+
+            this.exitButton = Graphics.makeUiElement({
+                text: 'EXIT!',
+                style: AcornSetup.style3,
+                interactive: true,buttonMode: true,
+                position: [(Graphics.width-10),10],
+                anchor: [1,0],
+                clickFunc: function onClick(e){
+                    Acorn.changeState('mainmenu');
+                }
+            });
+
+            Graphics.uiContainer.addChild(this.enterWorldButton);
+            Graphics.uiContainer.addChild(this.exitButton);
+            Graphics.uiContainer.addChild(this.nameAvailableSymbol);
+            Graphics.uiContainer.addChild(this.nameAvailableText);
+
             this.raceDescText = new PIXI.Text('',AcornSetup.style2);
             this.classDescText = new PIXI.Text('',AcornSetup.style2);
-            Graphics.uiContainer2.addChild(this.raceDescText);
-            Graphics.uiContainer2.addChild(this.classDescText);
             this.raceDescText.position.x = 510;
             this.raceDescText.position.y = 200;
             this.classDescText.position.x = 510;
@@ -85,8 +150,8 @@
                     }
                     Graphics.uiPrimitives2.clear();
                     NewChar.currentRace = b.raceid;
-                    if (typeof NewChar.raceInfo[NewChar.currentRace].availableClasses[NewChar.currentClass] == 'undefined'){
-                        for (var i in NewChar.raceInfo[NewChar.currentRace].availableClasses){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES][NewChar.currentClass] == 'undefined'){
+                        for (var i in NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES]){
                             NewChar.currentClass = i;
                             break;
                         }
@@ -124,7 +189,7 @@
                     if (NewChar.currentRace == b.raceid){
                         return;
                     }
-                    if (typeof NewChar.raceInfo[NewChar.currentRace].availableClasses[b.classid] == 'undefined'){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES][b.classid] == 'undefined'){
                         return;
                     }
                     Graphics.uiPrimitives2.clear();
@@ -146,10 +211,10 @@
         reDraw: function(){
             var bX = 100;
             var bY = 32;
-            this.classDescText.text = this.classInfo[this.currentClass].name + '\n' + this.classInfo[this.currentClass].description;
-            this.raceDescText.text = this.raceInfo[this.currentRace].name + '\n' + this.raceInfo[this.currentRace].description;
+            this.classDescText.text = this.classInfo[this.currentClass][AcornSetup.enums.NAME] + '\n' + this.classInfo[this.currentClass][AcornSetup.enums.DESCRIPTION];
+            this.raceDescText.text = this.raceInfo[this.currentRace][AcornSetup.enums.NAME] + '\n' + this.raceInfo[this.currentRace][AcornSetup.enums.DESCRIPTION];
             for (var i in this.classInfo){
-                if (typeof this.raceInfo[this.currentRace].availableClasses[this.classInfo[i].classid] == 'undefined'){
+                if (typeof this.raceInfo[this.currentRace][AcornSetup.enums.AVAILABLECLASSES][this.classInfo[i][AcornSetup.enums.CLASSID]] == 'undefined'){
                     var cButton = this.classInfo[i].button;
                     Graphics.uiPrimitives2.lineStyle(2,0xFF0000,1);
                     Graphics.uiPrimitives2.drawRoundedRect(cButton.position.x - bX/2,cButton.position.y-cButton.height/2,bX,bY,12);
@@ -167,7 +232,34 @@
             Graphics.uiPrimitives2.drawRoundedRect(rButton.position.x - bX/2,rButton.position.y-rButton.height/2,bX,bY,12);
         },
         update: function(dt){
-            
+            if (this.nameBox.text.length >=3 && this.nameBox.text.length < 16){
+                this.nameValid = true;
+            }else{
+                this.nameAvailableSymbol.text = '';
+                this.nameAvailableText.text = '';
+                this.nameValid = false;
+                this.enterWorldButton.visible = false;
+                return;
+            }
+            if (this.waitingForNameAvailability){
+                this.nameAvailableSymbol.text = '...';
+                this.nameAvailableText.text = '';
+                this.nameAvailableSymbol.style.fill = 'black';
+                    this.enterWorldButton.visible = false;
+            }else{
+                if (this.nameAvailable){
+                    this.nameAvailableSymbol.text = '🗸';
+                    this.nameAvailableText.text = 'Name available!';
+                    this.nameAvailableSymbol.style.fill = 'green';
+                    //TODO - check stats, etc
+                    this.enterWorldButton.visible = true;
+                }else{
+                    this.nameAvailableSymbol.text = 'X';
+                    this.nameAvailableText.text = 'Name not available.';
+                    this.nameAvailableSymbol.style.fill = 'red';
+                    this.enterWorldButton.visible = false;
+                }
+            }
         }
 
     }

@@ -39,36 +39,53 @@ var GameEngine = function() {
     this.debugList = {}; //used avoid multiple debug chains in tick()
     this.ready = false;
 
+    this.possibleNameChars = {};
+
     fs.truncate('debug.txt', 0, function(){console.log('debug.txt cleared')})
     this.debugWriteStream = fs.createWriteStream('debug.txt', {AutoClose: true});
 
     this.enums = {
         //client and database enums
+
         //calls
         DISCONNECT: 'disconnect',
+        CHECKNAME: 'checkName',
         CLIENTCOMMAND: 'clientCommand',
+        COMMAND: 'command',
         CONNINFO: 'connInfo',
+        CREATECHAR: 'creatChar',
+        CREATECHARERROR: 'createCharError',
         LOGINATTEMPT: 'loginAttempt',
         LOGOUT: 'logout',
         MAPDATA: 'mapData',
         PLAYERUPDATE: 'playerUpdate',
         SETLOGINERRORTEXT: 'setLoginErrorText',
+
+
         //var names
-        ID: 'id',
-        RACES: 'races',
-        CLASSES: 'classes',
-        RACEID: 'raceid',
-        CLASSID: 'classid',
-        NAME: 'name',
-        DESCRIPTION: 'description',
         ATTRIBUTES: 'attributes',
-        AVAILABLECLASSES: 'availableClasses'
-    }
+        AVAILABLECLASSES: 'availableClasses',
+        BOOL: 'bool',
+        CLASSES: 'classes',
+        CLASS: 'class',
+        CLASSID: 'classid',
+        DESCRIPTION: 'description',
+        ID: 'id',
+        NAME: 'name',
+        RACES: 'races',
+        RACE: 'race',
+        RACEID: 'raceid',
+        SLOT: 'slot',
+        TEXT: 'text'
+    };
 }
 
 GameEngine.prototype.init = function () {
+    var letters = 'abcdefghijklmnopqrstuvwxyz';
+    for (var i = 0; i < letters.length;i++){
+        this.possibleNameChars[letters.charAt(i)] = true;
+    }
     this.start();
-
 };
 
 GameEngine.prototype.start = function () {
@@ -85,6 +102,11 @@ GameEngine.prototype.tick = function() {
     for (var z in self.zoneUpdateList){
         var zone = self.zones[z];
         zone.tick(deltaTime);
+    }
+
+
+    for (var p in self.players){
+        self.players[p].tick(deltaTime);
     }
     
     //update debug list
@@ -197,6 +219,15 @@ GameEngine.prototype.playerLogout = function(p){
     p.user = null;
 }
 
+GameEngine.prototype.checkData = function(obj,key){
+    if (Utils._udCheck(obj[key])){
+        console.log('INVALID DATA - ' + key)
+        return false;
+    }else{
+        return true;
+    }
+}
+
 // ----------------------------------------------------------
 // Socket Functions
 // ----------------------------------------------------------
@@ -271,13 +302,13 @@ GameEngine.prototype.debug = function(id,e,d) {
             t: 5.0
         }
         d.n = 1;
-        console.log('debug.txt updated');
+        console.log('debug.txt updated - ' + id);
         this.debugWriteStream.write(new Date().toJSON() + ' - ' + id + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
     }else{
         this.debugList[id].n += 1;
         d.n = this.debugList[id].n
         if (this.debugList[id].t <= 0){
-            console.log('debug.txt updated (duplicate error)');
+            console.log('debug.txt updated (duplicate error) - ' + id);
             this.debugWriteStream.write(new Date().toJSON() + ' - ' + id + ' \n ' + e.stack + ' \n ' + JSON.stringify(d) + '\n\n');
             this.debugList[id].t = 5.0;
         }

@@ -14,8 +14,6 @@
         fadeOutTicker: null,
 
         init: function() {
-            this.currentChar = null;
-            this.charSelect = false;
             this.fadeOut = false;
             this.fadeOutTicker = 0;
 
@@ -23,6 +21,14 @@
             Graphics.worldPrimitives.beginFill(0x000000,1);
             Graphics.worldPrimitives.drawRect(0,0,Graphics.width,Graphics.height);
             Graphics.worldPrimitives.endFill();
+            
+            if (Player.userData){
+                this.showCharacterSelection();
+
+                return;
+            }
+            this.currentChar = null;
+            this.charSelect = false;
 
             this.mainPanel = document.createElement('div');
             this.mainPanel.id = 'mainPanel'
@@ -186,7 +192,7 @@
             this.errorAlpha = 1.0;
             this.errorText.style.color = 'rgba(255, 0, 0,' +  this.errorAlpha + ')';
         },
-        showCharacterSelection(data){
+        showCharacterSelection(){
             this.charSelect = true;
             Graphics.uiPrimitives.lineStyle(1,0xFFFFFF,1);
             Graphics.uiPrimitives.beginFill(0xFFFFFF,1)
@@ -205,7 +211,7 @@
                 num.position.y = Graphics.height/2 - 320 + i*60;
                 Graphics.uiContainer.addChild(num);
                 //check if character exists
-                if (typeof data.characters[i] == 'undefined'){
+                if (typeof Player.userData.characters[i] == 'undefined'){
                     button = Graphics.makeUiElement({
                         text: 'NEW CHARACTER',
                         style: AcornSetup.style1,
@@ -219,6 +225,7 @@
                             if(!e.currentTarget.newChar){
                                 MainMenu.deleteButton.visible = true;
                             }
+                            NewChar.slot = e.currentTarget.num;
                             MainMenu.currentChar = e.currentTarget.num;
                             var start = [e.currentTarget.position.x + e.currentTarget.width + 20,e.currentTarget.position.y];
                             console.log(start)
@@ -232,7 +239,7 @@
                             Graphics.uiPrimitives1.endFill();
                         }
                     });
-                    button.num = 1;
+                    button.num = i;
                     button.newChar = true;
                     button.style.fontSize = 24;
                     Graphics.uiContainer.addChild(button);

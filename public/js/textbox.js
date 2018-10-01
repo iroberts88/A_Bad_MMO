@@ -21,6 +21,8 @@
         this.letterOnly = null;
         this.atMax = false;
         this.letters = {};
+
+        this.onChange = null;
     };
 
     TextBox.prototype.init = function(data) {
@@ -33,6 +35,7 @@
         this.height = data.height;
         this.maxLength = typeof data.max == 'undefined' ? 280 : data.max;
         this.letterOnly = typeof data.letterOnly == 'undefined' ? false : data.letterOnly;
+        this.onChange = typeof data.onChange == 'undefined' ? function(){} : data.onChange;
         this.font = data.font;
     	this.container = data.container;
     	this.name = data.name;
@@ -110,6 +113,7 @@
                     this.addToText(' ');
                     break;
             }
+            this.onChange();
         }
     },
     TextBox.prototype.keyPress = function(key){
@@ -117,6 +121,7 @@
             if(key !== 13) {
                 this.addToText(String.fromCharCode(key));
             }
+            this.onChange();
         }
     }
 

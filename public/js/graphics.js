@@ -12,6 +12,8 @@
         textBoxes: {},
         currentTextBox: null,
 
+        numbers: {},
+        letters: {},
         pallette: {
             color1:'#f4bc42', // Font color
             color2:'#000022', // BG color 
@@ -23,6 +25,14 @@
         },
 
         init: function(w,h) {
+            var numbers = '0123456789';
+            var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            for (var i = 0; i < numbers.length;i++){
+                this.numbers[numbers.charAt(i)] = true;
+            }
+            for (var i = 0; i < letters.length;i++){
+                this.letters[letters.charAt(i)] = true;
+            }
             PIXI.settings.SCALE_MODE = 1;
             this.width = w;
             this.height = h;
@@ -130,6 +140,9 @@
             this.uiPrimitives.clear();
             this.uiPrimitives.position.x = 0;
             this.uiPrimitives.position.y = 0;
+            this.uiPrimitives1.clear();
+            this.uiPrimitives1.position.x = 0;
+            this.uiPrimitives1.position.y = 0;
             this.uiPrimitives2.clear();
             this.uiPrimitives2.position.x = 0;
             this.uiPrimitives2.position.y = 0;
@@ -224,36 +237,17 @@
                 }
             }
 
-            //add all base map tiles
-            for(var i = 0; i <= 27; i++) {
-                try{
-                    var texture = PIXI.Texture.fromFrame(i + ".png");
-                    texture.isAMapTexture = true;
-                    Graphics.resources[i] = texture;
-                }catch(e){
-                    console.log(e);
+            var r = Graphics.app._loader.resources['img/mapSprites.json'];
+            for (var i in r.textures){
+                if (typeof Graphics.letters[i.charAt(0)] != 'undefined'){
+                    //this is an animation
+                    continue;
                 }
-            }
-
-            //add all overlay textures to resources
-            for(var i = 1; i <= 20; i++) {
-                try{
-                    var texture = PIXI.Texture.fromFrame('ov_' + i + ".png");
+                var texture = PIXI.Texture.fromFrame(i);
+                var name = i.slice(0,i.length-4);
+                if (typeof Graphics.animationSpeeds[name] == 'undefined'){
+                    Graphics.resources[name] = texture;
                     texture.isAMapTexture = true;
-                    Graphics.resources['ov_' + i] = texture;
-                }catch(e){
-                    console.log(e);
-                }
-            }
-
-            //add all clip textures to resources
-            for(var i = 1; i <= 8; i++) {
-                try{
-                    var texture = PIXI.Texture.fromFrame('e_' + i + ".png");
-                    texture.isAMapTexture = true;
-                    Graphics.resources['e_' + i] = texture;
-                }catch(e){
-                    console.log(e);
                 }
             }
             

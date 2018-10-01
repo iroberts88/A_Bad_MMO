@@ -3,6 +3,8 @@
 //----------------------------------------------------------------
 var User = require('./user.js').User,
     Character = require('./character.js').Character,
+    utils = require('./utils.js').Utils,
+    Utils = new utils(),
     Zone = require('./zone.js').Zone;
 
 const crypto = require('crypto');
@@ -18,6 +20,10 @@ var Player = function(){
     this.user = null;
     this.id = null;
     this.ready = null;
+
+    this.checkName = false;
+    this.checkNameTicker = 0;
+    this.checkNameText = ''
 };
 
 Player.prototype.init = function (data) {
@@ -34,7 +40,35 @@ Player.prototype.init = function (data) {
 
 
 Player.prototype.tick = function(deltaTime){
-   
+    if (this.checkName){
+        this.checkNameTicker += deltaTime;
+        if (this.checkNameTicker >= 0.75){
+            //send checkname
+            var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
+            var params = {
+                TableName: 'abm_charnames',
+                Key: {
+                    name: this.checkNameText
+                }
+            }
+            var that = this;
+            docClient.get(params, function(err, data) {
+                var d = {};
+                if (err) {
+                    console.error("Unable to find user data. Error JSON:", JSON.stringify(err, null, 2));
+                } else {
+                    if (typeof data.Item == 'undefined'){
+                        d[that.engine.enums.BOOL] = true;
+                    }else{
+                        d[that.engine.enums.BOOL] = false;
+                    }
+                }
+                that.engine.queuePlayer(that,that.engine.enums.CHECKNAME, d);
+            });
+            this.checkNameTicker = 0;
+            this.checkName = false;
+        }
+    }
 };
 
 Player.prototype.onDisconnect = function(callback) {
@@ -53,32 +87,94 @@ Player.prototype.setupSocket = function() {
 
     this.socket.on(this.engine.enums.PLAYERUPDATE, function (data) {
         try{
-            if (that.battle != null){
-                //player updates during an active battle are ignored
-                return;
-            }
-            switch(data.command){
-                case 'logout':
+            if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
+            switch(data[that.engine.enums.COMMAND]){
+                case that.engine.enums.LOGOUT:
                     that.engine.playerLogout(that);
-                    that.engine.queuePlayer(that,this.engine.enums.LOGOUT, {});
+                    that.engine.queuePlayer(that,that.engine.enums.LOGOUT, {});
                     break;
-               
-                case 'requestMapData':
+                case that.engine.enums.CHECKNAME:
+                    //check if valid name
+                    if (!that.engine.checkData(data,that.engine.enums.TEXT)){return;}
+                    that.checkName = true;
+                    that.checkNameTicker = 0.0;
+                    that.checkNameText = data[that.engine.enums.TEXT].toLowerCase();
+                    break;
+                case that.engine.enums.CREATECHAR:
+                    //CREATE CHARACTER
+                    //check valid slot
+                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.RACE)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.CLASS)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.NAME)){return;}
+                    var slot = data[that.engine.enums.SLOT];
+                    var name = data[that.engine.enums.NAME] + '';
+                    name = name.toLowerCase();
+                    var race = data[that.engine.enums.RACE];
+                    var cclass = data[that.engine.enums.CLASS];
+
+                    if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] != 'undefined'){
+                        var d = {};
+                        d[that.engine.enums.CREATECHARERROR] = "Invalid slot!";
+                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        return;
+                    }
+                    //check valid race/class
+                    if (!that.engine.checkData(that.engine.races,race) || !that.engine.checkData(that.engine.classes,cclass)){return;}
+                    if (Utils._udCheck(that.engine.races[race].availableClasses[cclass])){
+                        console.log('Invalid class/race combination')
+                        return;
+                    }
+                    //check if valid name and create
+                    for (var i = 0; i < name.length;i++){
+                        if (Utils._udCheck(that.engine.possibleNameChars[name.charAt(i)])){
+                            var d = {};
+                            d[that.engine.enums.CREATECHARERROR] = "Invalid Name!";
+                            that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                            return;
+                        }
+                    }
+                    if (name.length < 3 || name.length > 16){
+                        var d = {};
+                        d[that.engine.enums.CREATECHARERROR] = "Name must be between 3 and 16 characters!";
+                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        return;
+                    }
+                    name = name.charAt(0).toUpperCase() + name.substr(1);
+                    console.log(name);
+                    var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
+                    var params = {
+                        TableName: 'abm_charnames',
+                        Key: {
+                            name: name
+                        }
+                    }
+                    docClient.get(params, function(err, data) {
+                        var d = {};
+                        if (err) {
+                            console.error("Unable to find user data. Error JSON:", JSON.stringify(err, null, 2));
+                        } else {
+                            if (typeof (data.Items != 'undefined')){
+                                console.log("All data valid - create character!!")
+                            }
+                        }
+                    });
+                    break;
+                case that.engine.enums.REQUESTMAPDATA:
                     //TODO - zone data to client obj???
-                    try{
+                    /*try{
                         var zoneData = that.engine.zones[data.name].zoneData;
-                        that.engine.queuePlayer(that,this.engine.enums.MAPDATA,{
+                        that.engine.queuePlayer(that,that.engine.enums.MAPDATA,{
                             zoneData: zoneData,
                             name: data.name
                         });
                     }catch(e){
                         that.engine.debug(that,{id: 'requestMapDataError', error: e.stack});
-                    }
+                    }*/
                     break;
             }
         }catch(e){
-            console.log("Player Update Error");
-            console.log(e);
+            console.log(that.engine.debug('playerUpdateError',e,data));
         }
     });
 

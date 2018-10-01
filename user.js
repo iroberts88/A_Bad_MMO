@@ -18,9 +18,11 @@ function User() {
         guest: false,
 
         characters: null,
+        statistics: null,
        
         init: function(d){
 
+            //user is not a guest, load profile
             if (!d.guest){
                 this.characters = {};
                 this.userData = {
@@ -35,7 +37,7 @@ function User() {
                 this.userData.createDate = d.createDate;
                 var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
                 var params = {
-                    TableName: 'blaine_userdata',
+                    TableName: 'abm_userdata',
                     Key: {
                         username: this.userData.username
                     }
@@ -48,6 +50,7 @@ function User() {
 
                     }
                 });
+            //
             }else{
                 this.guest = true;
                 this.characters = {};

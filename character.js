@@ -10,13 +10,13 @@ var P = SAT.Polygon,
 Character = function(){
 
     var character = Unit()
-    //console.log(player);
 
     character.init = function (data) {
         this._init(data);
         this.classInfo = null;
         this.spellBook = null;
         this.statistics = null;
+        this.slot = data.slot;
     }
 
     character.update = function(deltaTime){

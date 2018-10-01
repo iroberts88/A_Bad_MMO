@@ -23,24 +23,37 @@
 
         enums: {
             //client and database enums
+
             //calls
             DISCONNECT: 'disconnect',
+            CHECKNAME: 'checkName',
             CLIENTCOMMAND: 'clientCommand',
+            COMMAND: 'command',
             CONNINFO: 'connInfo',
+            CREATECHAR: 'creatChar',
+            CREATECHARERROR: 'createCharError',
             LOGINATTEMPT: 'loginAttempt',
             LOGOUT: 'logout',
             MAPDATA: 'mapData',
             PLAYERUPDATE: 'playerUpdate',
             SETLOGINERRORTEXT: 'setLoginErrorText',
+
+
             //var names
-            ID: 'id',
-            RACES: 'races',
-            CLASSES: 'classes',
-            RACEID: 'raceid',
-            CLASSID: 'classid',
-            NAME: 'name',
             ATTRIBUTES: 'attributes',
-            AVAILABLECLASSES: 'availableClasses'
+            AVAILABLECLASSES: 'availableClasses',
+            BOOL: 'bool',
+            CLASSES: 'classes',
+            CLASS: 'class',
+            CLASSID: 'classid',
+            DESCRIPTION: 'description',
+            ID: 'id',
+            NAME: 'name',
+            RACES: 'races',
+            RACE: 'race',
+            RACEID: 'raceid',
+            SLOT: 'slot',
+            TEXT: 'text'
         },
 
         net: function() {
@@ -54,6 +67,19 @@
                 checkReady();
             });
 
+            Acorn.Net.on(this.enums.CHECKNAME, function (data) {
+                if (data[AcornSetup.enums.BOOL]){
+                    NewChar.nameAvailable = true;
+                }else{
+                    NewChar.nameAvailable = false;
+                }
+                NewChar.waitingForNameAvailability = false;
+            });
+
+            Acorn.Net.on(this.enums.CREATECHARERROR, function (data) {
+                alert(data[AcornSetup.enums.CREATECHARERROR])
+            });
+            
             Acorn.Net.on('startGame', function (data) {
 
             });
@@ -86,7 +112,7 @@
                 var s = 'Login Error';
                 switch(data.text){
                     case 'userexists':
-                        s = 'Username is already in use. Please try another!'
+                        s = 'Username is already in use. Please try another!';
                         break;
                     case 'snlength':
                         s = 'Username length must be between 3 and 16 characters';
@@ -103,7 +129,7 @@
             Acorn.Net.on('loggedIn', function (data) {
                 Player.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
-                MainMenu.showCharacterSelection(data);
+                MainMenu.showCharacterSelection();
             });
 
             Acorn.Net.on('logout', function (data) {
