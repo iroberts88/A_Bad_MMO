@@ -34,11 +34,11 @@ function Unit() {
         totalExp: null,
 
         //seperate objects for players?
-        skills: null,
         inventory: null,
 
-        //seperate objects for AI
-        unitAI: null,
+        currentZone: null,
+        currentSector: null,
+        currentTile: null,
 
         _init: function(data){
             //REQUIRED DATA VARIABLES
@@ -47,109 +47,127 @@ function Unit() {
             //OPTIONAL DATA VARIABLES
             this.strength = new Attribute();
             this.strength.init({
-                'id': 'str',
-                'owner': this,
-                'value': typeof data.strength == 'undefined' ? 50 : data.strength,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.STRENGTH,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.STRENGTH],50,data[this.engine.enums.STRENGTH]),
+                min: 1,
+                max: 999
             });
-            this.endurance = new Attribute();
-            this.endurance.init({
-                'id': 'end',
-                'owner': this,
-                'value': typeof data.endurance == 'undefined' ? 50 : data.endurance,
-                'min': 1,
-                'max': 999
+            this.stamina = new Attribute();
+            this.stamina.init({
+                id: this.engine.enums.STAMINA,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.STAMINA],50,data[this.engine.enums.STAMINA]),
+                min: 1,
+                max: 999
             });
             this.dexterity = new Attribute();
             this.dexterity.init({
-                'id': 'dex',
-                'owner': this,
-                'value': typeof data.dexterity == 'undefined' ? 50 : data.dexterity,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.DEXTERITY,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.DEXTERITY],50,data[this.engine.enums.DEXTERITY]),
+                min: 1,
+                max: 999
             });
             this.agility = new Attribute();
             this.agility.init({
-                'id': 'agi',
-                'owner': this,
-                'value': typeof data.agility == 'undefined' ? 50 : data.agility,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.AGILITY,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.AGILITY],50,data[this.engine.enums.AGILITY]),
+                min: 1,
+                max: 999
             });
             this.wisdom = new Attribute();
             this.wisdom.init({
-                'id': 'wis',
-                'owner': this,
-                'value': typeof data.wisdom == 'undefined' ? 50 : data.wisdom,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.WISDOM,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.WISDOM],50,data[this.engine.enums.WISDOM]),
+                min: 1,
+                max: 999
             });
             this.intelligence = new Attribute();
             this.intelligence.init({
-                'id': 'int',
-                'owner': this,
-                'value': typeof data.intelligence == 'undefined' ? 50 : data.intelligence,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.INTELIIGENCE,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.INTELIIGENCE],50,data[this.engine.enums.INTELIIGENCE]),
+                min: 1,
+                max: 999
             });
             this.perception = new Attribute();
             this.perception.init({
-                'id': 'per',
-                'owner': this,
-                'value': typeof data.perception == 'undefined' ? 50 : data.perception,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.PERCEPTION,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.PERCEPTION],50,data[this.engine.enums.PERCEPTION]),
+                min: 1,
+                max: 999
             });
             this.charisma = new Attribute();
             this.charisma.init({
-                'id': 'cha',
-                'owner': this,
-                'value': typeof data.charisma == 'undefined' ? 50 : data.charisma,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.CHARISMA,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.CHARISMA],50,data[this.engine.enums.CHARISMA]),
+                min: 1,
+                max: 999
             });
             this.luck = new Attribute();
             this.luck.init({
-                'id': 'luc',
-                'owner': this,
-                'value': typeof data.luck == 'undefined' ? 50 : data.luck,
-                'min': 1,
-                'max': 999
+                id: this.engine.enums.LUCK,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.LUCK],50,data[this.engine.enums.LUCK]),
+                min: 1,
+                max: 999
             });
             this.AC = new Attribute();
             this.AC.init({
-                'id': 'AC',
-                'owner': this,
-                'value': typeof data.AC == 'undefined' ? 1 : data.AC,
-                'min': 1,
-                'max': 99999
+                id: this.engine.enums.AC,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.AC],50,data[this.engine.enums.AC]),
+                min: 1,
+                max: 99999
             });
             this.skill = new Attribute();
             this.skill.init({
-                'id': 'ski',
-                'owner': this,
-                'value': typeof data.skill == 'undefined' ? 50 : data.skill,
-                'min': 1,
-                'max': 99999
+                id: this.engine.enums.SKILL,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.SKILL],50,data[this.engine.enums.SKILL]),
+                min: 1,
+                max: 99999
             });
             this.focus = new Attribute();
             this.focus.init({
-                'id': 'foc',
-                'owner': this,
-                'value': typeof data.focus == 'undefined' ? 50 : data.focus,
-                'min': 1,
-                'max': 99999
+                id: this.engine.enums.FOCUS,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.FOCUS],50,data[this.engine.enums.FOCUS]),
+                min: 1,
+                max: 99999
             });
             this.power = new Attribute();
             this.power.init({
-                'id': 'pow',
-                'owner': this,
-                'value': typeof data.power == 'undefined' ? 50 : data.power,
-                'min': 1,
-                'max': 99999
+                id: this.engine.enums.POWER,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.POWER],50,data[this.engine.enums.POWER]),
+                min: 1,
+                max: 99999
             });
             //OTHER
+            this.maxHealth = new Attribute();
+            this.maxHealth.init({
+                id: this.engine.enums.MAXHEALTH,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.MAXHEALTH],30,data[this.engine.enums.MAXHEALTH]),
+                min: 1,
+                max: 99999
+            });
+            this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
+            this.maxMana = new Attribute();
+            this.maxMana.init({
+                id: this.engine.enums.MAXMANA,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.MAXMANA],30,data[this.engine.enums.MAXMANA]),
+                min: 1,
+                max: 99999
+            });
+            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.MAXMANA.value,data[this.engine.enums.CURRENTMANA]);
         },
        
         

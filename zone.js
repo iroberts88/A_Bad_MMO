@@ -32,6 +32,7 @@ Zone.prototype.init = function (data) {
 };
 
 Zone.prototype.tick = function(deltaTime) {
+    console.log(this.mapid);
 }
 
 Zone.prototype.getSectorXY = function(string){
@@ -265,3 +266,38 @@ Sector.prototype.removePlayer = function(p){
 };
 
 exports.Sector = Sector;
+
+//Sector
+var Tile = function(id,data) {
+    this.players = {}; //players in this zone
+    this.playerCount = 0; //players in this sector
+    this.id = id;
+    var x = '';
+    var y = '';
+    var toX = true;
+    for (var i = 0; i < id.length;i++){
+        if (id.charAt(i) == 'x'){
+            toX = false;
+        }else if (toX){
+            x += id.charAt(i);
+        }else{
+            y += id.charAt(i);
+        }
+    }
+    this.sectorX = parseInt(x);
+    this.sectorY = parseInt(y);
+    this.tiles = data.tiles;
+    for (var i = 0; i < this.tiles.length;i++){
+        for (var j = 0; j < this.tiles[i].length;j++){
+            var tile = this.tiles[i][j];
+            if (typeof tile.triggers == 'undefined'){
+                tile.triggers = [];
+            }
+            if (typeof tile.open == 'undefined'){
+                tile.open = false;
+            }
+        }
+    }
+};
+
+exports.Tile = Tile;

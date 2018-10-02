@@ -24,7 +24,7 @@
     };
     GameMap.prototype.changeVisibleSectors = function(){
         if (this.sectorData){
-            console.log(this.sectorData)
+            console.log(this.sectorData);
             if (this.sectorData.dir == 'left'){
                 this.setVisible((this.sectorData.x-1) + 'x' + this.sectorData.y,true);
                 this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y-1),true);

@@ -167,7 +167,11 @@ Player.prototype.setupSocket = function() {
                         } else {
                             if (typeof (data.Items != 'undefined')){
                                 console.log("All data valid - create character!!")
-                                //name = name.charAt(0).toUpperCase() + name.substr(1);
+                                name = name.charAt(0).toUpperCase() + name.substr(1);
+                                var newChar = new Character();
+                                newChar.init({});
+                                that.user.characters[slot] = newChar;
+                                
                             }
                         }
                     });

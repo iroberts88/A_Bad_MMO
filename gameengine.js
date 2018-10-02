@@ -80,6 +80,26 @@ var GameEngine = function() {
         RACEID: 'raceid',
         SLOT: 'slot',
         TEXT: 'text'
+
+        //stats
+        STRENGTH: 'str',
+        STAMINA: 'sta',
+        INTELLIGENCE: 'int',
+        WISDOM: 'wis',
+        AGILITY: 'agi',
+        DEXTERITY: 'dex',
+        PERCEPTION: 'per',
+        CHARISMA: 'cha',
+        LUCK: 'luc',
+        AC: 'ac',
+        FOCUS: 'focus',
+        SKILL: 'skill',
+        POWER: 'power'
+        MAXHEALTH: 'maxHealth',
+        CURRENTHEALTH: 'currentHealth',
+        MAXMANA: 'maxMana',
+        CURRENTMANA: 'currentMana'
+
     };
 }
 
