@@ -44,6 +44,12 @@ Player.prototype.tick = function(deltaTime){
         this.checkNameTicker += deltaTime;
         if (this.checkNameTicker >= 0.75){
             //send checkname
+            if (this.engine.filter.isProfaneLike(this.checkNameText)){
+                var d = {};
+                d[this.engine.enums.BOOL] = false;
+                this.engine.queuePlayer(this,this.engine.enums.CHECKNAME, d);
+                return;
+            }
             var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
             var params = {
                 TableName: 'abm_charnames',
@@ -140,8 +146,13 @@ Player.prototype.setupSocket = function() {
                         that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
                         return;
                     }
-                    name = name.charAt(0).toUpperCase() + name.substr(1);
-                    console.log(name);
+                    //profanity check
+                    if (that.engine.filter.isProfaneLike(this.checkNameText)){
+                        var d = {};
+                        d[that.engine.enums.CREATECHARERROR] = "Bad words!";
+                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        return;
+                    }
                     var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
                     var params = {
                         TableName: 'abm_charnames',
@@ -156,6 +167,7 @@ Player.prototype.setupSocket = function() {
                         } else {
                             if (typeof (data.Items != 'undefined')){
                                 console.log("All data valid - create character!!")
+                                //name = name.charAt(0).toUpperCase() + name.substr(1);
                             }
                         }
                     });

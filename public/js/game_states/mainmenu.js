@@ -21,7 +21,7 @@
             Graphics.worldPrimitives.beginFill(0x000000,1);
             Graphics.worldPrimitives.drawRect(0,0,Graphics.width,Graphics.height);
             Graphics.worldPrimitives.endFill();
-            
+
             if (Player.userData){
                 this.showCharacterSelection();
 
@@ -239,7 +239,7 @@
                             Graphics.uiPrimitives1.endFill();
                         }
                     });
-                    button.num = i;
+                    button.num = i+1;
                     button.newChar = true;
                     button.style.fontSize = 24;
                     Graphics.uiContainer.addChild(button);

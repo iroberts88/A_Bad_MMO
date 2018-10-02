@@ -9,6 +9,7 @@ var Player = require('./player.js').Player,
     fs = require('fs'),
     utils = require('./utils.js').Utils,
     Utils = new utils(),
+    Filter = require('bad-words'),
     AWS = require("aws-sdk");
 
 var self = null;
@@ -44,6 +45,8 @@ var GameEngine = function() {
     fs.truncate('debug.txt', 0, function(){console.log('debug.txt cleared')})
     this.debugWriteStream = fs.createWriteStream('debug.txt', {AutoClose: true});
 
+    this.filter = new Filter();
+    
     this.enums = {
         //client and database enums
 
