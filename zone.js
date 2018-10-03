@@ -3,6 +3,8 @@
 //----------------------------------------------------------------
 
 var Player = require('./player.js').Player,
+    utils = require('./utils.js').Utils,
+    Utils = new utils(),
     AWS = require("aws-sdk");
 
 var Zone = function(ge) {
@@ -11,8 +13,8 @@ var Zone = function(ge) {
 
     //map info
     this.mapid = null;
-    this.map = {};
-    this.sectorArray = null;
+    this.map = {}; //contains all tiles
+    this.sectors = {}; //all sectors
 
     this.players = {}; //players in this zone
     this.playerCount = 0;
@@ -21,14 +23,31 @@ var Zone = function(ge) {
 }
 
 Zone.prototype.init = function (data) {
-    //basically just initialize the map here
-    this.zoneData = data;
-    this.mapid = data.mapid;
-    this.mapData = data.mapData;
-    this.sectorArray = data.sectorArray;
-    for (var i = 0; i < this.sectorArray.length;i++){
-        this.map[this.sectorArray[i]] = new Sector(this.sectorArray[i],data.mapData[this.sectorArray[i]]);
+    //initialize the map here
+    this.mapid = data[this.engine.enums.MAPID];
+    for (var i = 0; i < data[this.engine.enums.SECTORARRAY].length;i++){
+        //create a new sector
+        var id = data[this.engine.enums.SECTORARRAY][i];
+        var sector = new Sector(id,this)
+        this.sectors[id] = sector;
+        //add all of the tiles in this sector to map
+        var tiles = this.engine.enums.TILES;
+        var mapData = this.engine.enums.MAPDATA;
+        var coords = this.getSectorXY(id);
+        var xStart = coords.x*20;
+        var yStart = coords.y*20;
+        for (var j = 0; j < data[mapData][id][tiles].length;j++){
+            for (var k = 0; k < data[mapData][id][tiles][j].length;k++){
+                var newTile = new Tile(k+xStart,j+yStart,data[mapData][id][tiles][j][k],this);
+
+                if (Utils._udCheck(this.map[k+xStart])){
+                    this.map[k+xStart] = {};
+                }
+                this.map[k+xStart][j+yStart] = newTile;
+            }
+        }
     }
+    console.log(this.map);
 };
 
 Zone.prototype.tick = function(deltaTime) {
@@ -223,36 +242,14 @@ exports.Zone = Zone;
 
 
 //Sector
-var Sector = function(id,data) {
+var Sector = function(id,zone) {
     this.players = {}; //players in this zone
     this.playerCount = 0; //players in this sector
     this.id = id;
-    var x = '';
-    var y = '';
-    var toX = true;
-    for (var i = 0; i < id.length;i++){
-        if (id.charAt(i) == 'x'){
-            toX = false;
-        }else if (toX){
-            x += id.charAt(i);
-        }else{
-            y += id.charAt(i);
-        }
-    }
-    this.sectorX = parseInt(x);
-    this.sectorY = parseInt(y);
-    this.tiles = data.tiles;
-    for (var i = 0; i < this.tiles.length;i++){
-        for (var j = 0; j < this.tiles[i].length;j++){
-            var tile = this.tiles[i][j];
-            if (typeof tile.triggers == 'undefined'){
-                tile.triggers = [];
-            }
-            if (typeof tile.open == 'undefined'){
-                tile.open = false;
-            }
-        }
-    }
+    this.zone = zone;
+    var coords = this.zone.getSectorXY(this.id);
+    this.sectorX = coords.x;
+    this.sectorY = coords.y;
 };
 
 Sector.prototype.addPlayer = function(p){
@@ -267,37 +264,14 @@ Sector.prototype.removePlayer = function(p){
 
 exports.Sector = Sector;
 
-//Sector
-var Tile = function(id,data) {
-    this.players = {}; //players in this zone
-    this.playerCount = 0; //players in this sector
-    this.id = id;
-    var x = '';
-    var y = '';
-    var toX = true;
-    for (var i = 0; i < id.length;i++){
-        if (id.charAt(i) == 'x'){
-            toX = false;
-        }else if (toX){
-            x += id.charAt(i);
-        }else{
-            y += id.charAt(i);
-        }
-    }
-    this.sectorX = parseInt(x);
-    this.sectorY = parseInt(y);
-    this.tiles = data.tiles;
-    for (var i = 0; i < this.tiles.length;i++){
-        for (var j = 0; j < this.tiles[i].length;j++){
-            var tile = this.tiles[i][j];
-            if (typeof tile.triggers == 'undefined'){
-                tile.triggers = [];
-            }
-            if (typeof tile.open == 'undefined'){
-                tile.open = false;
-            }
-        }
-    }
+var Tile = function(x,y,data,zone) {
+    this.x = x;
+    this.y = y;
+    this.zone = zone;
+    this.triggers = Utils.udCheck(data[zone.engine.enums.TRIGGERS],[],data[zone.engine.enums.TRIGGERS]);
+    this.resource = Utils.udCheck(data[zone.engine.enums.RESOURCE],[],data[zone.engine.enums.RESOURCE]);
+    this.overlayResource = Utils.udCheck(data[zone.engine.enums.OVERLAYRESOURCE],[],data[zone.engine.enums.OVERLAYRESOURCE]);
+    this.open = Utils.udCheck(data[zone.engine.enums.OPEN],[],data[zone.engine.enums.OPEN]);
 };
 
 exports.Tile = Tile;

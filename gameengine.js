@@ -74,12 +74,20 @@ var GameEngine = function() {
         CLASSID: 'classid',
         DESCRIPTION: 'description',
         ID: 'id',
+        MAPID: 'mapid',
         NAME: 'name',
+        OPEN: 'open',
+        OVERLAYRESOURCE: 'overlayResource',
         RACES: 'races',
         RACE: 'race',
         RACEID: 'raceid',
+        RESOURCE: 'resource',
+        SECTORARRAY: 'sectorArray',
         SLOT: 'slot',
-        TEXT: 'text'
+        TEXT: 'text',
+        TILES: 'tiles',
+        TRIGGERS: 'triggers',
+
 
         //stats
         STRENGTH: 'str',
@@ -94,7 +102,7 @@ var GameEngine = function() {
         AC: 'ac',
         FOCUS: 'focus',
         SKILL: 'skill',
-        POWER: 'power'
+        POWER: 'power',
         MAXHEALTH: 'maxHealth',
         CURRENTHEALTH: 'currentHealth',
         MAXMANA: 'maxMana',
