@@ -322,7 +322,7 @@ Player.prototype.setupSocket = function() {
                                     that.user.init(data.Item);
                                     that.user.lock();
                                     that.engine.users[d.sn] = that.user;
-                                    that.engine.queuePlayer(that,"loggedIn", {name:data.Item.username, characters: that.user.characters});
+                                    that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:data.Item.username, characters: that.user.characters});
                                 }else{
                                     that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
                                 }
@@ -367,7 +367,7 @@ Player.prototype.setupSocket = function() {
                         that.user.setOwner(that);
                         that.user.init(u);
                         that.engine.users[d.sn] = that.user;
-                        that.engine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
+                        that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:d.sn, characters: that.user.characters});
                     }else if (typeof data.Item != 'undefined' || typeof that.engine.users[d.sn] != 'undefined'){
                         that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
                     }else{
@@ -424,7 +424,7 @@ Player.prototype.setupSocket = function() {
                                     that.user.setOwner(that);
                                     that.user.init(u);
                                     that.engine.users[d.sn] = that.user;
-                                    that.engine.queuePlayer(that,"loggedIn", {name:d.sn, characters: that.user.characters});
+                                    that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:d.sn, characters: that.user.characters});
                                     var params3 = {
                                         TableName: 'users',
                                         Item: {

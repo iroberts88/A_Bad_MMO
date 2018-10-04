@@ -31,13 +31,13 @@ var GameEngine = function() {
     this.mapCount = 0; //for checking if all maps have loaded before ready
 
     this.zones = {};
-    this.zoneUpdateList = {}; //a list of zones with active players
+    this.zoneUpdateList = {}; //a list of zones with active players to update
 
     //variables for ID's
     this.idIterator = 0;
     this.possibleIDChars = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz";
 
-    this.debugList = {}; //used avoid multiple debug chains in tick()
+    this.debugList = {}; //used avoid overloading debug.txt
     this.ready = false;
 
     this.possibleNameChars = {};
@@ -50,64 +50,64 @@ var GameEngine = function() {
     this.enums = {
         //client and database enums
 
-        //calls
-        DISCONNECT: 'disconnect',
-        CHECKNAME: 'checkName',
-        CLIENTCOMMAND: 'clientCommand',
-        COMMAND: 'command',
-        CONNINFO: 'connInfo',
-        CREATECHAR: 'creatChar',
-        CREATECHARERROR: 'createCharError',
-        LOGINATTEMPT: 'loginAttempt',
-        LOGOUT: 'logout',
+        //DB
         MAPDATA: 'mapData',
-        PLAYERUPDATE: 'playerUpdate',
-        SETLOGINERRORTEXT: 'setLoginErrorText',
-
-
-        //var names
-        ATTRIBUTES: 'attributes',
-        AVAILABLECLASSES: 'availableClasses',
-        BOOL: 'bool',
-        CLASSES: 'classes',
-        CLASS: 'class',
         CLASSID: 'classid',
         DESCRIPTION: 'description',
-        ID: 'id',
-        MAPID: 'mapid',
         NAME: 'name',
-        OPEN: 'open',
-        OVERLAYRESOURCE: 'overlayResource',
-        RACES: 'races',
-        RACE: 'race',
+        ATTRIBUTES: 'attributes',
+        AVAILABLECLASSES: 'availableClasses',
         RACEID: 'raceid',
         RESOURCE: 'resource',
         SECTORARRAY: 'sectorArray',
-        SLOT: 'slot',
-        TEXT: 'text',
         TILES: 'tiles',
         TRIGGERS: 'triggers',
+        MAPID: 'mapid',
+        OPEN: 'open',
+        OVERLAYRESOURCE: 'overlayResource',
 
-
-        //stats
-        STRENGTH: 'str',
-        STAMINA: 'sta',
-        INTELLIGENCE: 'int',
-        WISDOM: 'wis',
-        AGILITY: 'agi',
-        DEXTERITY: 'dex',
-        PERCEPTION: 'per',
-        CHARISMA: 'cha',
-        LUCK: 'luc',
-        AC: 'ac',
-        FOCUS: 'focus',
-        SKILL: 'skill',
-        POWER: 'power',
-        MAXHEALTH: 'maxHealth',
-        CURRENTHEALTH: 'currentHealth',
-        MAXMANA: 'maxMana',
-        CURRENTMANA: 'currentMana'
-
+        //calls
+        DISCONNECT: '0',
+        CHECKNAME: '1',
+        CLIENTCOMMAND: '2',
+        COMMAND: '3',
+        CONNINFO: '4',
+        CREATECHAR: '5',
+        CREATECHARERROR: '6',
+        LOGINATTEMPT: '7',
+        LOGOUT: '8',
+        LOGGEDIN: '9',
+        PLAYERUPDATE: '10',
+        SETLOGINERRORTEXT: '11',
+        BOOL: '12',
+        CLASSES: '13',
+        CLASS: '14',
+        ID: '15',
+        RACES: '16',
+        RACE: '17',
+        SLOT: '18',
+        TEXT: '19',
+        STRENGTH: '20',
+        STAMINA: '21',
+        INTELLIGENCE: '22',
+        WISDOM: '23',
+        AGILITY: '24',
+        DEXTERITY: '25',
+        PERCEPTION: '26',
+        CHARISMA: '27',
+        LUCK: '28',
+        AC: '29',
+        FOCUS: '30',
+        SKILL: '31',
+        POWER: '32',
+        MAXHEALTH: '33',
+        CURRENTHEALTH: '34',
+        MAXMANA: '35',
+        CURRENTMANA: '36',
+        CURRENTEXP: '37',
+        LEVEL: '38',
+        MAXENDURANCE: '39',
+        CURRENTENDURANCE: '40'
     };
 }
 

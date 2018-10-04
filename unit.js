@@ -14,15 +14,22 @@ function Unit() {
         name: null,
         owner: null,
 
-        strength: null, //carry weight, power, crit damage
-        endurance: null, //maximum health, 
-        dexterity: null, // skill, weapon skill increase chance, crit damage
-        agility: null, //attack speed, move speed, jump, dodge
-        wisdom: null, // mana, focus for healers
-        intelligence: null, //mana, focus for spellcasters
+        strength: null, //carry weight, power, melee crit damage
+        stamina: null, //maximum health, 
+        dexterity: null, // skill, weapon skill increase chance, ranged crit damage
+        agility: null, //attack speed, jump, dodge
+        wisdom: null, // mana regen
+        intelligence: null, //max mana, focus, spell crit damage
         perception: null, //hit chance, crit chance, dodge
-        charisma: null, //buy/sell prices, healing power
+        charisma: null, //buy/sell prices, healing crit damage
         luck: null, //slightly effects all actions
+
+        maxHealth: null,
+        maxMana: null,
+        maxEnurance: null,
+        currentHealth: null,
+        currentMana: null,
+        currentEnurance: null,
 
         armorClass: null,
         power: null,
@@ -31,7 +38,6 @@ function Unit() {
 
         level: null,
         currentExp: null,
-        totalExp: null,
 
         //seperate objects for players?
         inventory: null,
@@ -117,14 +123,81 @@ function Unit() {
                 min: 1,
                 max: 999
             });
+
             this.AC = new Attribute();
             this.AC.init({
                 id: this.engine.enums.AC,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.AC],50,data[this.engine.enums.AC]),
-                min: 1,
+                value: Utils.udCheck(data[this.engine.enums.AC],0,data[this.engine.enums.AC]),
+                min: 0,
                 max: 99999
             });
+
+            this.frostRes = new Attribute();
+            this.frostRes.init({
+                id: this.engine.enums.FROSTRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.FROSTRES],0,data[this.engine.enums.FROSTRES]),
+                min: 0,
+                max: 999
+            });
+            this.fireRes = new Attribute();
+            this.fireRes.init({
+                id: this.engine.enums.FIRERES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.FIRERES],0,data[this.engine.enums.FIRERES]),
+                min: 0,
+                max: 999
+            });
+            this.earthRes = new Attribute();
+            this.earthRes.init({
+                id: this.engine.enums.EARTHRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.EARTHRES],0,data[this.engine.enums.EARTHRES]),
+                min: 0,
+                max: 999
+            });
+            this.windRes = new Attribute();
+            this.windRes.init({
+                id: this.engine.enums.WINDRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.WINDRES],0,data[this.engine.enums.WINDRES]),
+                min: 0,
+                max: 999
+            });
+            this.shockRes = new Attribute();
+            this.shockRes.init({
+                id: this.engine.enums.SHOCKRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.SHOCKRES],0,data[this.engine.enums.SHOCKRES]),
+                min: 0,
+                max: 999
+            });
+            this.poisonRes = new Attribute();
+            this.poisonRes.init({
+                id: this.engine.enums.POISONRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.POISONRES],0,data[this.engine.enums.POISONRES]),
+                min: 0,
+                max: 999
+            });
+            this.shadowRes = new Attribute();
+            this.shadowRes.init({
+                id: this.engine.enums.SHADOWRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.SHADOWRES],0,data[this.engine.enums.SHADOWRES]),
+                min: 0,
+                max: 999
+            });
+            this.holyRes = new Attribute();
+            this.holyRes.init({
+                id: this.engine.enums.HOLYRES,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.HOLYRES],0,data[this.engine.enums.HOLYRES]),
+                min: 0,
+                max: 999
+            });
+
             this.skill = new Attribute();
             this.skill.init({
                 id: this.engine.enums.SKILL,
@@ -168,14 +241,35 @@ function Unit() {
                 max: 99999
             });
             this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
+
+            this.maxEndurance = new Attribute();
+            this.maxEndurance.init({
+                id: this.engine.enums.MAXENDURANCE,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.MAXENDURANCE],30,data[this.engine.enums.MAXENDURANCE]),
+                min: 1,
+                max: 99999
+            });
+            this.currentEndurance = Utils.udCheck(data[this.engine.enums.CURRENTENDURANCE],this.maxEndurance.value,data[this.engine.enums.CURRENTENDURANCE]);
+
+            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
+            this.currentExp = Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]);
+
+            this.isColliding = true;
+            this.currentZone = null;
+            this.currentSector = null;
+            this.currentTile = null;
         },
        
-        
-
         _update: function(deltaTime){
         },
 
         _getClientData: function(){
+            var data = {}
+
+            return data;
+        },
+        _getLessClientData: function(){
             var data = {}
 
             return data;

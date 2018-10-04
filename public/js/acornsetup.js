@@ -24,36 +24,64 @@
         enums: {
             //client and database enums
 
-            //calls
-            DISCONNECT: 'disconnect',
-            CHECKNAME: 'checkName',
-            CLIENTCOMMAND: 'clientCommand',
-            COMMAND: 'command',
-            CONNINFO: 'connInfo',
-            CREATECHAR: 'creatChar',
-            CREATECHARERROR: 'createCharError',
-            LOGINATTEMPT: 'loginAttempt',
-            LOGOUT: 'logout',
+            //DB
             MAPDATA: 'mapData',
-            PLAYERUPDATE: 'playerUpdate',
-            SETLOGINERRORTEXT: 'setLoginErrorText',
-
-
-            //var names
-            ATTRIBUTES: 'attributes',
-            AVAILABLECLASSES: 'availableClasses',
-            BOOL: 'bool',
-            CLASSES: 'classes',
-            CLASS: 'class',
             CLASSID: 'classid',
             DESCRIPTION: 'description',
-            ID: 'id',
             NAME: 'name',
-            RACES: 'races',
-            RACE: 'race',
+            ATTRIBUTES: 'attributes',
+            AVAILABLECLASSES: 'availableClasses',
             RACEID: 'raceid',
-            SLOT: 'slot',
-            TEXT: 'text'
+            RESOURCE: 'resource',
+            SECTORARRAY: 'sectorArray',
+            TILES: 'tiles',
+            TRIGGERS: 'triggers',
+            MAPID: 'mapid',
+            OPEN: 'open',
+            OVERLAYRESOURCE: 'overlayResource',
+
+            //client
+            DISCONNECT: '0',
+            CHECKNAME: '1',
+            CLIENTCOMMAND: '2',
+            COMMAND: '3',
+            CONNINFO: '4',
+            CREATECHAR: '5',
+            CREATECHARERROR: '6',
+            LOGINATTEMPT: '7',
+            LOGOUT: '8',
+            LOGGEDIN: '9',
+            PLAYERUPDATE: '10',
+            SETLOGINERRORTEXT: '11',
+            BOOL: '12',
+            CLASSES: '13',
+            CLASS: '14',
+            ID: '15',
+            RACES: '16',
+            RACE: '17',
+            SLOT: '18',
+            TEXT: '19',
+            STRENGTH: '20',
+            STAMINA: '21',
+            INTELLIGENCE: '22',
+            WISDOM: '23',
+            AGILITY: '24',
+            DEXTERITY: '25',
+            PERCEPTION: '26',
+            CHARISMA: '27',
+            LUCK: '28',
+            AC: '29',
+            FOCUS: '30',
+            SKILL: '31',
+            POWER: '32',
+            MAXHEALTH: '33',
+            CURRENTHEALTH: '34',
+            MAXMANA: '35',
+            CURRENTMANA: '36',
+            CURRENTEXP: '37',
+            LEVEL: '38',
+            MAXENDURANCE: '39',
+            CURRENTENDURANCE: '40'
         },
 
         net: function() {
@@ -108,7 +136,7 @@
             });
 
             //Login screen stuff
-            Acorn.Net.on('setLoginErrorText', function (data) {
+            Acorn.Net.on(this.enums.SETLOGINERRORTEXT, function (data) {
                 var s = 'Login Error';
                 switch(data.text){
                     case 'userexists':
@@ -126,13 +154,13 @@
                 }
                 MainMenu.setLoginErrorText(s);
             });
-            Acorn.Net.on('loggedIn', function (data) {
+            Acorn.Net.on(this.enums.LOGGEDIN, function (data) {
                 Player.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
                 MainMenu.showCharacterSelection();
             });
 
-            Acorn.Net.on('logout', function (data) {
+            Acorn.Net.on(this.enums.LOGOUT, function (data) {
                 console.log(data);
                 Player.userData = null;
                 Acorn.changeState('mainmenu');
