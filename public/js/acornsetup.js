@@ -40,7 +40,7 @@
             OPEN: 'open',
             OVERLAYRESOURCE: 'overlayResource',
 
-            //client
+            //calls
             DISCONNECT: '0',
             CHECKNAME: '1',
             CLIENTCOMMAND: '2',
@@ -81,7 +81,15 @@
             CURRENTEXP: '37',
             LEVEL: '38',
             MAXENDURANCE: '39',
-            CURRENTENDURANCE: '40'
+            CURRENTENDURANCE: '40',
+            FROSTRES: '41',
+            FIRERES: '42',
+            WINDRES: '43',
+            EARTHRES: '44',
+            POISONRES: '45',
+            SHOCKRES: '46',
+            HOLYRES: '47',
+            SHADOWRES: '48'
         },
 
         net: function() {
