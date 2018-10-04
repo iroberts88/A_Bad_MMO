@@ -167,7 +167,7 @@ function Unit() {
                 min: 1,
                 max: 99999
             });
-            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.MAXMANA.value,data[this.engine.enums.CURRENTMANA]);
+            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
         },
        
         

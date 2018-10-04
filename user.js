@@ -64,6 +64,11 @@ function User() {
                 };
             }
         },
+        addCharacter: function(slot,character){
+            this.characters[slot] = character;
+            //get char info and send to player
+            
+        },
         lock: function(){
             this.userData.loggedin = true;
             if (!this.guest){

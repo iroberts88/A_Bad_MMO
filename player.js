@@ -169,9 +169,8 @@ Player.prototype.setupSocket = function() {
                                 console.log("All data valid - create character!!")
                                 name = name.charAt(0).toUpperCase() + name.substr(1);
                                 var newChar = new Character();
-                                newChar.init({});
-                                that.user.characters[slot] = newChar;
-                                
+                                newChar.init({engine: that.engine,owner: that});
+                                that.user.addCharacter(slot,newChar);
                             }
                         }
                     });

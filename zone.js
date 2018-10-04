@@ -47,7 +47,6 @@ Zone.prototype.init = function (data) {
             }
         }
     }
-    console.log(this.map);
 };
 
 Zone.prototype.tick = function(deltaTime) {
