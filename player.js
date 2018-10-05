@@ -160,7 +160,9 @@ Player.prototype.setupSocket = function() {
                             name: name
                         }
                     }
-                    docClient.get(params, function(err, data) {
+                    data.engine = that.engine;
+                    data.owner = that.owner;
+                    docClient.get(params, function(err, dbData) {
                         var d = {};
                         if (err) {
                             console.error("Unable to find user data. Error JSON:", JSON.stringify(err, null, 2));
@@ -169,7 +171,7 @@ Player.prototype.setupSocket = function() {
                                 console.log("All data valid - create character!!")
                                 name = name.charAt(0).toUpperCase() + name.substr(1);
                                 var newChar = new Character();
-                                newChar.init({engine: that.engine,owner: that});
+                                newChar.init(data);
                                 that.user.addCharacter(slot,newChar);
                             }
                         }

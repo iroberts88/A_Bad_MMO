@@ -16,7 +16,7 @@ Character = function(){
         this.classInfo = null;
         this.spellBook = null;
         this.statistics = null;
-        this.slot = data.slot;
+        this.slot = data[this.engine.enums.SLOT];
     }
 
     character.update = function(deltaTime){
@@ -25,7 +25,7 @@ Character = function(){
 
     character.getClientData = function(){
     	var data = this._getClientData();
-
+        data[this.engine.enums.SLOT] = this.slot;
     	return data;
     }
     character.getDBObj = function(){

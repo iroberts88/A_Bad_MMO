@@ -25,6 +25,7 @@
             //client and database enums
 
             //DB
+            //need to match the DB values
             MAPDATA: 'mapData',
             CLASSID: 'classid',
             DESCRIPTION: 'description',
@@ -40,7 +41,8 @@
             OPEN: 'open',
             OVERLAYRESOURCE: 'overlayResource',
 
-            //calls
+            //client
+            //these can get changed to just numbers later on
             DISCONNECT: '0',
             CHECKNAME: '1',
             CLIENTCOMMAND: '2',
@@ -89,7 +91,8 @@
             POISONRES: '45',
             SHOCKRES: '46',
             HOLYRES: '47',
-            SHADOWRES: '48'
+            SHADOWRES: '48',
+            ADDCHARACTER: '49',
         },
 
         net: function() {
@@ -114,6 +117,12 @@
 
             Acorn.Net.on(this.enums.CREATECHARERROR, function (data) {
                 alert(data[AcornSetup.enums.CREATECHARERROR])
+            });
+
+            Acorn.Net.on(this.enums.ADDCHARACTER, function (data) {
+                console.log(data);
+                Player.addCharacter(data);
+                Acorn.changeState('mainmenu');
             });
             
             Acorn.Net.on('startGame', function (data) {

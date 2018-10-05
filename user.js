@@ -67,7 +67,8 @@ function User() {
         addCharacter: function(slot,character){
             this.characters[slot] = character;
             //get char info and send to player
-            
+            var data = character.getClientData();
+            this.owner.engine.queuePlayer(this.owner,this.owner.engine.enums.ADDCHARACTER, data);
         },
         lock: function(){
             this.userData.loggedin = true;

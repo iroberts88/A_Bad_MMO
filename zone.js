@@ -268,9 +268,9 @@ var Tile = function(x,y,data,zone) {
     this.y = y;
     this.zone = zone;
     this.triggers = Utils.udCheck(data[zone.engine.enums.TRIGGERS],[],data[zone.engine.enums.TRIGGERS]);
-    this.resource = Utils.udCheck(data[zone.engine.enums.RESOURCE],[],data[zone.engine.enums.RESOURCE]);
-    this.overlayResource = Utils.udCheck(data[zone.engine.enums.OVERLAYRESOURCE],[],data[zone.engine.enums.OVERLAYRESOURCE]);
-    this.open = Utils.udCheck(data[zone.engine.enums.OPEN],[],data[zone.engine.enums.OPEN]);
+    this.resource = Utils.udCheck(data[zone.engine.enums.RESOURCE],'0x0',data[zone.engine.enums.RESOURCE]);
+    this.overlayResource = Utils.udCheck(data[zone.engine.enums.OVERLAYRESOURCE],'0x0',data[zone.engine.enums.OVERLAYRESOURCE]);
+    this.open = Utils.udCheck(data[zone.engine.enums.OPEN],true,data[zone.engine.enums.OPEN]);
 };
 
 exports.Tile = Tile;

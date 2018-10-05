@@ -12,6 +12,7 @@ function Unit() {
     return {
         engine: null,
         name: null,
+        id: null,
         owner: null,
 
         strength: null, //carry weight, power, melee crit damage
@@ -49,6 +50,8 @@ function Unit() {
         _init: function(data){
             //REQUIRED DATA VARIABLES
             this.engine = data.engine;
+            this.id = this.engine.getId();
+            this.name = data[this.engine.enums.NAME];
             this.owner = data.owner;
             //OPTIONAL DATA VARIABLES
             this.strength = new Attribute();
@@ -124,8 +127,8 @@ function Unit() {
                 max: 999
             });
 
-            this.AC = new Attribute();
-            this.AC.init({
+            this.ac = new Attribute();
+            this.ac.init({
                 id: this.engine.enums.AC,
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.AC],0,data[this.engine.enums.AC]),
@@ -266,6 +269,38 @@ function Unit() {
 
         _getClientData: function(){
             var data = {}
+            data[this.engine.enums.NAME] = this.name;
+            data[this.engine.enums.ID] = this.id;
+
+            data[this.engine.enums.STRENGTH] = this.strength.value;
+            data[this.engine.enums.STAMINA] = this.stamina.value;
+            data[this.engine.enums.INTELLIGENCE] = this.intelligence.value;
+            data[this.engine.enums.WISDOM] = this.wisdom.value;
+            data[this.engine.enums.AGILITY] = this.agility.value;
+            data[this.engine.enums.DEXTERITY] = this.dexterity.value;
+            data[this.engine.enums.CHARISMA] = this.charisma.value;
+            data[this.engine.enums.PERCEPTION] = this.perception.value;
+            data[this.engine.enums.LUCK] = this.luck.value;
+            data[this.engine.enums.AC] = this.ac.value;
+            data[this.engine.enums.POWER] = this.power.value;
+            data[this.engine.enums.SKILL] = this.skill.value;
+            data[this.engine.enums.FOCUS] = this.focus.value;
+            data[this.engine.enums.MAXHEALTH] = this.maxHealth.value;
+            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth;
+            data[this.engine.enums.MAXMANA] = this.maxMana.value;
+            data[this.engine.enums.CURRENTMANA] = this.currentMana;
+            data[this.engine.enums.CURRENTENDURANCE] = this.currentEndurance;
+            data[this.engine.enums.MAXENDURANCE] = this.maxEndurance.value;
+            data[this.engine.enums.CURRENTEXP] = this.currentExp;
+            data[this.engine.enums.LEVEL] = this.level;
+            data[this.engine.enums.FROSTRES] = this.frostRes.value;
+            data[this.engine.enums.FIRERES] = this.fireRes.value;
+            data[this.engine.enums.WINDRES] = this.windRes.value;
+            data[this.engine.enums.EARTHRES] = this.earthRes.value;
+            data[this.engine.enums.POISONRES] = this.poisonRes.value;
+            data[this.engine.enums.SHOCKRES] = this.shockRes.value;
+            data[this.engine.enums.HOLYRES] = this.holyRes.value;
+            data[this.engine.enums.SHADOWRES] = this.shadowRes.value;
 
             return data;
         },

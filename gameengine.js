@@ -51,6 +51,7 @@ var GameEngine = function() {
         //client and database enums
 
         //DB
+        //need to match the DB values
         MAPDATA: 'mapData',
         CLASSID: 'classid',
         DESCRIPTION: 'description',
@@ -66,7 +67,8 @@ var GameEngine = function() {
         OPEN: 'open',
         OVERLAYRESOURCE: 'overlayResource',
 
-        //calls
+        //client
+        //these can get changed to just numbers later on
         DISCONNECT: '0',
         CHECKNAME: '1',
         CLIENTCOMMAND: '2',
@@ -115,7 +117,8 @@ var GameEngine = function() {
         POISONRES: '45',
         SHOCKRES: '46',
         HOLYRES: '47',
-        SHADOWRES: '48'
+        SHADOWRES: '48',
+        ADDCHARACTER: '49',
     };
 }
 

@@ -61,7 +61,7 @@
             this.nameAvailableText.position.y = this.nameText.height + 26;
 
             this.enterWorldButton = Graphics.makeUiElement({
-                text: 'ENTER WORLD!',
+                text: 'CREATE!',
                 style: AcornSetup.style3,
                 interactive: true,buttonMode: true,
                 position: [(Graphics.width/2),this.nameAvailableText.position.y + 100],

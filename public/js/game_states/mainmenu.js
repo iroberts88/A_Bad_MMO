@@ -211,7 +211,7 @@
                 num.position.y = Graphics.height/2 - 320 + i*60;
                 Graphics.uiContainer.addChild(num);
                 //check if character exists
-                if (typeof Player.userData.characters[i] == 'undefined'){
+                if (typeof Player.characters[i+1] == 'undefined'){
                     button = Graphics.makeUiElement({
                         text: 'NEW CHARACTER',
                         style: AcornSetup.style1,
@@ -222,13 +222,11 @@
                             //new character!
                             Acorn.Sound.play('select');
                             MainMenu.playButton.visible = true;
-                            if(!e.currentTarget.newChar){
-                                MainMenu.deleteButton.visible = true;
-                            }
+                            MainMenu.playButton.text = 'CREATE!';
+                            MainMenu.deleteButton.visible = false;
                             NewChar.slot = e.currentTarget.num;
                             MainMenu.currentChar = e.currentTarget.num;
                             var start = [e.currentTarget.position.x + e.currentTarget.width + 20,e.currentTarget.position.y];
-                            console.log(start)
                             Graphics.uiPrimitives1.clear();
                             Graphics.uiPrimitives1.lineStyle(1,0x484848,1);
                             Graphics.uiPrimitives1.beginFill(0x484848,1)
@@ -245,6 +243,36 @@
                     Graphics.uiContainer.addChild(button);
                 }else{
                     //enter already created character!
+
+                    button = Graphics.makeUiElement({
+                        text: Player.characters[i+1].name,
+                        style: AcornSetup.style1,
+                        interactive: true,buttonMode: true,
+                        position: [(Graphics.width/2 - 150),Graphics.height/2 - 320 + i*60],
+                        anchor: [0,0.5],
+                        clickFunc: function onClick(e){
+                            Acorn.Sound.play('select');
+                            MainMenu.playButton.visible = true;
+                            MainMenu.playButton.text = 'PLAY!';
+                            MainMenu.deleteButton.visible = true;
+                            MainMenu.deleteButton.visible = true;
+                            NewChar.slot = e.currentTarget.num;
+                            MainMenu.currentChar = e.currentTarget.num;
+                            var start = [e.currentTarget.position.x + e.currentTarget.width + 20,e.currentTarget.position.y];
+                            Graphics.uiPrimitives1.clear();
+                            Graphics.uiPrimitives1.lineStyle(1,0x484848,1);
+                            Graphics.uiPrimitives1.beginFill(0x484848,1)
+                            Graphics.uiPrimitives1.moveTo(start[0],start[1]);
+                            Graphics.uiPrimitives1.lineTo(start[0]+10,start[1]-15);
+                            Graphics.uiPrimitives1.lineTo(start[0]+10,start[1]+15);
+                            Graphics.uiPrimitives1.lineTo(start[0],start[1]);
+                            Graphics.uiPrimitives1.endFill();
+                        }
+                    });
+                    button.num = i+1;
+                    button.newChar = true;
+                    button.style.fontSize = 24;
+                    Graphics.uiContainer.addChild(button);
                 }
                 Graphics.uiPrimitives.lineStyle(1,0x484848,1);
                 Graphics.uiPrimitives.beginFill(0x484848,1)
@@ -252,7 +280,7 @@
                 Graphics.uiPrimitives.endFill();
             }
             this.playButton = Graphics.makeUiElement({
-                text: 'PLAY!',
+                text: 'CREATE!',
                 style: AcornSetup.style3,
                 interactive: true,buttonMode: true,
                 position: [(Graphics.width/2),Graphics.height/2 +290],
@@ -271,7 +299,7 @@
             Graphics.uiContainer.addChild(this.playButton);
 
             this.deleteButton = Graphics.makeUiElement({
-                text: 'DELETE',
+                text: '☒',
                 style: AcornSetup.style2,
                 interactive: true,buttonMode: true,
                 position: [(Graphics.width/2-190),Graphics.height/2 +390],
@@ -281,6 +309,7 @@
                 }
             });
             this.deleteButton.style.fontSize = 24;
+            this.deleteButton.style.fill = 'red';
             this.deleteButton.visible = false;
             Graphics.uiContainer.addChild(this.deleteButton);
 
@@ -291,7 +320,9 @@
                 position: [Graphics.width/2+190,Graphics.height/2+390],
                 anchor: [1,1],
                 clickFunc: function onClick(){
-                        Acorn.Net.socket_.emit('playerUpdate',{command: 'logout'});
+                    var data = {}
+                    data[AcornSetup.enums.COMMAND] = AcornSetup.enums.LOGOUT;
+                    Acorn.Net.socket_.emit('playerUpdate',data);
                 }
             });
             backButton.style.fontSize = 24;
