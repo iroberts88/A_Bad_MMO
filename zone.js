@@ -5,6 +5,7 @@
 var Player = require('./player.js').Player,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
+    fs = require('fs'),
     AWS = require("aws-sdk");
 
 var Zone = function(ge) {
@@ -50,7 +51,6 @@ Zone.prototype.init = function (data) {
 };
 
 Zone.prototype.tick = function(deltaTime) {
-    console.log(this.mapid);
 }
 
 Zone.prototype.getSectorXY = function(string){
@@ -166,6 +166,7 @@ Zone.prototype.getSector = function(id){
 }
 Zone.prototype.getPlayers = function(sector){
     var players = [];
+    /*
     for (var i = -1;i < 2;i++){
         for (var j = -1;j < 2;j++){
             if (typeof this.map[(sector.sectorX+i) + 'x' + (sector.sectorY+j)] == 'undefined'){
@@ -183,15 +184,16 @@ Zone.prototype.getPlayers = function(sector){
                 })
             }
         }
-    }
+    }*/
     return players;
 }
 Zone.prototype.addPlayer = function(p){
     this.players[p.id] = p;
+    p.currentZone = this;
     //TODO add player to all players in the zone within 1 sector
-    this.map[p.character.currentSector].addPlayer(p);
+    this.sectors[p.sectorid].addPlayer(p);
     this.playerCount += 1;
-    var coords = this.getSectorXY(p.character.currentSector);
+    /*var coords = this.getSectorXY(p.character.currentSector);
     for (var i = -1;i < 2;i++){
         for (var j = -1;j < 2;j++){
             if (typeof this.map[(coords.x+i) + 'x' + (coords.y+j)] == 'undefined'){
@@ -209,13 +211,13 @@ Zone.prototype.addPlayer = function(p){
                 });
             }
         }
-    }
+    }*/
+    this.sendMapDataTo(p);
     return this.playerCount;
 }
 
 Zone.prototype.removePlayer = function(p){
     this.map[p.character.currentSector].removePlayer(p);
-    //TODO remove player from all players in the zone within 1 sector
     for (var i = -1;i < 2;i++){
         for (var j = -1;j < 2;j++){
             var coords = this.getSectorXY(p.character.currentSector);
@@ -231,6 +233,20 @@ Zone.prototype.removePlayer = function(p){
     delete this.players[p.id];
     this.playerCount -= 1;
     return this.playerCount;
+}
+
+Zone.prototype.sendMapDataTo = function(character) {
+    var that = this;
+    fs.readFile('./mapgen_tool/maps/' + that.mapid + '.json', "utf8",function read(err, fsdata) {
+        if (err) {
+            throw err;
+        }
+        //TODO also get NPC's
+        var data = {}
+        data[that.engine.enums.PLAYERS] = that.getPlayers();
+        data[that.engine.enums.MAPDATA] = JSON.parse(fsdata);
+        that.engine.queuePlayer(character.owner,that.engine.enums.NEWMAP,data);
+    });
 }
 
 // ----------------------------------------------------------
@@ -253,10 +269,12 @@ var Sector = function(id,zone) {
 
 Sector.prototype.addPlayer = function(p){
     this.players[p.id] = p;
+    p.currentSector = this;
     this.playerCount += 1;
 };
 
 Sector.prototype.removePlayer = function(p){
+    p.currentSector = null;
     delete this.players[p.id];
     this.playerCount -= 1;
 };

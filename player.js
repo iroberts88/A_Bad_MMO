@@ -21,6 +21,7 @@ var Player = function(){
     this.id = null;
     this.ready = null;
 
+    this.activeChar = null;
     this.checkName = false;
     this.checkNameTicker = 0;
     this.checkNameText = ''
@@ -161,7 +162,7 @@ Player.prototype.setupSocket = function() {
                         }
                     }
                     data.engine = that.engine;
-                    data.owner = that.owner;
+                    data.owner = that;
                     docClient.get(params, function(err, dbData) {
                         var d = {};
                         if (err) {
@@ -177,8 +178,21 @@ Player.prototype.setupSocket = function() {
                         }
                     });
                     break;
+                case that.engine.enums.ENTERGAME:
+                    //check if the slot is a valid character
+                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
+                    console.log(data);
+                    var slot = data[that.engine.enums.SLOT];
+                    console.log(that.user.characters[slot].id);
+                    if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] == 'undefined'){
+                        console.log('Player Error - Invalid Slot')
+                        return;
+                    }
+                    //Add to zone/sector
+                    that.activeChar = that.user.characters[slot];
+                    that.engine.addPlayerToZone(that.activeChar,that.activeChar.zoneid);
+                    break;
                 case that.engine.enums.REQUESTMAPDATA:
-                    //TODO - zone data to client obj???
                     /*try{
                         var zoneData = that.engine.zones[data.name].zoneData;
                         that.engine.queuePlayer(that,that.engine.enums.MAPDATA,{

@@ -68,7 +68,7 @@ var GameEngine = function() {
         OVERLAYRESOURCE: 'overlayResource',
 
         //client
-        //these can get changed to just numbers later on
+        //TODO these can get changed to just numbers
         DISCONNECT: '0',
         CHECKNAME: '1',
         CLIENTCOMMAND: '2',
@@ -116,9 +116,12 @@ var GameEngine = function() {
         EARTHRES: '44',
         POISONRES: '45',
         SHOCKRES: '46',
-        HOLYRES: '47',
-        SHADOWRES: '48',
-        ADDCHARACTER: '49',
+        HOLYRES: 'holyres',
+        SHADOWRES: 'shadowres',
+        ADDCHARACTER: 'addcharacter',
+        ENTERGAME: 'entergame',
+        NEWMAP: 'newmap',
+        PLAYERS: 'players'
     };
 }
 

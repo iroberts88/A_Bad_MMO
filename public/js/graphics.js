@@ -71,6 +71,11 @@
             this.worldContainer.position.y = Graphics.width/2;
             this.worldContainer.interactive = true;
             this.world.addChild(this.worldContainer); // ADD WORLD CONTAINER
+            this.worldContainer2 = new PIXI.Container();
+            this.worldContainer2.position.x = Graphics.width/2;
+            this.worldContainer2.position.y = Graphics.width/2;
+            this.worldContainer2.interactive = true;
+            this.world.addChild(this.worldContainer2); // ADD WORLD CONTAINER
             this.worldPrimitives = new PIXI.Graphics();
             this.worldPrimitives.position.x = Graphics.width/2;
             this.worldPrimitives.position.y = Graphics.width/2;
@@ -128,6 +133,9 @@
             this.worldContainer.removeChildren();
             this.worldContainer.position.x = 0;
             this.worldContainer.position.y = 0;
+            this.worldContainer2.removeChildren();
+            this.worldContainer2.position.x = 0;
+            this.worldContainer2.position.y = 0;
             this.worldPrimitives.clear();
             this.worldPrimitives.position.x = 0;
             this.worldPrimitives.position.y = 0;

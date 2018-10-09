@@ -17,6 +17,10 @@ Character = function(){
         this.spellBook = null;
         this.statistics = null;
         this.slot = data[this.engine.enums.SLOT];
+
+        this.zoneid = 'test1';
+        this.sectorid = '0x0';
+        this.hb = new C(new V(0,0), 20);
     }
 
     character.update = function(deltaTime){

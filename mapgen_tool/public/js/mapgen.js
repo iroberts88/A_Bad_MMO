@@ -636,7 +636,6 @@
             this.map.update(deltaTime);
             this.setInfoTexts();
 
-
             if (this.currentMode == 'settrigger'){
                 var str = 'Current Trigger: ON <' + this.currentOnTrigger + '> DO <' + this.currentDoTrigger + '>';
                 for (var i in this.triggerDoInfo){
@@ -709,7 +708,7 @@
                             }
                             break;
                         }
-                        Acorn.Input.buttons = {2:true}
+                        Acorn.Input.buttons = {2:true};
                         Acorn.Input.mouseDown = true;
                         if (tile.resource != this.currentPlaceTile){
                             tile.setSprite(this.currentPlaceTile);

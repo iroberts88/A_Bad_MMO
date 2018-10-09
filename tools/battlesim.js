@@ -1,18 +1,18 @@
 var fs = require('fs'),
     AWS = require("aws-sdk");
 
-var name1 = '__Remmy',
-    name2 = 'Faulken',
+var name1 = '{Mortideus}',
+    name2 = '--Faulken--',
     p1DMG = 48,
     p2DMG = 10,
     p1DELAY = 4.8,
     p2DELAY = 1.0,
     p1AC = 750,
-    p2AC = 750,
+    p2AC = 75,
     p1ATTACK = 1000,
-    p2ATTACK = 1000,
-    p1HP = 500,
-    p2HP = 500,
+    p2ATTACK = 100,
+    p1HP = 5000,
+    p2HP = 5000,
     p1Ticker = 0,
     p2Ticker = 0;
 
@@ -38,7 +38,7 @@ function tick(){
         if (p2AC*acrandom < p1ATTACK*attkrandom){
             var dmgmod = (p1ATTACK*attkrandom - p2AC*acrandom) / 100;
             var dmg = Math.ceil(Math.random()*p1DMG + dmgmod*p1DMG);
-            console.log(name1 + ' hit ' + name2 + ' for   ' + dmg + '   damage! (' + p2HP + '->' + Math.max(0,p2HP-dmg) + ')\n');
+            console.log(name1 + ' HIT ' + name2 + ' for   ' + dmg + '   damage! (' + p2HP + '->' + Math.max(0,p2HP-dmg) + ')\n');
             p2HP -= dmg;
             if (p2HP <= 0){
                 console.log(name2 + ' has died.\n');
@@ -58,7 +58,7 @@ function tick(){
         if (p1AC*acrandom < p2ATTACK*attkrandom){
             var dmgmod = (p2ATTACK*attkrandom - p1AC*acrandom) / 100;
             var dmg = Math.ceil(Math.random()*p2DMG + dmgmod*p2DMG);
-            console.log(name2 + ' hit ' + name1 + ' for   ' + dmg + '   damage! (' + p1HP + '->' + Math.max(0,p1HP-dmg) + ')\n');
+            console.log(name2 + ' HIT ' + name1 + ' for   ' + dmg + '   damage! (' + p1HP + '->' + Math.max(0,p1HP-dmg) + ')\n');
             p1HP -= dmg;
             if (p1HP <= 0){
                 console.log(name1 + ' has died.\n');

@@ -42,7 +42,7 @@
             OVERLAYRESOURCE: 'overlayResource',
 
             //client
-            //these can get changed to just numbers later on
+            //TODO these can get changed to just numbers
             DISCONNECT: '0',
             CHECKNAME: '1',
             CLIENTCOMMAND: '2',
@@ -90,9 +90,12 @@
             EARTHRES: '44',
             POISONRES: '45',
             SHOCKRES: '46',
-            HOLYRES: '47',
-            SHADOWRES: '48',
-            ADDCHARACTER: '49',
+            HOLYRES: 'holyres',
+            SHADOWRES: 'shadowres',
+            ADDCHARACTER: 'addcharacter',
+            ENTERGAME: 'entergame',
+            NEWMAP: 'newmap',
+            PLAYERS: 'players'
         },
 
         net: function() {
@@ -125,8 +128,11 @@
                 Acorn.changeState('mainmenu');
             });
             
-            Acorn.Net.on('startGame', function (data) {
-
+            Acorn.Net.on(this.enums.NEWMAP, function (data) {
+                console.log(data);
+                Game.map = new GameMap();
+                Game.map.init(data.mapData);
+                Game.ready = true;
             });
 
             Acorn.Net.on('changeMap', function (data) {
@@ -215,7 +221,7 @@
             });
 
             Acorn.addState({
-                stateId: 'ingame',
+                stateId: 'game',
                 init: function(){
                     document.body.style.cursor = 'default';
                     Game.init();

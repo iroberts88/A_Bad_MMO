@@ -38,7 +38,6 @@
         
         update: function(dt){
             Graphics.uiPrimitives2.clear();
-            
         }
 
     }

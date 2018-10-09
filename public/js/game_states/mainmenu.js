@@ -270,7 +270,7 @@
                         }
                     });
                     button.num = i+1;
-                    button.newChar = true;
+                    button.newChar = false;
                     button.style.fontSize = 24;
                     Graphics.uiContainer.addChild(button);
                 }
@@ -285,13 +285,21 @@
                 interactive: true,buttonMode: true,
                 position: [(Graphics.width/2),Graphics.height/2 +290],
                 anchor: [0.5,0.5],
-                clickFunc: function onClick(){
-                    console.log('play')
-                    Acorn.Sound.play('newChar');
-                    Graphics.uiPrimitives.clear()
-                    Graphics.uiPrimitives1.clear()
-                    Graphics.uiContainer.removeChildren()
-                    MainMenu.fadeOut = true;
+                clickFunc: function onClick(e){
+                    if (typeof Player.characters[NewChar.slot] == 'undefined'){
+                        Acorn.Sound.play('newChar');
+                        Graphics.uiPrimitives.clear()
+                        Graphics.uiPrimitives1.clear()
+                        Graphics.uiContainer.removeChildren()
+                        MainMenu.fadeOut = true;
+                    }else{
+                        //enter the game
+                        var data = {};
+                        data[AcornSetup.enums.COMMAND] = AcornSetup.enums.ENTERGAME;
+                        data[AcornSetup.enums.SLOT] = NewChar.slot;
+                        Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                        Acorn.changeState('game');
+                    }
                 }
             });
             this.playButton.style.fontSize = 36;

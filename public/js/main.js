@@ -16,7 +16,7 @@ var requestAnimFrame = (function(){
 var mainObj = this;
 mainObj.playerId = 'none';
 
-mainObj.GAME_SCALE = 4;
+mainObj.GAME_SCALE = 2;
 mainObj.TILE_SIZE = 16*mainObj.GAME_SCALE;
 
 $(function() {
