@@ -10,11 +10,10 @@
         },
 
         addCharacter: function(data){
-            var char = new PlayerCharacter();
+            var char = PlayerCharacter();
             char.init(data);
-            this.characters[char[AcornSetup.enums.SLOT]] = char;
+            this.characters[char.slot] = char;
         }
-        
     }
     window.Player = Player;
 })(window);

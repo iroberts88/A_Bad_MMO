@@ -17,7 +17,8 @@ Character = function(){
         this.spellBook = null;
         this.statistics = null;
         this.slot = data[this.engine.enums.SLOT];
-
+        this.class = data[this.engine.enums.CLASS];
+        this.race = data[this.engine.enums.RACE];
         this.zoneid = 'test1';
         this.sectorid = '0x0';
         this.hb = new C(new V(0,0), 20);
@@ -30,6 +31,8 @@ Character = function(){
     character.getClientData = function(){
     	var data = this._getClientData();
         data[this.engine.enums.SLOT] = this.slot;
+        data[this.engine.enums.CLASS] = this.class;
+        data[this.engine.enums.RACE] = this.race;
     	return data;
     }
     character.getDBObj = function(){

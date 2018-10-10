@@ -5,7 +5,7 @@ var app = require('http').createServer(webResponse),
     fs = require('fs');
     
 var rc = null,
-    ge = null;
+    mt = null;
 
 
 
@@ -42,7 +42,7 @@ init();
 // ----------------------------------------------------------
 // Start Web Server
 // ----------------------------------------------------------
-var port = process.env.PORT || 3009;
+var port = process.env.PORT || 3001;
 app.listen(port);
 
 function webResponse(req, res) {

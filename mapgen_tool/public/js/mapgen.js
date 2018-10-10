@@ -601,8 +601,6 @@
                     var tiley = '';
                     var onX = true;
                     for (var j = 0; j < string.length;j++){
-                        console.log(j)
-                        console.log(string.charAt(j))
                         if (typeof Graphics.numbers[string.charAt(j)] != 'undefined'){
                             if (onX){
                                 tilex += string.charAt(j);

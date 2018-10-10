@@ -245,7 +245,7 @@
                     //enter already created character!
 
                     button = Graphics.makeUiElement({
-                        text: Player.characters[i+1].name,
+                        text: Player.characters[i+1].name + ', the level ' + Player.characters[i+1].level + ' ' + Player.characters[i+1].class,
                         style: AcornSetup.style1,
                         interactive: true,buttonMode: true,
                         position: [(Graphics.width/2 - 150),Graphics.height/2 - 320 + i*60],
@@ -295,9 +295,9 @@
                     }else{
                         //enter the game
                         var data = {};
-                        data[AcornSetup.enums.COMMAND] = AcornSetup.enums.ENTERGAME;
-                        data[AcornSetup.enums.SLOT] = NewChar.slot;
-                        Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                        data[Enums.COMMAND] = Enums.ENTERGAME;
+                        data[Enums.SLOT] = NewChar.slot;
+                        Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
                         Acorn.changeState('game');
                     }
                 }
@@ -329,7 +329,7 @@
                 anchor: [1,1],
                 clickFunc: function onClick(){
                     var data = {}
-                    data[AcornSetup.enums.COMMAND] = AcornSetup.enums.LOGOUT;
+                    data[Enums.COMMAND] = Enums.LOGOUT;
                     Acorn.Net.socket_.emit('playerUpdate',data);
                 }
             });

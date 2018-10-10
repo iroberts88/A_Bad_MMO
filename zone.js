@@ -40,7 +40,6 @@ Zone.prototype.init = function (data) {
         for (var j = 0; j < data[mapData][id][tiles].length;j++){
             for (var k = 0; k < data[mapData][id][tiles][j].length;k++){
                 var newTile = new Tile(k+xStart,j+yStart,data[mapData][id][tiles][j][k],this);
-
                 if (Utils._udCheck(this.map[k+xStart])){
                     this.map[k+xStart] = {};
                 }
@@ -51,7 +50,7 @@ Zone.prototype.init = function (data) {
 };
 
 Zone.prototype.tick = function(deltaTime) {
-}
+};
 
 Zone.prototype.getSectorXY = function(string){
     var x = '';

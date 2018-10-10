@@ -40,9 +40,9 @@
                     if (NewChar.nameBox.text.length >=3 && NewChar.nameBox.text.length < 16){
                         NewChar.waitingForNameAvailability = true;
                         var data = {};
-                        data[AcornSetup.enums.COMMAND] = AcornSetup.enums.CHECKNAME;
-                        data[AcornSetup.enums.TEXT] = NewChar.nameBox.text;
-                        Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                        data[Enums.COMMAND] = Enums.CHECKNAME;
+                        data[Enums.TEXT] = NewChar.nameBox.text;
+                        Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
                     }else{
                         NewChar.waitingForNameAvailability = false;
                     }
@@ -68,12 +68,12 @@
                 anchor: [0.5,0.5],
                 clickFunc: function onClick(e){
                     var data = {};
-                    data[AcornSetup.enums.COMMAND] = AcornSetup.enums.CREATECHAR;
-                    data[AcornSetup.enums.NAME] = NewChar.nameBox.text;
-                    data[AcornSetup.enums.RACE] = NewChar.currentRace;
-                    data[AcornSetup.enums.CLASS] = NewChar.currentClass;
-                    data[AcornSetup.enums.SLOT] = NewChar.slot;
-                    Acorn.Net.socket_.emit(AcornSetup.enums.PLAYERUPDATE,data);
+                    data[Enums.COMMAND] = Enums.CREATECHAR;
+                    data[Enums.NAME] = NewChar.nameBox.text;
+                    data[Enums.RACE] = NewChar.currentRace;
+                    data[Enums.CLASS] = NewChar.currentClass;
+                    data[Enums.SLOT] = NewChar.slot;
+                    Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
                 }
             });
             this.enterWorldButton.visible = false;
@@ -150,8 +150,8 @@
                     }
                     Graphics.uiPrimitives2.clear();
                     NewChar.currentRace = b.raceid;
-                    if (typeof NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES][NewChar.currentClass] == 'undefined'){
-                        for (var i in NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES]){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES][NewChar.currentClass] == 'undefined'){
+                        for (var i in NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES]){
                             NewChar.currentClass = i;
                             break;
                         }
@@ -189,7 +189,7 @@
                     if (NewChar.currentRace == b.raceid){
                         return;
                     }
-                    if (typeof NewChar.raceInfo[NewChar.currentRace][AcornSetup.enums.AVAILABLECLASSES][b.classid] == 'undefined'){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES][b.classid] == 'undefined'){
                         return;
                     }
                     Graphics.uiPrimitives2.clear();
@@ -211,10 +211,10 @@
         reDraw: function(){
             var bX = 100;
             var bY = 32;
-            this.classDescText.text = this.classInfo[this.currentClass][AcornSetup.enums.NAME] + '\n' + this.classInfo[this.currentClass][AcornSetup.enums.DESCRIPTION];
-            this.raceDescText.text = this.raceInfo[this.currentRace][AcornSetup.enums.NAME] + '\n' + this.raceInfo[this.currentRace][AcornSetup.enums.DESCRIPTION];
+            this.classDescText.text = this.classInfo[this.currentClass][Enums.NAME] + '\n' + this.classInfo[this.currentClass][Enums.DESCRIPTION];
+            this.raceDescText.text = this.raceInfo[this.currentRace][Enums.NAME] + '\n' + this.raceInfo[this.currentRace][Enums.DESCRIPTION];
             for (var i in this.classInfo){
-                if (typeof this.raceInfo[this.currentRace][AcornSetup.enums.AVAILABLECLASSES][this.classInfo[i][AcornSetup.enums.CLASSID]] == 'undefined'){
+                if (typeof this.raceInfo[this.currentRace][Enums.AVAILABLECLASSES][this.classInfo[i][Enums.CLASSID]] == 'undefined'){
                     var cButton = this.classInfo[i].button;
                     Graphics.uiPrimitives2.lineStyle(2,0xFF0000,1);
                     Graphics.uiPrimitives2.drawRoundedRect(cButton.position.x - bX/2,cButton.position.y-cButton.height/2,bX,bY,12);

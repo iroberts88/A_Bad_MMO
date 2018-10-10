@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/iroberts88/A_Bad_MMO#readme",
   "dependencies": {
-    "aws-sdk": "^2.327.0",
+    "aws-sdk": "^2.330.0",
     "bad-words": "^1.6.4",
     "socket.io": "^2.1.1"
   }

@@ -21,96 +21,19 @@
             align: 'left'
         },
 
-        enums: {
-            //client and database enums
-
-            //DB
-            //need to match the DB values
-            MAPDATA: 'mapData',
-            CLASSID: 'classid',
-            DESCRIPTION: 'description',
-            NAME: 'name',
-            ATTRIBUTES: 'attributes',
-            AVAILABLECLASSES: 'availableClasses',
-            RACEID: 'raceid',
-            RESOURCE: 'resource',
-            SECTORARRAY: 'sectorArray',
-            TILES: 'tiles',
-            TRIGGERS: 'triggers',
-            MAPID: 'mapid',
-            OPEN: 'open',
-            OVERLAYRESOURCE: 'overlayResource',
-
-            //client
-            //TODO these can get changed to just numbers
-            DISCONNECT: '0',
-            CHECKNAME: '1',
-            CLIENTCOMMAND: '2',
-            COMMAND: '3',
-            CONNINFO: '4',
-            CREATECHAR: '5',
-            CREATECHARERROR: '6',
-            LOGINATTEMPT: '7',
-            LOGOUT: '8',
-            LOGGEDIN: '9',
-            PLAYERUPDATE: '10',
-            SETLOGINERRORTEXT: '11',
-            BOOL: '12',
-            CLASSES: '13',
-            CLASS: '14',
-            ID: '15',
-            RACES: '16',
-            RACE: '17',
-            SLOT: '18',
-            TEXT: '19',
-            STRENGTH: '20',
-            STAMINA: '21',
-            INTELLIGENCE: '22',
-            WISDOM: '23',
-            AGILITY: '24',
-            DEXTERITY: '25',
-            PERCEPTION: '26',
-            CHARISMA: '27',
-            LUCK: '28',
-            AC: '29',
-            FOCUS: '30',
-            SKILL: '31',
-            POWER: '32',
-            MAXHEALTH: '33',
-            CURRENTHEALTH: '34',
-            MAXMANA: '35',
-            CURRENTMANA: '36',
-            CURRENTEXP: '37',
-            LEVEL: '38',
-            MAXENDURANCE: '39',
-            CURRENTENDURANCE: '40',
-            FROSTRES: '41',
-            FIRERES: '42',
-            WINDRES: '43',
-            EARTHRES: '44',
-            POISONRES: '45',
-            SHOCKRES: '46',
-            HOLYRES: 'holyres',
-            SHADOWRES: 'shadowres',
-            ADDCHARACTER: 'addcharacter',
-            ENTERGAME: 'entergame',
-            NEWMAP: 'newmap',
-            PLAYERS: 'players'
-        },
-
         net: function() {
-            Acorn.Net.on(this.enums.CONNINFO, function (data) {
+            Acorn.Net.on(Enums.CONNINFO, function (data) {
                 console.log('Connected to server: Info Received');
                 console.log(data);
-                mainObj.id = data[AcornSetup.enums.ID];
-                NewChar.raceInfo = data[AcornSetup.enums.RACES];
-                NewChar.classInfo = data[AcornSetup.enums.CLASSES];
+                mainObj.id = data[Enums.ID];
+                NewChar.raceInfo = data[Enums.RACES];
+                NewChar.classInfo = data[Enums.CLASSES];
                 Acorn.Net.ready = true;
                 checkReady();
             });
 
-            Acorn.Net.on(this.enums.CHECKNAME, function (data) {
-                if (data[AcornSetup.enums.BOOL]){
+            Acorn.Net.on(Enums.CHECKNAME, function (data) {
+                if (data[Enums.BOOL]){
                     NewChar.nameAvailable = true;
                 }else{
                     NewChar.nameAvailable = false;
@@ -118,17 +41,17 @@
                 NewChar.waitingForNameAvailability = false;
             });
 
-            Acorn.Net.on(this.enums.CREATECHARERROR, function (data) {
-                alert(data[AcornSetup.enums.CREATECHARERROR])
+            Acorn.Net.on(Enums.CREATECHARERROR, function (data) {
+                alert(data[Enums.CREATECHARERROR])
             });
 
-            Acorn.Net.on(this.enums.ADDCHARACTER, function (data) {
+            Acorn.Net.on(Enums.ADDCHARACTER, function (data) {
                 console.log(data);
                 Player.addCharacter(data);
                 Acorn.changeState('mainmenu');
             });
             
-            Acorn.Net.on(this.enums.NEWMAP, function (data) {
+            Acorn.Net.on(Enums.NEWMAP, function (data) {
                 console.log(data);
                 Game.map = new GameMap();
                 Game.map.init(data.mapData);
@@ -159,7 +82,7 @@
             });
 
             //Login screen stuff
-            Acorn.Net.on(this.enums.SETLOGINERRORTEXT, function (data) {
+            Acorn.Net.on(Enums.SETLOGINERRORTEXT, function (data) {
                 var s = 'Login Error';
                 switch(data.text){
                     case 'userexists':
@@ -177,13 +100,13 @@
                 }
                 MainMenu.setLoginErrorText(s);
             });
-            Acorn.Net.on(this.enums.LOGGEDIN, function (data) {
+            Acorn.Net.on(Enums.LOGGEDIN, function (data) {
                 Player.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
                 MainMenu.showCharacterSelection();
             });
 
-            Acorn.Net.on(this.enums.LOGOUT, function (data) {
+            Acorn.Net.on(Enums.LOGOUT, function (data) {
                 console.log(data);
                 Player.userData = null;
                 Acorn.changeState('mainmenu');
