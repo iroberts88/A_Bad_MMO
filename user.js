@@ -54,6 +54,17 @@ function User() {
             }else{
                 this.guest = true;
                 this.characters = {};
+                var newChar = new Character();
+                var data = {
+                    owner: this.owner,
+                    engine: this.owner.engine
+                };
+                data[this.owner.engine.enums.SLOT] = 1;
+                data[this.owner.engine.enums.NAME] = 'Test Character 1';
+                data[this.owner.engine.enums.RACE] = 'human';
+                data[this.owner.engine.enums.CLASS] = 'warrior';
+                newChar.init(data);
+                this.characters[1] = newChar;
                 this.userData = {
                     username: d.username,
                     password: '',
@@ -123,6 +134,14 @@ function User() {
                     console.log(e);
                 }
             }
+        },
+        getClientData: function(){
+            var data = {};
+            data[this.owner.engine.enums.CHARACTERS] = {};
+            for (var i in this.characters){
+                data[this.owner.engine.enums.CHARACTERS][this.characters[i].slot] = this.characters[i].getClientData();
+            }
+            return data;
         },
         updateDB: function(){
             var ge = this.owner.gameEngine;

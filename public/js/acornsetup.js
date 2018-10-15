@@ -101,6 +101,7 @@
                 MainMenu.setLoginErrorText(s);
             });
             Acorn.Net.on(Enums.LOGGEDIN, function (data) {
+                console.log(data);
                 Player.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
                 MainMenu.showCharacterSelection();
@@ -169,11 +170,15 @@
 
         input: function(){
             Acorn.Input.onMouseClick(function(e) {
+                console.log(e);
                 Acorn.Input.mouseDown = true;
                 if (Graphics.currentTextBox){
                     if (!Graphics.textBoxes[Graphics.currentTextBox].pointerOver){
                         Graphics.textBoxes[Graphics.currentTextBox].deactivate();
                     }
+                }
+                if (e.button == 2 && Game.ready){
+                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y)
                 }
             });
             Acorn.Input.onMouseUp(function(e) {

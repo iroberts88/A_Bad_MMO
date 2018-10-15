@@ -75,6 +75,7 @@ var GameEngine = function() {
         COMMAND: '3',
         CONNINFO: '4',
         CREATECHAR: '5',
+        CHARACTERS: 'characters',
         CREATECHARERROR: '6',
         LOGINATTEMPT: '7',
         LOGOUT: '8',

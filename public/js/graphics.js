@@ -51,7 +51,6 @@
             this.actualRatio = [1,1]; //for screen scaling
 
             this.world = new PIXI.Container();
-            this.world.interactive = true;
             this.world.position.x = 0;
             this.world.position.y = 0;
             this.ui = new PIXI.Container();

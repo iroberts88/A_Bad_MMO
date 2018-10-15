@@ -1,4 +1,8 @@
 
+var P = SAT.Polygon,
+    C = SAT.Circle,
+    V = SAT.Vector;
+
 (function(window) {
 
     var GameMap = function(){
@@ -58,6 +62,23 @@
             this.sectorData = null;
         }
     };
+    GameMap.prototype.collideUnit = function(unit,dt){
+        var xDist = unit.moveVector.x*unit.speed*dt;
+        var yDist = unit.moveVector.y*unit.speed*dt;
+        var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
+        for (var i = 0; i < hyp;i++){
+            unit.hd.pos.x += xDist/hyp;
+            var tile = Game.map[Math.floor((unit.hd.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hd.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+            if (!tile.open){
+                unit.hd.pos.x -= xDist/hyp;
+            }
+            unit.hd.pos.y += yDist/hyp;
+            var tile = Game.map[Math.floor((unit.hd.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hd.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+            if (!tile.open){
+                unit.hd.pos.y -= yDist/hyp;
+            }
+        }
+    };
     window.GameMap = GameMap;
 })(window);
 
@@ -104,7 +125,7 @@ var getSectorXY = function(string){
                 	sectorid: s,
                     x: i,
                     y: j,
-                    hd: new SAT.Box(new SAT.Vector(i+this.pos.x*21,j+this.pos.y*21),mainObj.TILE_SIZE,mainObj.TILE_SIZE),
+                    hd: new SAT.Box(new SAT.Vector(i*mainObj.TILE_SIZE+this.pos.x*this.fullSectorSize,j*mainObj.TILE_SIZE+this.pos.y*this.fullSectorSize),mainObj.TILE_SIZE,mainObj.TILE_SIZE).toPolygon(),
                     resource: data.tiles[i][j][Enums.RESOURCE],
                     open: data.tiles[i][j][Enums.OPEN],
                     triggers: data.tiles[i][j][Enums.TRIGGERS],
@@ -158,7 +179,7 @@ var getSectorXY = function(string){
             this.sprite = Graphics.getSprite(data.resource); //tile sprite
             this.sprite.scale.x = mainObj.GAME_SCALE;
             this.sprite.scale.y = mainObj.GAME_SCALE;
-            this.open = (typeof data.open == 'undefined')  ? null : data.open;
+            this.open = (typeof data.open == 'undefined')  ? false : data.open;
             this.overlayResource = (typeof data.overlayResource == 'undefined')  ? null : data.overlayResource;
             this.overlaySprite = null; //2nd layer sprite
             if (this.overlayResource){

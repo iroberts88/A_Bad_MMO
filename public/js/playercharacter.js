@@ -10,6 +10,9 @@
             this.race = data[Enums.RACE];
             this.slot = data[Enums.SLOT];
         };
+        unit.update = function(dt){
+            this._update(dt);
+        };
         unit.updateStats = function(data){
             for (var i in data){
                 this[i] = data[i];

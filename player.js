@@ -173,6 +173,7 @@ Player.prototype.setupSocket = function() {
                                 name = name.charAt(0).toUpperCase() + name.substr(1);
                                 var newChar = new Character();
                                 newChar.init(data);
+                                newChar.name = name;
                                 that.user.addCharacter(slot,newChar);
                             }
                         }
@@ -383,7 +384,7 @@ Player.prototype.setupSocket = function() {
                         that.user.setOwner(that);
                         that.user.init(u);
                         that.engine.users[d.sn] = that.user;
-                        that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:d.sn, characters: that.user.characters});
+                        that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, that.user.getClientData());
                     }else if (typeof data.Item != 'undefined' || typeof that.engine.users[d.sn] != 'undefined'){
                         that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
                     }else{

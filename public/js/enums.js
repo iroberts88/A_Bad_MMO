@@ -25,6 +25,7 @@
             CLIENTCOMMAND: '2',
             COMMAND: '3',
             CONNINFO: '4',
+            CHARACTERS: 'characters',
             CREATECHAR: '5',
             CREATECHARERROR: '6',
             LOGINATTEMPT: '7',

@@ -17,6 +17,7 @@
 
         init: function() {
             Graphics.app.renderer.backgroundColor = 0x000000;
+            Graphics.worldContainer2.addChild(Player.currentCharacter.sprite);
         },
 
         update: function(deltaTime){
@@ -25,7 +26,17 @@
                 this.updateScreenChange(deltaTime);
                 return;
             }
-            
+            //get movement keys!!
+            var cmX = Player.currentCharacter.moveVector.x;
+            var cmY = Player.currentCharacter.moveVector.y;
+            Player.setMove(deltaTime);
+            if (cmX != Player.currentCharacter.moveVector.x || cmY != Player.currentCharacter.moveVector.y){
+                //send new moveVector?!
+            }
+            Player.currentCharacter.update(deltaTime);
+
+            Graphics.world.position.x = Math.round((Graphics.width/2) - Player.currentCharacter.sprite.position.x);
+            Graphics.world.position.y = Math.round((Graphics.height/2) - Player.currentCharacter.sprite.position.y);
         },
 
         updateScreenChange: function(deltaTime){
@@ -70,7 +81,16 @@
             }catch(e){
                 console.log(e);
             }
+        },
+
+        rightClick: function(x,y){
+            Player.clickMove = true;
+            Player.clickPos = [x,y];
+            Player.currentCharacter.moveVector.x = x - Player.currentCharacter.sprite.position.x;
+            Player.currentCharacter.moveVector.y = y - Player.currentCharacter.sprite.position.y;
+            Player.currentCharacter.moveVector.normalize();
         }
+
     }
     window.Game = Game;
 })(window);

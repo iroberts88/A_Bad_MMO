@@ -16,7 +16,7 @@ var requestAnimFrame = (function(){
 var mainObj = this;
 mainObj.playerId = 'none';
 
-mainObj.GAME_SCALE = 2;
+mainObj.GAME_SCALE = 3;
 mainObj.TILE_SIZE = 16*mainObj.GAME_SCALE;
 
 $(function() {
@@ -79,8 +79,10 @@ $(function() {
         }
 
         if (Graphics.currentTextBox){
+            //text box is active, add text
             Graphics.textBoxes[Graphics.currentTextBox].keyDown(key);
         }else{
+            //otherwise, key binding stuff
             Acorn.Input.keyDown(key);
         }
 
@@ -147,7 +149,6 @@ function init() {
     //do some stuff after Graphics and network are initialized
     lastTime = Date.now();
     Settings.init();
-    Player.init();
     //Init Touch Events
     Graphics.app.stage.on('touchstart', Acorn.Input.handleTouchEvent).on('touchmove', Acorn.Input.handleTouchEvent);
 

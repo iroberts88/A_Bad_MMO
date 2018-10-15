@@ -298,6 +298,7 @@
                         data[Enums.COMMAND] = Enums.ENTERGAME;
                         data[Enums.SLOT] = NewChar.slot;
                         Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+                        Player.currentCharacter = Player.characters[NewChar.slot];
                         Acorn.changeState('game');
                     }
                 }
