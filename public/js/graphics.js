@@ -70,11 +70,21 @@
             this.worldContainer.position.y = Graphics.width/2;
             this.worldContainer.interactive = true;
             this.world.addChild(this.worldContainer); // ADD WORLD CONTAINER
+            this.unitContainer = new PIXI.Container();
+            this.unitContainer.position.x = Graphics.width/2;
+            this.unitContainer.position.y = Graphics.width/2;
+            this.unitContainer.interactive = true;
+            this.world.addChild(this.unitContainer); // ADD UNIT CONTAINER
             this.worldContainer2 = new PIXI.Container();
             this.worldContainer2.position.x = Graphics.width/2;
             this.worldContainer2.position.y = Graphics.width/2;
             this.worldContainer2.interactive = true;
-            this.world.addChild(this.worldContainer2); // ADD WORLD CONTAINER
+            this.world.addChild(this.worldContainer2); // ADD WORLD CONTAINER 2
+            this.unitContainer2 = new PIXI.Container();
+            this.unitContainer2.position.x = Graphics.width/2;
+            this.unitContainer2.position.y = Graphics.width/2;
+            this.unitContainer2.interactive = true;
+            this.world.addChild(this.unitContainer2); // ADD UNIT CONTAINER 2
             this.worldPrimitives = new PIXI.Graphics();
             this.worldPrimitives.position.x = Graphics.width/2;
             this.worldPrimitives.position.y = Graphics.width/2;
@@ -101,6 +111,9 @@
             this.resources = {};
             this.resourcesReady = false;
             this.animationSpeeds = {};
+
+            //this.world.scale.x = 0.25;
+            //this.world.scale.y = 0.25;
 
         },
 
@@ -132,6 +145,12 @@
             this.worldContainer.removeChildren();
             this.worldContainer.position.x = 0;
             this.worldContainer.position.y = 0;
+            this.unitContainer.removeChildren();
+            this.unitContainer.position.x = 0;
+            this.unitContainer.position.y = 0;
+            this.unitContainer2.removeChildren();
+            this.unitContainer2.position.x = 0;
+            this.unitContainer2.position.y = 0;
             this.worldContainer2.removeChildren();
             this.worldContainer2.position.x = 0;
             this.worldContainer2.position.y = 0;

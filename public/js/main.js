@@ -18,6 +18,7 @@ mainObj.playerId = 'none';
 
 mainObj.GAME_SCALE = 3;
 mainObj.TILE_SIZE = 16*mainObj.GAME_SCALE;
+mainObj.SECTOR_SIZE = 21*TILE_SIZE;
 
 $(function() {
 

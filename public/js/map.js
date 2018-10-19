@@ -7,6 +7,7 @@ var P = SAT.Polygon,
 
     var GameMap = function(){
         this.sectors = {};
+        this.currentVisibleSectors = []; //TODO actually change visible sectors
     };
 
     GameMap.prototype.init = function(data){
@@ -14,52 +15,90 @@ var P = SAT.Polygon,
     		var sector = this.createSector(s,data.mapData[s]);
     		this.sectors[s] = sector;
     	}
+        var cs = this.getSector(Player.currentCharacter.hb.pos.x,Player.currentCharacter.hb.pos.y);
+        for (var i = -1;i < 2;i++){
+            for (var j = -1;j < 2; j++){
+                var sec = this._getSector(cs.pos.x+i,cs.pos.y+j);
+                if (sec){
+                    sec.setVisible(true);
+                }
+            }
+        }
     };
 
     GameMap.prototype.createSector = function(s,data){
-    	var sector = new Sector();
-    	sector.init(s,this,data);
-    	return sector;
+        var sector = new Sector();
+        sector.init(s,this,data);
+        return sector;
+    };
+
+    GameMap.prototype.getSector = function(x,y){
+        if (typeof this.sectors[Math.floor(x/mainObj.SECTOR_SIZE)+'x'+Math.floor(y/mainObj.SECTOR_SIZE)] != 'undefined'){
+            return this.sectors[Math.floor(x/mainObj.SECTOR_SIZE)+'x'+Math.floor(y/mainObj.SECTOR_SIZE)];
+        }else{
+            return null;
+        }
+    };
+    GameMap.prototype._getSector = function(x,y){
+        if (typeof this.sectors[x+'x'+y] != 'undefined'){
+            return this.sectors[x+'x'+y];
+        }else{
+            return null;
+        }
     };
     GameMap.prototype.setVisible = function(sString,visible){
         try{
-            this[sString].setVisible(visible)
+            this.sectors[sString].setVisible(visible)
         }catch(e){
+            console.log(sString);
         }
     };
-    GameMap.prototype.changeVisibleSectors = function(){
-        if (this.sectorData){
-            console.log(this.sectorData);
-            if (this.sectorData.dir == 'left'){
-                this.setVisible((this.sectorData.x-1) + 'x' + this.sectorData.y,true);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y-1),true);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y+1),true);
-                this.setVisible((this.sectorData.x+2) + 'x' + this.sectorData.y,false);
-                this.setVisible((this.sectorData.x+2) + 'x' + (this.sectorData.y-1),false);
-                this.setVisible((this.sectorData.x+2) + 'x' + (this.sectorData.y+1),false);
-            }else if (this.sectorData.dir == 'up'){
-                this.setVisible(this.sectorData.x + 'x' + (this.sectorData.y-1),true);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y-1),true);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y-1),true);
-                this.setVisible(this.sectorData.x + 'x' + (this.sectorData.y+2),false);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y+2),false);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y+2),false);
-            }else if (this.sectorData.dir == 'right'){
-                this.setVisible((this.sectorData.x+1) + 'x' + this.sectorData.y,true);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y-1),true);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y+1),true);
-                this.setVisible((this.sectorData.x-2) + 'x' + this.sectorData.y,false);
-                this.setVisible((this.sectorData.x-2) + 'x' + (this.sectorData.y-1),false);
-                this.setVisible((this.sectorData.x-2) + 'x' + (this.sectorData.y+1),false);
-            }else if (this.sectorData.dir == 'down'){
-                this.setVisible(this.sectorData.x + 'x' + (this.sectorData.y+1),true);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y+1),true);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y+1),true);
-                this.setVisible((this.sectorData.x+1) + 'x' + (this.sectorData.y-2),false);
-                this.setVisible((this.sectorData.x-1) + 'x' + (this.sectorData.y-2),false);
-                this.setVisible(this.sectorData.x + 'x' + (this.sectorData.y-2),false);
+    GameMap.prototype.updateVisibleSectors = function(c,n){
+        var x = n.pos.x-c.pos.x;
+        var y = n.pos.y-c.pos.y;
+        console.log(x);
+        console.log(y);
+        if (x == -1){
+            this.setVisible((n.pos.x-1) + 'x' + n.pos.y,true);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y-1),true);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y+1),true);
+            this.setVisible((n.pos.x+2) + 'x' + n.pos.y,false);
+            this.setVisible((n.pos.x+2) + 'x' + (n.pos.y-1),false);
+            this.setVisible((n.pos.x+2) + 'x' + (n.pos.y+1),false);
+            if (y == -1){
+                this.setVisible((n.pos.x+2) + 'x' + (n.pos.y+2),false);
             }
-            this.sectorData = null;
+            if (y == 1){
+                this.setVisible((n.pos.x+2) + 'x' + (n.pos.y-2),false);
+            }
+        }else if (x == 1){
+            this.setVisible((n.pos.x+1) + 'x' + n.pos.y,true);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y-1),true);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y+1),true);
+            this.setVisible((n.pos.x-2) + 'x' + n.pos.y,false);
+            this.setVisible((n.pos.x-2) + 'x' + (n.pos.y-1),false);
+            this.setVisible((n.pos.x-2) + 'x' + (n.pos.y+1),false);
+            if (y == -1){
+                this.setVisible((n.pos.x-2) + 'x' + (n.pos.y+2),false);
+            }
+            if (y == 1){
+                this.setVisible((n.pos.x-2) + 'x' + (n.pos.y-2),false);
+            }
+        }
+        if (y == -1){
+            this.setVisible(n.pos.x + 'x' + (n.pos.y-1),true);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y-1),true);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y-1),true);
+            this.setVisible(n.pos.x + 'x' + (n.pos.y+2),false);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y+2),false);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y+2),false);
+        }else if (y == 1){
+            this.setVisible(n.pos.x + 'x' + (n.pos.y+1),true);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y+1),true);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y+1),true);
+            this.setVisible((n.pos.x+1) + 'x' + (n.pos.y-2),false);
+            this.setVisible((n.pos.x-1) + 'x' + (n.pos.y-2),false);
+            this.setVisible(n.pos.x + 'x' + (n.pos.y-2),false);
         }
     };
     GameMap.prototype.collideUnit = function(unit,dt){
@@ -67,15 +106,15 @@ var P = SAT.Polygon,
         var yDist = unit.moveVector.y*unit.speed*dt;
         var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
         for (var i = 0; i < hyp;i++){
-            unit.hd.pos.x += xDist/hyp;
-            var tile = Game.map[Math.floor((unit.hd.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hd.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+            unit.hb.pos.x += xDist/hyp;
+            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
             if (!tile.open){
-                unit.hd.pos.x -= xDist/hyp;
+                unit.hb.pos.x -= xDist/hyp;
             }
-            unit.hd.pos.y += yDist/hyp;
-            var tile = Game.map[Math.floor((unit.hd.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hd.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+            unit.hb.pos.y += yDist/hyp;
+            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
             if (!tile.open){
-                unit.hd.pos.y -= yDist/hyp;
+                unit.hb.pos.y -= yDist/hyp;
             }
         }
     };
@@ -121,11 +160,12 @@ var getSectorXY = function(string){
             }
     		for (var j = 0; j < data.tiles[i].length;j++){
  				var newTile = new Tile();
+                var r = data.tiles[i][j][Enums.RESOURCE];
+                var or = data.tiles[i][j][Enums.OVERLAYRESOURCE];
                 newTile.init({
                 	sectorid: s,
                     x: i,
                     y: j,
-                    hd: new SAT.Box(new SAT.Vector(i*mainObj.TILE_SIZE+this.pos.x*this.fullSectorSize,j*mainObj.TILE_SIZE+this.pos.y*this.fullSectorSize),mainObj.TILE_SIZE,mainObj.TILE_SIZE).toPolygon(),
                     resource: data.tiles[i][j][Enums.RESOURCE],
                     open: data.tiles[i][j][Enums.OPEN],
                     triggers: data.tiles[i][j][Enums.TRIGGERS],
@@ -133,7 +173,7 @@ var getSectorXY = function(string){
                 });
                 newTile.sprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                 newTile.sprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                if (data.tiles[i][j][Enums.RESOURCE] == '1x1'){
+                if (r == 'deep_water' || r.charAt(r.length-1) == 'e'){
                     Graphics.worldContainer2.addChild(newTile.sprite);
                 }else{
                     Graphics.worldContainer.addChild(newTile.sprite);
@@ -141,23 +181,21 @@ var getSectorXY = function(string){
                 if (newTile.overlaySprite){
                     newTile.overlaySprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                     newTile.overlaySprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                    if (data.tiles[i][j][Enums.OVERLAYRESOURCE] == '1x1'){
+                    if (r == 'deep_water' || or.charAt(or.length-1) == 'e'){
                         Graphics.worldContainer2.addChild(newTile.overlaySprite);
                     }else{
                         Graphics.worldContainer.addChild(newTile.overlaySprite);
                     }
                 }
                 map[i+this.pos.x*21][j+this.pos.y*21] = newTile;
+                newTile.setVisible(false);
     		}
     	}
     };
     Sector.prototype.setVisible = function(bool){
-        for (var i = 0; i < this.tiles.length;i++){
-            for (var j = 0; j < this.tiles[i].length;j++){
-                this.tiles[i][j].sprite.visible = bool;
-                if (this.tiles[i][j].overlaySprite){
-                    this.tiles[i][j].overlaySprite.visible = bool;
-                }
+        for (var i = this.pos.x*21; i < this.pos.x*21 +21;i++){
+            for (var j = this.pos.y*21; j < this.pos.y*21 +21;j++){
+                this.map[i][j].setVisible(bool);
             }
         }
     };
@@ -174,7 +212,7 @@ var getSectorXY = function(string){
     		this.sectorid = data.sectorid;
             this.x = data.x;
             this.y = data.y;
-            this.hd = data.hd;
+            this.hb = data.hb;
             this.resource = data.resource; //the graphics resource used
             this.sprite = Graphics.getSprite(data.resource); //tile sprite
             this.sprite.scale.x = mainObj.GAME_SCALE;
@@ -193,6 +231,13 @@ var getSectorXY = function(string){
         }catch(e){
             console.log("failed to init Tile");
             console.log(e);
+        }
+    };
+
+    Tile.prototype.setVisible = function(bool){
+        this.sprite.visible = bool;
+        if (this.overlaySprite){
+            this.overlaySprite.visible = bool;
         }
     };
 

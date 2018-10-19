@@ -76,6 +76,9 @@ Player.prototype.tick = function(deltaTime){
             this.checkName = false;
         }
     }
+    if (this.activeChar){
+        this.activeChar.update(deltaTime);
+    }
 };
 
 Player.prototype.onDisconnect = function(callback) {
@@ -204,6 +207,20 @@ Player.prototype.setupSocket = function() {
                         that.engine.debug(that,{id: 'requestMapDataError', error: e.stack});
                     }*/
                     break;
+                case that.engine.enums.MOVE:
+                    //TODO - this should actually keep track of movement not just set the position
+                    that.activeChar.moveVector.x = data[that.engine.enums.MOVEVECTOR][0];
+                    that.activeChar.moveVector.y = data[that.engine.enums.MOVEVECTOR][1];
+                    that.activeChar.hb.pos.x = data[that.engine.enums.POSITION][0];
+                    that.activeChar.hb.pos.y = data[that.engine.enums.POSITION][1];
+                    for (var i = 0; i < that.activeChar.pToUpdate.length;i++){
+                        var d = {};
+                        d[that.engine.enums.ID] = that.activeChar.id;
+                        d[that.engine.enums.POSITION] = data[that.engine.enums.POSITION];
+                        d[that.engine.enums.MOVEVECTOR] = data[that.engine.enums.MOVEVECTOR];
+                        that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,that.engine.enums.POSUPDATE, d);
+                    }
+                    break;
             }
         }catch(e){
             console.log(that.engine.debug('playerUpdateError',e,data));
@@ -297,7 +314,7 @@ Player.prototype.setupSocket = function() {
         */
     });
 
-    this.socket.on(this.engine.enums.disconnect, function () {
+    this.socket.on(this.engine.enums.DISCONNECT, function () {
         try{
             that.user.unlock();
             console.log('Player ' + that.id + ' (' + that.user.userData.username + ') has disconnected.');

@@ -47,12 +47,32 @@ function Unit() {
         currentSector: null,
         currentTile: null,
 
+        hb: null,
+        moveVector: null,
+        cRadius: null,
+
+        pToUpdate: [], //the array of players to keep updated of this units position
+
         _init: function(data){
             //REQUIRED DATA VARIABLES
             this.engine = data.engine;
             this.id = this.engine.getId();
             this.name = data[this.engine.enums.NAME];
             this.owner = data.owner;
+
+            this.cRadius = 20;
+            this.hb = new C(new V(500,500), this.cRadius);
+            this.moveVector = new V(0,0);
+
+            this.speed = new Attribute();
+            this.speed.init({
+                id: this.engine.enums.SPEED,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.SPEED],200,data[this.engine.enums.SPEED]),
+                min: 0,
+                max: 250
+            });
+
             //OPTIONAL DATA VARIABLES
             this.strength = new Attribute();
             this.strength.init({
@@ -265,13 +285,23 @@ function Unit() {
         },
        
         _update: function(deltaTime){
+            if (!this.moveVector.x == 0 || this.moveVector.y != 0){
+                this.currentZone.collideUnit(this,deltaTime);
+                if (this.currentSector != this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y)){
+                    this.currentZone.changeSector(this,this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y));
+                }
+            }
         },
 
-        _getClientData: function(){
+        _getClientData: function(less){
             var data = {}
             data[this.engine.enums.NAME] = this.name;
             data[this.engine.enums.ID] = this.id;
+            data[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
+            data[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
+            data[this.engine.enums.SPEED] = this.speed.value;
 
+            if (less){return data}
             data[this.engine.enums.STRENGTH] = this.strength.value;
             data[this.engine.enums.STAMINA] = this.stamina.value;
             data[this.engine.enums.INTELLIGENCE] = this.intelligence.value;
@@ -305,9 +335,7 @@ function Unit() {
             return data;
         },
         _getLessClientData: function(){
-            var data = {}
-
-            return data;
+            return this._getClientData(true);
         },
 
         modStat: function(data){

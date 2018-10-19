@@ -17,7 +17,6 @@
 
         init: function() {
             Graphics.app.renderer.backgroundColor = 0x000000;
-            Graphics.worldContainer2.addChild(Player.currentCharacter.sprite);
         },
 
         update: function(deltaTime){
@@ -31,12 +30,13 @@
             var cmY = Player.currentCharacter.moveVector.y;
             Player.setMove(deltaTime);
             if (cmX != Player.currentCharacter.moveVector.x || cmY != Player.currentCharacter.moveVector.y){
-                //send new moveVector?!
+                Player.sendMove();
             }
-            Player.currentCharacter.update(deltaTime);
+            Player.update(deltaTime);
 
-            Graphics.world.position.x = Math.round((Graphics.width/2) - Player.currentCharacter.sprite.position.x);
-            Graphics.world.position.y = Math.round((Graphics.height/2) - Player.currentCharacter.sprite.position.y);
+            Graphics.world.position.x = Math.round((Graphics.width/2) - Player.currentCharacter.sprite.position.x*Graphics.world.scale.x);
+            Graphics.world.position.y = Math.round((Graphics.height/2) - Player.currentCharacter.sprite.position.y*Graphics.world.scale.y);
+            PCS.update(deltaTime);
         },
 
         updateScreenChange: function(deltaTime){

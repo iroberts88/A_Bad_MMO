@@ -9,7 +9,8 @@ var Player = require('./player.js').Player,
     AWS = require("aws-sdk");
 
 var Zone = function(ge) {
-
+    this.TILE_SIZE = 48;
+    this.SECTOR_SIZE = this.TILE_SIZE*21;
     this.engine = ge;
 
     //map info
@@ -21,6 +22,8 @@ var Zone = function(ge) {
     this.playerCount = 0;
 
     this.zoneData = null;
+
+
 }
 
 Zone.prototype.init = function (data) {
@@ -35,8 +38,8 @@ Zone.prototype.init = function (data) {
         var tiles = this.engine.enums.TILES;
         var mapData = this.engine.enums.MAPDATA;
         var coords = this.getSectorXY(id);
-        var xStart = coords.x*20;
-        var yStart = coords.y*20;
+        var xStart = coords.x*21;
+        var yStart = coords.y*21;
         for (var j = 0; j < data[mapData][id][tiles].length;j++){
             for (var k = 0; k < data[mapData][id][tiles][j].length;k++){
                 var newTile = new Tile(k+xStart,j+yStart,data[mapData][id][tiles][j][k],this);
@@ -77,43 +80,69 @@ Zone.prototype.getSectorXY = function(string){
 // Player Functions
 // ----------------------------------------------------------
 
-Zone.prototype.changeSector = function(p,arr,id,tile){
-    //p = the player to change sector
-    //arr = the coordinates of the sector change
-    //id the id of the new sector
-    if (arr[0] == 0 && arr[1] == 0){
-        return;
+Zone.prototype.collideUnit = function(unit,dt){
+    var xDist = unit.moveVector.x*unit.speed.value*dt;
+    var yDist = unit.moveVector.y*unit.speed.value*dt;
+    var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
+    for (var i = 0; i < hyp;i++){
+        unit.hb.pos.x += xDist/hyp;
+        if (!this.getTile((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
+            unit.hb.pos.x -= xDist/hyp;
+        }
+        unit.hb.pos.y += yDist/hyp;
+        if (!this.getTileOpen((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
+            unit.hb.pos.y -= yDist/hyp;
+        }
     }
-    var current = this.getSector(p.character.currentSector);
+};
+Zone.prototype.changeSector = function(p,sector){
+    //p = the player to change sector
+    var current = p.currentSector;
     if (current){
         current.removePlayer(p);
     }
-    var newSector = this.getSector(id);
+    var newSector = this.getSector(p.hb.pos.x,p.hb.pos.y);
     if (newSector){
         newSector.addPlayer(p);
     }
-    var newCoords = this.getSectorXY(id);
+
+    var arr = [newSector.x-current.x,newSector.y-current.y];
     var removeList = [];
     var addList = [];
     if (arr[0] == -1){
         for (var i = -1;i < 2;i++){
-            addList.push(this.getSector((newCoords.x-1) + 'x' + (newCoords.y+i)));
-            removeList.push(this.getSector((newCoords.x+2) + 'x' + (newCoords.y+i)));
+            addList.push(this.getSectorById((newSector.x-1) + 'x' + (newSector.y+i)));
+            removeList.push(this.getSectorById((newSector.x+2) + 'x' + (newSector.y+i)));
         }
-    }else if (arr[1] == -1){
-        for (var i = -1;i < 2;i++){
-            addList.push(this.getSector((newCoords.x+i) + 'x' + (newCoords.y-1)));
-            removeList.push(this.getSector((newCoords.x+i) + 'x' + (newCoords.y+2)));
+        if (arr[1] == 1){
+            removeList.push(this.getSectorById((newSector.x+2) + 'x' + (newSector.y-2)));
         }
-    }else if (arr[0] == 1){
-        for (var i = -1;i < 2;i++){
-            addList.push(this.getSector((newCoords.x+1) + 'x' + (newCoords.y+i)));
-            removeList.push(this.getSector((newCoords.x-2) + 'x' + (newCoords.y+i)));
+        if (arr[1] == -1){
+            removeList.push(this.getSectorById((newSector.x+2) + 'x' + (newSector.y+2)));
         }
-    }else if (arr[1] == 1){
+    }
+    if (arr[0] == 1){
         for (var i = -1;i < 2;i++){
-            addList.push(this.getSector((newCoords.x+i) + 'x' + (newCoords.y+1)));
-            removeList.push(this.getSector((newCoords.x+i) + 'x' + (newCoords.y-2)));
+            addList.push(this.getSectorById((newSector.x+1) + 'x' + (newSector.y+i)));
+            removeList.push(this.getSectorById((newSector.x-2) + 'x' + (newSector.y+i)));
+        }
+        if (arr[1] == 1){
+            removeList.push(this.getSectorById((newSector.x-2) + 'x' + (newSector.y-2)));
+        }
+        if (arr[1] == -1){
+            removeList.push(this.getSectorById((newSector.x-2) + 'x' + (newSector.y+2)));
+        }
+    }
+    if (arr[1] == -1){
+        for (var i = -1;i < 2;i++){
+            addList.push(this.getSectorById((newSector.x+i) + 'x' + (newSector.y-1)));
+            removeList.push(this.getSectorById((newSector.x+i) + 'x' + (newSector.y+2)));
+        }
+    }
+    if (arr[1] == 1){
+        for (var i = -1;i < 2;i++){
+            addList.push(this.getSectorById((newSector.x+i) + 'x' + (newSector.y+1)));
+            removeList.push(this.getSectorById((newSector.x+i) + 'x' + (newSector.y-2)));
         }
     }
     for (var i = 0; i < addList.length;i++){
@@ -121,22 +150,8 @@ Zone.prototype.changeSector = function(p,arr,id,tile){
             if (addList[i] == null){continue;}
             for (var pl in addList[i].players){
                 var player = addList[i].players[pl];
-                this.engine.queuePlayer(player,'addPC',{
-                    id: p.id,
-                    name:p.user.userData.username,
-                    user: p.user.userData.username,
-                    owSprite: p.character.owSprite,
-                    tile: [tile.x,tile.y],
-                    sector: id
-                });
-                this.engine.queuePlayer(p,'addPC',{
-                    id: player.id,
-                    user: player.user.userData.username,
-                    name:player.user.userData.username,
-                    owSprite: player.character.owSprite,
-                    tile: player.character.currentTile,
-                    sector: player.character.currentSector
-                });
+                this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
+                this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
         }catch(e){
             console.log(e);
@@ -147,87 +162,109 @@ Zone.prototype.changeSector = function(p,arr,id,tile){
             if (removeList[i] == null){continue;}
             for (var pl in removeList[i].players){
                 var player = removeList[i].players[pl];
-                this.engine.queuePlayer(player,'removePC',{id: p.id})
-                this.engine.queuePlayer(p,'removePC',{id: player.id})
+                console.log('derp' + player.id)
+                var d = {};
+                d[this.engine.enums.ID] = p.id;
+                this.engine.queuePlayer(player.owner,this.engine.enums.REMOVEPC,d);
+                var d = {};
+                d[this.engine.enums.ID] = player.id;
+                this.engine.queuePlayer(p.owner,this.engine.enums.REMOVEPC,d);
             }
         }catch(e){
             console.log(e);
         }
     }
+    //get the new list of players to update for each player in the old sectors
+    for (var i = 0; i < p.pToUpdate.length;i++){
+        p.pToUpdate[i].pToUpdate = this.getPlayers(p.pToUpdate[i].currentSector);
+    }
+    //set the new pToUpdate
+    p.pToUpdate = this.getPlayers(p.currentSector);
 }
 
-Zone.prototype.getSector = function(id){
-    if (typeof this.map[id] != 'undefined'){
-        return this.map[id];
+Zone.prototype.getSector = function(x,y){
+    //get sector by position
+    if (typeof this.sectors[Math.floor(x/this.SECTOR_SIZE)+'x'+Math.floor(y/this.SECTOR_SIZE)] != 'undefined'){
+        return this.sectors[Math.floor(x/this.SECTOR_SIZE)+'x'+Math.floor(y/this.SECTOR_SIZE)];
     }else{
         return null;
     }
 }
+
+Zone.prototype.getTile = function(x,y){
+    //get sector by position
+    if (typeof this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)] != 'undefined'){
+        return this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)];
+    }else{
+        return null;
+    }
+}
+Zone.prototype.getTileOpen = function(x,y){
+    //get sector by position
+    if (typeof this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)] != 'undefined'){
+        return this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)].open;
+    }else{
+        return false;
+    }
+}
+Zone.prototype.getSectorById = function(id){
+    if (typeof this.sectors[id] != 'undefined'){
+        return this.sectors[id];
+    }else{
+        return null;
+    }
+}
+
 Zone.prototype.getPlayers = function(sector){
     var players = [];
-    /*
     for (var i = -1;i < 2;i++){
         for (var j = -1;j < 2;j++){
-            if (typeof this.map[(sector.sectorX+i) + 'x' + (sector.sectorY+j)] == 'undefined'){
+            if (typeof this.sectors[(sector.x+i) + 'x' + (sector.y+j)] == 'undefined'){
                 continue;
             }
-            for (var pl in this.map[(sector.sectorX+i) + 'x' + (sector.sectorY+j)].players){
-                var player = this.map[(sector.sectorX+i) + 'x' + (sector.sectorY+j)].players[pl];
-                players.push({
-                    id: player.id,
-                    user: player.user.userData.username,
-                    name:player.user.userData.username,
-                    owSprite: player.character.owSprite,
-                    tile: player.character.currentTile,
-                    sector: player.character.currentSector
-                })
+            for (var pl in this.sectors[(sector.x+i) + 'x' + (sector.y+j)].players){
+                var player = this.sectors[(sector.x+i) + 'x' + (sector.y+j)].players[pl];
+                players.push(player);
             }
         }
-    }*/
+    }
     return players;
 }
+
+Zone.prototype.getPlayerData = function(sector){
+    var pArr = [];
+    var players = this.getPlayers(sector);
+    for (var i = 0; i < players.length;i++){
+        pArr.push(players[i].getLessClientData());
+    }
+    return pArr;
+}
+
 Zone.prototype.addPlayer = function(p){
     this.players[p.id] = p;
     p.currentZone = this;
-    //TODO add player to all players in the zone within 1 sector
-    this.sectors[p.sectorid].addPlayer(p);
-    this.playerCount += 1;
-    /*var coords = this.getSectorXY(p.character.currentSector);
-    for (var i = -1;i < 2;i++){
-        for (var j = -1;j < 2;j++){
-            if (typeof this.map[(coords.x+i) + 'x' + (coords.y+j)] == 'undefined'){
-                continue;
-            }
-            for (var pl in this.map[(coords.x+i) + 'x' + (coords.y+j)].players){
-                var player = this.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                this.engine.queuePlayer(player,'addPC',{
-                    id: p.id,
-                    name:p.user.userData.username,
-                    user: p.user.userData.username,
-                    owSprite: p.character.owSprite,
-                    tile: p.character.currentTile,
-                    sector: p.character.currentSector
-                });
-            }
-        }
-    }*/
+    var sector = this.getSector(p.hb.pos.x,p.hb.pos.y);
+    var players = this.getPlayers(sector);
+    for (var i = 0; i < players.length;i++){
+        this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDPC,p.getLessClientData());
+        players[i].pToUpdate.push(p);
+    }
     this.sendMapDataTo(p);
+    sector.addPlayer(p);
+    this.playerCount += 1;
+    p.pToUpdate = this.getPlayers(p.currentSector);
     return this.playerCount;
 }
 
 Zone.prototype.removePlayer = function(p){
-    this.map[p.character.currentSector].removePlayer(p);
-    for (var i = -1;i < 2;i++){
-        for (var j = -1;j < 2;j++){
-            var coords = this.getSectorXY(p.character.currentSector);
-            if (typeof this.map[(coords.x+i) + 'x' + (coords.y+j)] == 'undefined'){
-                continue;
-            }
-            for (var pl in this.map[(coords.x+i) + 'x' + (coords.y+j)].players){
-                var player = this.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                this.engine.queuePlayer(player,'removePC',{id: p.id})
-            }
-        }
+    var cid = p.currentSector.id;
+    p.currentSector.removePlayer(p);
+    var players = this.getPlayers(this.sectors[cid]);
+    for (var i = 0; i < players.length;i++){
+        var data = {};
+        data[this.engine.enums.ID] = p.id;
+        players[i].pToUpdate = players;
+        this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVEPC,data);
     }
     delete this.players[p.id];
     this.playerCount -= 1;
@@ -242,7 +279,7 @@ Zone.prototype.sendMapDataTo = function(character) {
         }
         //TODO also get NPC's
         var data = {}
-        data[that.engine.enums.PLAYERS] = that.getPlayers();
+        data[that.engine.enums.PLAYERS] = that.getPlayerData(character.currentSector);
         data[that.engine.enums.MAPDATA] = JSON.parse(fsdata);
         that.engine.queuePlayer(character.owner,that.engine.enums.NEWMAP,data);
     });
@@ -262,8 +299,8 @@ var Sector = function(id,zone) {
     this.id = id;
     this.zone = zone;
     var coords = this.zone.getSectorXY(this.id);
-    this.sectorX = coords.x;
-    this.sectorY = coords.y;
+    this.x = coords.x;
+    this.y = coords.y;
 };
 
 Sector.prototype.addPlayer = function(p){

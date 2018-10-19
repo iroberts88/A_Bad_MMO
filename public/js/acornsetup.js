@@ -54,8 +54,37 @@
             Acorn.Net.on(Enums.NEWMAP, function (data) {
                 console.log(data);
                 Game.map = new GameMap();
-                Game.map.init(data.mapData);
+                Game.map.init(data[Enums.MAPDATA]);
+                for (var i = 0; i < data[Enums.PLAYERS].length;i++){
+                    if (data[Enums.PLAYERS][i][Enums.ID] == Player.currentCharacter.id){
+                        continue;
+                    }
+                    PCS.addPC(data[Enums.PLAYERS][i]);
+                }
                 Game.ready = true;
+                Graphics.unitContainer.addChild(Player.currentCharacter.sprite);
+                Graphics.unitContainer2.addChild(Player.currentCharacter.sprite2);
+                Graphics.unitContainer2.addChild(Player.currentCharacter.spriteMask);
+            });
+
+            Acorn.Net.on(Enums.ADDPC, function (data) {
+                console.log(data);
+                if (data[Enums.ID] != Player.currentCharacter.id){
+                    PCS.addPC(data);
+                }
+            });
+
+            Acorn.Net.on(Enums.REMOVEPC, function (data) {
+                console.log(data);
+                if (data[Enums.ID] != Player.currentCharacter.id){
+                    PCS.removePC(data);
+                }
+            });
+
+            Acorn.Net.on(Enums.POSUPDATE, function (data) {
+                if (data[Enums.ID] != Player.currentCharacter.id){
+                    PCS.updatePCPos(data);
+                }
             });
 
             Acorn.Net.on('changeMap', function (data) {
@@ -103,6 +132,7 @@
             Acorn.Net.on(Enums.LOGGEDIN, function (data) {
                 console.log(data);
                 Player.init(data);
+                PCS.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
                 MainMenu.showCharacterSelection();
             });
@@ -178,11 +208,16 @@
                     }
                 }
                 if (e.button == 2 && Game.ready){
-                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y)
+                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
+                    Player.sendMove();
                 }
             });
             Acorn.Input.onMouseUp(function(e) {
                 Acorn.Input.mouseDown = false;
+                if (e.button == 2 && Game.ready){
+                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
+                    Player.sendMove();
+                }
             });
 
             Acorn.Input.onScroll(function(e) {
@@ -190,7 +225,10 @@
             });
 
             Acorn.Input.onMouseMove(function(e) {
-
+                if (Acorn.Input.buttons[2] && Player.clickMove){
+                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
+                    Player.sendMove();
+                }
             });
 
             Acorn.Input.onTouchEvent(function(e) {

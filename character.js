@@ -20,12 +20,11 @@ Character = function(){
         this.class = data[this.engine.enums.CLASS];
         this.race = data[this.engine.enums.RACE];
         this.zoneid = 'test1';
-        this.sectorid = '0x0';
-        this.hb = new C(new V(0,0), 20);
     }
 
     character.update = function(deltaTime){
     	this._update(deltaTime);
+
     }
 
     character.getClientData = function(){
@@ -33,8 +32,18 @@ Character = function(){
         data[this.engine.enums.SLOT] = this.slot;
         data[this.engine.enums.CLASS] = this.class;
         data[this.engine.enums.RACE] = this.race;
+        data[this.engine.enums.OWNER] = this.owner.id;
     	return data;
     }
+
+    character.getLessClientData = function(){
+        var data = this._getLessClientData();
+        data[this.engine.enums.CLASS] = this.class;
+        data[this.engine.enums.RACE] = this.race;
+        data[this.engine.enums.OWNER] = this.owner.id;
+        return data;
+    }
+
     character.getDBObj = function(){
     	var data = {}
 

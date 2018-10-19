@@ -3,7 +3,8 @@
 //container for user info
 //----------------------------------------------------------------
 
-var AWS = require("aws-sdk");
+var AWS = require("aws-sdk"),
+    ng = require('./namegenerator.js').NameGenerator;
 AWS.config.update({
   region: "us-east-1",
   endpoint: "https://dynamodb.us-east-1.amazonaws.com"
@@ -60,7 +61,7 @@ function User() {
                     engine: this.owner.engine
                 };
                 data[this.owner.engine.enums.SLOT] = 1;
-                data[this.owner.engine.enums.NAME] = 'Test Character 1';
+                data[this.owner.engine.enums.NAME] = ng.generateName('male');
                 data[this.owner.engine.enums.RACE] = 'human';
                 data[this.owner.engine.enums.CLASS] = 'warrior';
                 newChar.init(data);

@@ -48,13 +48,12 @@ var GameEngine = function() {
     this.filter = new Filter();
     
     this.enums = {
-        //client and database enums
-
         //DB
         //need to match the DB values
         MAPDATA: 'mapData',
         CLASSID: 'classid',
         DESCRIPTION: 'description',
+        DISCONNECT: 'disconnect',
         NAME: 'name',
         ATTRIBUTES: 'attributes',
         AVAILABLECLASSES: 'availableClasses',
@@ -69,61 +68,68 @@ var GameEngine = function() {
 
         //client
         //TODO these can get changed to just numbers
-        DISCONNECT: '0',
-        CHECKNAME: '1',
-        CLIENTCOMMAND: '2',
-        COMMAND: '3',
-        CONNINFO: '4',
-        CREATECHAR: '5',
-        CHARACTERS: 'characters',
-        CREATECHARERROR: '6',
-        LOGINATTEMPT: '7',
-        LOGOUT: '8',
-        LOGGEDIN: '9',
-        PLAYERUPDATE: '10',
-        SETLOGINERRORTEXT: '11',
-        BOOL: '12',
-        CLASSES: '13',
-        CLASS: '14',
-        ID: '15',
-        RACES: '16',
-        RACE: '17',
-        SLOT: '18',
-        TEXT: '19',
-        STRENGTH: '20',
-        STAMINA: '21',
-        INTELLIGENCE: '22',
-        WISDOM: '23',
-        AGILITY: '24',
-        DEXTERITY: '25',
-        PERCEPTION: '26',
-        CHARISMA: '27',
-        LUCK: '28',
-        AC: '29',
-        FOCUS: '30',
-        SKILL: '31',
-        POWER: '32',
-        MAXHEALTH: '33',
-        CURRENTHEALTH: '34',
-        MAXMANA: '35',
-        CURRENTMANA: '36',
-        CURRENTEXP: '37',
-        LEVEL: '38',
-        MAXENDURANCE: '39',
-        CURRENTENDURANCE: '40',
-        FROSTRES: '41',
-        FIRERES: '42',
-        WINDRES: '43',
-        EARTHRES: '44',
-        POISONRES: '45',
-        SHOCKRES: '46',
-        HOLYRES: 'holyres',
-        SHADOWRES: 'shadowres',
+        AC: 'ac',
         ADDCHARACTER: 'addcharacter',
+        ADDPC: 'addPC',
+        AGILITY: 'agility',
+        BOOL: 'bool',
+        CHARACTERS: 'characters',
+        CHARISMA: 'charisma',
+        CHECKNAME: 'checkName',
+        CLIENTCOMMAND: 'clientCommand',
+        CLASSES: 'classes',
+        CLASS: 'class',
+        COMMAND: 'command',
+        CONNINFO: 'connInfo',
+        CREATECHAR: 'CreateChar',
+        CREATECHARERROR: 'createCharError',
+        CURRENTENDURANCE: 'currentEndurance',
+        CURRENTEXP: 'currentExp',
+        CURRENTHEALTH: 'currentHealth',
+        CURRENTMANA: 'currentMana',
+        DEXTERITY: 'dexterity',
+        EARTHRES: 'earthRes',
         ENTERGAME: 'entergame',
+        FOCUS: 'focus',
+        FIRERES: 'fireRes',
+        FROSTRES: 'frostRes',
+        HOLYRES: 'holyres',
+        ID: 'id',
+        INTELLIGENCE: 'intelligence',
+        LEVEL: 'level',
+        LOGINATTEMPT: 'loginAttempt',
+        LOGOUT: 'logout',
+        LOGGEDIN: 'loggedIn',
+        LUCK: 'luck',
+        MAXENDURANCE: 'maxEndurance',
+        MAXHEALTH: 'maxHealth',
+        MAXMANA: 'macMana',
+        MOVE: 'move',
+        MOVEVECTOR: 'moveVector',
         NEWMAP: 'newmap',
-        PLAYERS: 'players'
-    };
+        OWNER: 'owner',
+        PERCEPTION: 'perception',
+        PLAYERS: 'players',
+        PLAYERUPDATE: 'playerUpdate',
+        POISONRES: 'poisonRes',
+        POSITION: 'position',
+        POSUPDATE: 'posUpdate',
+        POWER: 'power',
+        RACES: 'races',
+        RACE: 'race',
+        REMOVEPC: 'removePC',
+        SETLOGINERRORTEXT: 'setLoginErrorText',
+        SHADOWRES: 'shadowres',
+        SHOCKRES: 'shockRes',
+        SKILL: 'skil',
+        SLOT: 'slot',
+        SPEED: 'speed',
+        STRENGTH: 'strength',
+        STAMINA: 'stamina',
+        TEXT: 'text',
+        WINDRES: 'windRes',
+        WISDOM: 'wisdom'
+  };
 }
 
 GameEngine.prototype.init = function () {
@@ -230,15 +236,16 @@ GameEngine.prototype.addPlayer = function(p){
 
 GameEngine.prototype.removePlayer = function(p){
     this.playerLogout(p);
-    this.removePlayerFromZone(p,p.character.currentMap);
-    delete this.users[p.user.userData.username];
+    if (p.activeChar){
+        this.removePlayerFromZone(p.activeChar,p.activeChar.currentZone);
+    }
     delete this.players[p.id];
     this.playerCount -= 1;
 }
 
 GameEngine.prototype.addPlayerToZone = function(p,z){
     var count = this.zones[z].addPlayer(p);
-
+    p.zoneid = z;
     if (count == 1){
         //zone is no longer empty, ready to update
         this.zoneUpdateList[z] = true;
@@ -246,11 +253,11 @@ GameEngine.prototype.addPlayerToZone = function(p,z){
 }
 
 GameEngine.prototype.removePlayerFromZone = function(p,z){
-    var count = this.zones[z].removePlayer(p);
+    var count = z.removePlayer(p);
 
     if (count == 0){
         //zone is empty, no longer update
-        delete this.zoneUpdateList[z]; 
+        delete this.zoneUpdateList[z.mapid]; 
     }
 }
 
@@ -268,6 +275,7 @@ GameEngine.prototype.playerLogout = function(p){
 GameEngine.prototype.checkData = function(obj,key){
     if (Utils._udCheck(obj[key])){
         console.log('INVALID DATA - ' + key)
+        console.log(obj);
         return false;
     }else{
         return true;

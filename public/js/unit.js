@@ -22,7 +22,7 @@ var P = SAT.Polygon,
             sprite: null,
             scale: 2,
 
-            hd: null,
+            hb: null,
             moveVector: null,
             mapCollide: true,
             cRadius: 16,
@@ -39,17 +39,33 @@ var P = SAT.Polygon,
                 this.maxHealth = data[Enums.MAXHEALTH];
                 this.level = data[Enums.LEVEL];
 
-                this.speed = 125;
-                this.moveVector = new SAT.Vector(0,0);
+                this.speed = data[Enums.SPEED];
+                this.moveVector = new SAT.Vector(data[Enums.MOVEVECTOR][0],data[Enums.MOVEVECTOR][1]);
 
                 this.sprite = Graphics.getSprite(this.spriteid + '_d1');
                 this.sprite.anchor.x = 0.5;
                 this.sprite.anchor.y = 0.6;
                 this.sprite.scale.x = this.scale;
                 this.sprite.scale.y = this.scale;
-                this.sprite.position.x = Graphics.width/2;
-                this.sprite.position.y = Graphics.height/2;
-                this.hd = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
+                this.sprite.position.x = data[Enums.POSITION][0];
+                this.sprite.position.y = data[Enums.POSITION][1];
+                
+                this.sprite2 = Graphics.getSprite(this.spriteid + '_d1');
+                this.sprite2.anchor.x = 0.5;
+                this.sprite2.anchor.y = 0.6;
+                this.sprite2.scale.x = this.scale;
+                this.sprite2.scale.y = this.scale;
+                this.sprite2.position.x = data[Enums.POSITION][0];
+                this.sprite2.position.y = data[Enums.POSITION][1];
+
+                this.spriteMask = new PIXI.Graphics();
+                this.spriteMask.beginFill(0xFFFFFF,1);
+                this.spriteMask.drawRect(0,0,this.sprite2.width,this.sprite2.height* 0.6);
+                this.spriteMask.endFill();
+                this.spriteMask.position.x = this.sprite2.position.x - this.sprite2.width/2;
+                this.spriteMask.position.y = this.sprite2.position.y - this.sprite2.width*0.6;
+                this.sprite2.mask = this.spriteMask;
+                this.hb = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
             },
 
             _update: function(dt){
@@ -58,30 +74,37 @@ var P = SAT.Polygon,
                 if (!this.moveVector.x == 0 || this.moveVector.y != 0){
                     Game.map.collideUnit(this,dt);
                     this.getDir();
-                    if (this.aTicker > (400-this.speed)/1200){
+                    if (this.aTicker > (400-this.speed)/2400){
                         this.aTicker = 0;
                         this.spritenum += 1;
                         if (this.spritenum == 3){this.spritenum = 1;}
                     }
                 }
-                this.sprite.position.x = this.hd.pos.x;
-                this.sprite.position.y = this.hd.pos.y;
-                this.currentTile = Game.map[Math.floor(this.hd.pos.x/mainObj.TILE_SIZE)][Math.floor(this.hd.pos.y/mainObj.TILE_SIZE)];
+                this.sprite.position.x = this.hb.pos.x;
+                this.sprite.position.y = this.hb.pos.y;
+                this.sprite2.position.x = this.hb.pos.x;
+                this.sprite2.position.y = this.hb.pos.y;
+                this.spriteMask.position.x = this.sprite2.position.x - this.sprite2.width/2;
+                this.spriteMask.position.y = this.sprite2.position.y - this.sprite2.width*0.6;
+                this.currentTile = Game.map[Math.floor(this.hb.pos.x/mainObj.TILE_SIZE)][Math.floor(this.hb.pos.y/mainObj.TILE_SIZE)];
             },
 
             getDir: function(){
                 if (this.moveVector.x >= this.diagM){
                     this.dir = 'r';
                     this.sprite.scale.x = this.scale;
+                    this.sprite2.scale.x = this.scale;
                 }else if (this.moveVector.x <= -this.diagM){
                     this.dir = 'r';
                     this.sprite.scale.x = -this.scale;
+                    this.sprite2.scale.x = -this.scale;
                 }else if (this.moveVector.y <= -this.diagM){
                     this.dir = 'u';
                 }else if (this.moveVector.y >= this.diagM){
                     this.dir = 'd';
                 }
                 this.sprite.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
+                this.sprite2.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
             }
         }
     };
