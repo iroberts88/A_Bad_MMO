@@ -11,8 +11,8 @@ var P = SAT.Polygon,
     };
 
     GameMap.prototype.init = function(data){
-    	for (var s in data.mapData){
-    		var sector = this.createSector(s,data.mapData[s]);
+    	for (var s in data[Enums.MAPDATA]){
+    		var sector = this.createSector(s,data[Enums.MAPDATA][s]);
     		this.sectors[s] = sector;
     	}
         var cs = this.getSector(Player.currentCharacter.hb.pos.x,Player.currentCharacter.hb.pos.y);
@@ -154,22 +154,22 @@ var getSectorXY = function(string){
     Sector.prototype.init = function(s,map,data){
     	this.pos = getSectorXY(s);
     	this.map = map;
-    	for (var i = 0; i < data.tiles.length;i++){
+    	for (var i = 0; i < data[Enums.TILES].length;i++){
             if (typeof map[i+this.pos.x*21] == 'undefined'){
                 map[i+this.pos.x*21] = {};
             }
-    		for (var j = 0; j < data.tiles[i].length;j++){
+    		for (var j = 0; j < data[Enums.TILES][i].length;j++){
  				var newTile = new Tile();
-                var r = data.tiles[i][j][Enums.RESOURCE];
-                var or = data.tiles[i][j][Enums.OVERLAYRESOURCE];
+                var r = data[Enums.TILES][i][j][Enums.RESOURCE];
+                var or = data[Enums.TILES][i][j][Enums.OVERLAYRESOURCE];
                 newTile.init({
                 	sectorid: s,
                     x: i,
                     y: j,
-                    resource: data.tiles[i][j][Enums.RESOURCE],
-                    open: data.tiles[i][j][Enums.OPEN],
-                    triggers: data.tiles[i][j][Enums.TRIGGERS],
-                    overlayResource: data.tiles[i][j][Enums.OVERLAYRESOURCE]
+                    resource: data[Enums.TILES][i][j][Enums.RESOURCE],
+                    open: data[Enums.TILES][i][j][Enums.OPEN],
+                    triggers: data[Enums.TILES][i][j][Enums.TRIGGERS],
+                    overlayResource: data[Enums.TILES][i][j][Enums.OVERLAYRESOURCE]
                 });
                 newTile.sprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                 newTile.sprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;

@@ -14,11 +14,11 @@ var Race = function(ge) {
 }
 
 Race.prototype.init = function (data) {
-    this.raceid = data[this.engine.enums.RACEID];
-    this.name = data[this.engine.enums.NAME];
-    this.description = data[this.engine.enums.DESCRIPTION];
-    this.attributes = data[this.engine.enums.ATTRIBUTES];
-    this.availableClasses = data[this.engine.enums.AVAILABLECLASSES];
+    this.raceid = data.raceid;
+    this.name = data.name;
+    this.description = data.description;
+    this.attributes = data.attributes;
+    this.availableClasses = data.availableClasses;
 };
 
 Race.prototype.getClientObj = function (data) {

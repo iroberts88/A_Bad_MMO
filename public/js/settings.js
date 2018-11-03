@@ -8,7 +8,7 @@
         masterVolume: null,
         musicVolume: null,
         sfxVolume: null,
-
+        uilocked: null,
         autoFullScreen: null,
         stats: null,
         statsOn: null,
@@ -25,9 +25,8 @@
             this.musicVolume = 1.0;
             this.sfxVolume = 1.0;
 
-            this.nSpeed = 1.2; //Battle notification Speed
+            this.uilocked = true;
 
-            this.charScrollSpeed = 100;
             this.autoFullScreen = false;
             this.currentMap = null;
             this.stats = new Stats();
@@ -38,101 +37,14 @@
             this.statsOn = false;
             this.currentRotation = 0;
         },
-        zoom: function(dir){
-            if (Acorn.currentState == 'MapGen' || Acorn.currentState == 'inGame'){
-                var changed = true;
-                if (dir == 'in'){
-                    window.currentGameMap.currentZoomSetting += 1;
-                    if (window.currentGameMap.currentZoomSetting == window.currentGameMap.ZOOM_SETTINGS.length){
-                        window.currentGameMap.currentZoomSetting = window.currentGameMap.ZOOM_SETTINGS.length-1;
-                        changed = false
-                    }
-                }else if (dir == 'out'){
-                    window.currentGameMap.currentZoomSetting -= 1;
-                    if (window.currentGameMap.currentZoomSetting == -1){
-                        window.currentGameMap.currentZoomSetting = 0;
-                        changed = false
-                    }
-                }
-                if (changed){
-                    var t = 1;
-                    if (!(window.currentGameMap.currentRotation%2)){t = 2}
-                    window.currentGameMap['container' + t].children = window.currentGameMap.updateSprites(window.currentGameMap['container' + t].children);
-                    window.currentGameMap.changedZoom = true;
-                }
+        toggleUILock: function(){
+            if (this.uilocked){
+                this.uilocked = false;
+
             }else{
-                var bounds = 0;
-                if (Acorn.currentState == 'charScreen'){bounds = Characters.bounds}
-                if (Acorn.currentState == 'learnAbilitiesMenu'){bounds = LearnAbilities.bounds}
-                if (Acorn.currentState == 'equipAbilitiesMenu'){bounds = EquipAbilities.bounds}
-                if (dir == 'in'){
-                    Graphics.uiPrimitives.position.y += this.charScrollSpeed;
-                    Graphics.uiPrimitives2.position.y += this.charScrollSpeed;
-                    Graphics.worldContainer.position.y += this.charScrollSpeed;
-                    Graphics.uiContainer.position.y += this.charScrollSpeed;
-                    if (Graphics.uiPrimitives.position.y > 0){
-                        Graphics.uiPrimitives.position.y = 0;
-                        Graphics.worldContainer.position.y = 0;
-                        Graphics.uiPrimitives2.position.y = 0;
-                        Graphics.uiContainer.position.y = 0;
-                    }
-                }else if (dir == 'out'){
-                    Graphics.uiPrimitives.position.y -= this.charScrollSpeed;
-                    Graphics.worldContainer.position.y -= this.charScrollSpeed;
-                    Graphics.uiPrimitives2.position.y -= this.charScrollSpeed;
-                    Graphics.uiContainer.position.y -= this.charScrollSpeed;
-                    if (Graphics.uiPrimitives.position.y < bounds){
-                        Graphics.uiPrimitives.position.y = bounds;
-                        Graphics.worldContainer.position.y = bounds;
-                        Graphics.uiPrimitives2.position.y = bounds;
-                        Graphics.uiContainer.position.y = bounds;
-                    }
-                }
+                this.uilocked = true;
             }
-        },
-        setYScale: function(dir){
-            if (Acorn.currentState == 'MapGen' || Acorn.currentState == 'inGame'){
-                if (dir == 'up'){
-                    window.currentGameMap.currentYScaleSetting += 1;
-                    if (window.currentGameMap.currentYScaleSetting == window.currentGameMap.YSCALE_SETTINGS.length){
-                        window.currentGameMap.currentYScaleSetting = window.currentGameMap.YSCALE_SETTINGS.length-1;
-                    }
-                }else if (dir == 'down'){
-                    window.currentGameMap.currentYScaleSetting -= 1;
-                    if (window.currentGameMap.currentYScaleSetting == -1){
-                        window.currentGameMap.currentYScaleSetting = 0;
-                    }
-                }
-                var t = 1;
-                if (!(window.currentGameMap.currentRotation%2)){t = 2}
-                window.currentGameMap['container' + t].children = window.currentGameMap.updateSprites(window.currentGameMap['container' + t].children);
-            }
-        },
-        rotateMap: function(dir){
-            
-            if (Acorn.currentState == 'MapGen' || Acorn.currentState == 'inGame'){
-                var c = window.currentGameMap.currentRotation;
-                var d = 1;
-                if (dir == 'right'){
-                    window.currentGameMap.currentRotation -= 1;
-                    if (window.currentGameMap.currentRotation == -1){
-                        window.currentGameMap.currentRotation = window.currentGameMap.totalRotations-1;
-                    }
-                }else if (dir == 'left'){
-                    d = -1;
-                    window.currentGameMap.currentRotation += 1;
-                    if (window.currentGameMap.currentRotation == window.currentGameMap.totalRotations){
-                        window.currentGameMap.currentRotation = 0;
-                    }
-                }
-                window.currentGameMap.rotateData = {
-                    t: 0,
-                    extraRot: 0,
-                    time: 0.05,
-                    dir: dir,
-                    angle: ((360/window.currentGameMap.totalRotations)*Math.PI/180)*d
-                }
-            }
+            Game.setUILock(this.uilocked);
         },
         toggleStats: function(){
             if (this.statsOn){
@@ -150,17 +62,6 @@
                 this.statsOn = true;
                 document.body.appendChild( this.stats.domElement );
             }
-        },
-        toggleViewBump: function(){
-        	if (this.viewBumpSpeed > 0){
-        		//turn it off
-        		this.oldViewBump = this.viewBumpSpeed;
-        		this.viewBumpSpeed = 0;
-        		Map.currentViewBump.x = 0;
-        		Map.currentViewBump.y = 0;
-        	}else{
-        		this.viewBumpSpeed = this.oldViewBump;
-        	}
         },
         toggleAutoFullScreen: function(){
             if (this.autoFullScreen){

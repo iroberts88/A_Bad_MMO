@@ -26,7 +26,7 @@
 
         init: function(w,h) {
             var numbers = '0123456789';
-            var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             for (var i = 0; i < numbers.length;i++){
                 this.numbers[numbers.charAt(i)] = true;
             }
@@ -41,6 +41,7 @@
             this.buttonCD = 0;
             //create the PIXI stage
             this.app = new PIXI.Application(this.width, this.height, {backgroundColor: 0xFFFFFF});
+            //this.app.renderer.plugins.interaction.moveWhenInside = true;
             this.filtersToApply = [];
 
             this.resourceList = [];
@@ -470,62 +471,22 @@
             }
             return button
         },
-        buttonGlow: function(element){
-            try{
-                element.defaultFill = element.style.fill;
-                element.style.fill = Graphics.pallette.color4;
-            }catch(e){
-                if(!element.glowSprite){
-                    var canvas = document.createElement('canvas');
-                    canvas.width  = element.width;
-                    canvas.height = element.height;
-                    var ctx = canvas.getContext('2d');
-                    var gradient = ctx.createLinearGradient(0, 0, element.width, 0);
-                    gradient.addColorStop(0, Graphics.pallette.color4);
-                    gradient.addColorStop(1, Graphics.pallette.color4);
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0,0,element.width,element.height);
-                    element.glowSprite1 = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas));
-                    element.glowSprite1.position.x = element.position.x;
-                    element.glowSprite1.position.y = element.position.y;
-                    element.glowSprite1.anchor.x = element.anchor.x;
-                    element.glowSprite1.anchor.y = element.anchor.y;
-                    var canvas2 = document.createElement('canvas');
-                    canvas2.width  = element.width;
-                    canvas2.height = element.height;
-                    var ctx2 = canvas2.getContext('2d');
-                    var gradient2 = ctx2.createLinearGradient(0, 0, element.width, 0);
-                    gradient2.addColorStop(0, Graphics.pallette.color5);
-                    gradient2.addColorStop(1, Graphics.pallette.color5);
-                    ctx2.fillStyle = gradient2;
-                    ctx2.fillRect(0,0,element.width,element.height);
-                    element.glowSprite2 = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas2));
-                    element.glowSprite2.position.x = element.position.x;
-                    element.glowSprite2.position.y = element.position.y;
-                    element.glowSprite2.anchor.x = element.anchor.x;
-                    element.glowSprite2.anchor.y = element.anchor.y;
+
+        fitText: function(text,width,height){
+            //resize a text object to the given size
+            while(text.width > width){
+                var s = parseInt(text.style.fontSize);
+                text.style.fontSize = (s-1) + 'px';
+            }
+            if (typeof height != 'undefined'){
+                while(text.height > height){
+                    var s = parseInt(text.style.fontSize);
+                    text.style.fontSize = (s-1) + 'px';
                 }
-                element.parent.addChildAt(element.glowSprite1,0);
             }
+            return text;
         },
-        removeGlow: function(element){
-            try{
-                element.style.fill = element.defaultFill;
-            }catch(e){
-                try{
-                    element.parent.removeChild(element.glowSprite1);
-                    element.parent.removeChild(element.glowSprite2);
-                }catch(e){}
-            }
-        },
-        changeGlow: function(element){
-            try{
-                element.style.fill = Graphics.pallette.color5;
-            }catch(e){
-                element.parent.removeChild(element.glowSprite1);
-                element.parent.addChildAt(element.glowSprite2,0);
-            }
-        },
+
         setSlideBar: function(bar,func){
             bar.clicked = false;
             bar.percent = 0;

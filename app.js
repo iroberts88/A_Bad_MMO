@@ -3,6 +3,7 @@ var app = require('http').createServer(webResponse),
     io = require('socket.io').listen(app),
     fs = require('fs'),
     GameEngine = require('./gameengine.js').GameEngine,
+    mongo = require('mongodb'),
     RequireCheck = require('./requirecheck.js').RequireCheck;
 
 
@@ -31,42 +32,68 @@ function init() {
     // ----------------------------------------------------------
 
     rc.ready();
-    rc.require('dbMaps','dbClasses','dbRaces','dbUsers');
+    rc.require('dbMaps','dbClasses','dbRaces','dbUsers','dbEnemies','dbBuffs','dbSpawns','dbItems');
 
-    // ---- Load Maps ----
-    fs.readdir( './mapgen_tool/maps', function( err, files ) {
-        if( err ) {
-            console.error( "Could not list the directory.", err );
-            process.exit( 1 );
-        } 
-        ge.mapCount = files.length;
-        ge.loadMaps(files);
-        rc.ready('dbMaps');
-    });
+    // ---- Load Classes/races/enemies from MONGODB ----
+    var MongoClient = require('mongodb').MongoClient;
+    var url = "mongodb://localhost:27017/";
 
-    // ---- Load Races ----
-    fs.readFile('./db/races.json', "utf8",function read(err, data) {
-        if (err) {
-            throw err;
-        }
-        var obj = JSON.parse(data);
-
-        ge.loadRaces(obj.items);
+    MongoClient.connect(url, { useNewUrlParser:true }, function(err, db) {
+      if (err) throw err;
+      var dbo = db.db("lithiumAve");
+      dbo.collection("abm_races").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadRaces(result);
         rc.ready('dbRaces');
-    });
-    // ---- Load Classes ----
-    fs.readFile('./db/classes.json', "utf8",function read(err, data) {
-        if (err) {
-            throw err;
-        }
-        var obj = JSON.parse(data);
+        db.close();
+      });
 
-        ge.loadClasses(obj.items);
+      dbo.collection("abm_classes").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadRaces(result);
         rc.ready('dbClasses');
+        db.close();
+      });
+      dbo.collection("abm_items").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadItems(result);
+        rc.ready('dbItems');
+        db.close();
+      });
+      dbo.collection("abm_enemies").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadEnemies(result);
+        rc.ready('dbEnemies');
+        db.close();
+      });
+      dbo.collection("abm_spawns").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadSpawns(result);
+        rc.ready('dbSpawns');
+        db.close();
+        
+            // ---- Load Maps Directly from file ----
+            fs.readdir( './mapgen_tool/maps', function( err, files ) {
+                if( err ) {
+                    console.error( "Could not list the directory.", err );
+                    process.exit( 1 );
+                } 
+                ge.mapCount = files.length;
+                ge.loadMaps(files);
+                rc.ready('dbMaps');
+            });
+
+      });
+      dbo.collection("abm_buffs").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadBuffs(result);
+        rc.ready('dbBuffs');
+        db.close();
+      });
     });
 
 
-    // ---- Load Userbase ----
+    // ---- Load Userbase from Dynamodb----
     docClient.scan({TableName: 'users'}, function(err, data) {
         if (err) {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));

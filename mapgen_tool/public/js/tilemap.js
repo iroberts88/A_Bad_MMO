@@ -7,12 +7,13 @@
     };
 
     TileMap.prototype.init = function(data) {
-        if (MapGen.mapName == ''){
+        if (MapGen.mapid == ''){
             this.fullSectorSize = this.TILE_SIZE*this.SECTOR_TILES;
             this.sectors = {};
             var s = this.getSector(0,0);
         }else{
-            this.name = data.name;
+            this.id = data.mapid;
+            this.name = data.mapname;
             this.fullSectorSize = this.TILE_SIZE*this.SECTOR_TILES;
             this.sectors = {};
             console.log(data.mapData);
@@ -207,6 +208,8 @@
 
             this.overlayResource = data.overlayResource;
             this.overlaySprite = null; //2nd layer sprite
+
+            this.spawnID = null;
             if (this.overlayResource){
                 this.overlaySprite = Graphics.getSprite(data.overlayResource); //tile sprite
                 this.overlaySprite.scale.x = 2;
@@ -271,6 +274,9 @@
         }
         if (this.triggers.length > 0){
             data.triggers = this.triggers;
+        }
+        if (this.spawnID){
+            data.spawnID = this.spawnID;
         }
         return data;
     }

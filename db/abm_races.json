@@ -1,0 +1,86 @@
+{ 
+    "_id" : ObjectId("5bd06e55f1c020323031e311"), 
+    "raceid" : "human", 
+    "attributes" : {
+        "dexterity" : NumberInt(100), 
+        "strength" : NumberInt(100), 
+        "wisdom" : NumberInt(100), 
+        "stamina" : NumberInt(100), 
+        "agility" : NumberInt(100), 
+        "charisma" : NumberInt(100), 
+        "intelligence" : NumberInt(100), 
+        "perception" : NumberInt(100)
+    }, 
+    "name" : "Human", 
+    "availableClasses" : {
+        "thief" : true, 
+        "mage" : true, 
+        "fighter" : true, 
+        "priest" : true
+    }, 
+    "description" : "This is a description of the HUMAN race"
+}
+{ 
+    "_id" : ObjectId("5bd06e55f1c020323031e312"), 
+    "raceid" : "elf", 
+    "attributes" : {
+        "dexterity" : NumberInt(120), 
+        "strength" : NumberInt(75), 
+        "wisdom" : NumberInt(130), 
+        "stamina" : NumberInt(65), 
+        "agility" : NumberInt(130), 
+        "charisma" : NumberInt(85), 
+        "intelligence" : NumberInt(95), 
+        "perception" : NumberInt(120)
+    }, 
+    "name" : "Elf", 
+    "availableClasses" : {
+        "thief" : true, 
+        "mage" : true, 
+        "fighter" : true, 
+        "priest" : true
+    }, 
+    "description" : "This is a description of the ELF race"
+}
+{ 
+    "_id" : ObjectId("5bd06e55f1c020323031e313"), 
+    "raceid" : "dwarf", 
+    "attributes" : {
+        "dexterity" : NumberInt(100), 
+        "strength" : NumberInt(135), 
+        "wisdom" : NumberInt(115), 
+        "stamina" : NumberInt(130), 
+        "agility" : NumberInt(75), 
+        "charisma" : NumberInt(55), 
+        "intelligence" : NumberInt(75), 
+        "perception" : NumberInt(115)
+    }, 
+    "name" : "Dwarf", 
+    "availableClasses" : {
+        "thief" : true, 
+        "fighter" : true, 
+        "priest" : true
+    }, 
+    "description" : "This is a description of the DWARF race"
+}
+{ 
+    "_id" : ObjectId("5bd06e55f1c020323031e314"), 
+    "raceid" : "gnome", 
+    "attributes" : {
+        "dexterity" : NumberInt(125), 
+        "strength" : NumberInt(65), 
+        "wisdom" : NumberInt(95), 
+        "stamina" : NumberInt(75), 
+        "agility" : NumberInt(120), 
+        "charisma" : NumberInt(75), 
+        "intelligence" : NumberInt(135), 
+        "perception" : NumberInt(110)
+    }, 
+    "name" : "Gnome", 
+    "availableClasses" : {
+        "thief" : true, 
+        "mage" : true, 
+        "fighter" : true
+    }, 
+    "description" : "This is a description of the GNOME race"
+}

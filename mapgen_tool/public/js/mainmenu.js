@@ -23,11 +23,11 @@
                 interactive: true,buttonMode: true,buttonGlow: true,
                 position: [Graphics.width* 0.75,(Graphics.height * .5)],
                 clickFunc: function onClick(){
-                    var s = "Enter map name: ";
+                    var s = "Enter map id: ";
                     var name = prompt(s, '');
                     if (name && name != ''){
-                        Acorn.Net.socket_.emit('editMap',{name: name});
-                        MapGen.mapName = name;
+                        Acorn.Net.socket_.emit('editMap',{id: name});
+                        MapGen.mapid = id;
                         Graphics.showLoadingMessage(true);
                     }
                 }

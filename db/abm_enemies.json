@@ -1,0 +1,48 @@
+{ 
+    "_id" : ObjectId("5bd32f5ff1c020323031e345"), 
+    "enemyid" : "ghost", 
+    "name" : "A Ghost", 
+    "level" : NumberInt(1), 
+    "statMods" : {
+        "maxHealth" : NumberInt(-5), 
+        "ac" : NumberInt(10)
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : NumberInt(2), 
+    "resource" : "ghost"
+}
+{ 
+    "_id" : ObjectId("5bd32f5ff1c020323031e346"), 
+    "enemyid" : "zombie", 
+    "name" : "A Zombie", 
+    "level" : NumberInt(1), 
+    "statMods" : {
+        "maxHealth" : NumberInt(10), 
+        "speed" : NumberInt(15)
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : NumberInt(2), 
+    "resource" : "zombie"
+}
+{ 
+    "_id" : ObjectId("5bd32f5ff1c020323031e347"), 
+    "enemyid" : "skeleton", 
+    "name" : "A Skeleton", 
+    "level" : NumberInt(1), 
+    "statMods" : {
+        "maxHealth" : NumberInt(5), 
+        "strength" : NumberInt(10)
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : NumberInt(2), 
+    "resource" : "skeleton"
+}

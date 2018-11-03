@@ -4,7 +4,8 @@
 //----------------------------------------------------------------
 
 var AWS = require("aws-sdk"),
-    ng = require('./namegenerator.js').NameGenerator;
+    ng = require('./namegenerator.js').NameGenerator,
+    Character = require('./character.js').Character;
 AWS.config.update({
   region: "us-east-1",
   endpoint: "https://dynamodb.us-east-1.amazonaws.com"
@@ -60,10 +61,11 @@ function User() {
                     owner: this.owner,
                     engine: this.owner.engine
                 };
-                data[this.owner.engine.enums.SLOT] = 1;
-                data[this.owner.engine.enums.NAME] = ng.generateName('male');
-                data[this.owner.engine.enums.RACE] = 'human';
-                data[this.owner.engine.enums.CLASS] = 'warrior';
+                data.slot= 1;
+                data.name = ng.generateName('male');
+                data.race = 'human';
+                data.class = 'fighter';
+                data.classid = 'fighter';
                 newChar.init(data);
                 this.characters[1] = newChar;
                 this.userData = {
@@ -140,7 +142,7 @@ function User() {
             var data = {};
             data[this.owner.engine.enums.CHARACTERS] = {};
             for (var i in this.characters){
-                data[this.owner.engine.enums.CHARACTERS][this.characters[i].slot] = this.characters[i].getClientData();
+                data[this.owner.engine.enums.CHARACTERS][this.characters[i].slot] = this.characters[i].getClientData(false);
             }
             return data;
         },

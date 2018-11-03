@@ -1,0 +1,16 @@
+{ 
+    "_id" : ObjectId("5bd211f4f1c020323031e329"), 
+    "spawnid" : "testspawn", 
+    "t" : 3.0, 
+    "def" : "zombie", 
+    "enemies" : [
+        "zombie", 
+        "ghost", 
+        "skeleton"
+    ], 
+    "chances" : [
+        30.0, 
+        30.0, 
+        30.0
+    ]
+}

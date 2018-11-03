@@ -36,7 +36,12 @@
         this.maxLength = typeof data.max == 'undefined' ? 280 : data.max;
         this.letterOnly = typeof data.letterOnly == 'undefined' ? false : data.letterOnly;
         this.onChange = typeof data.onChange == 'undefined' ? function(){} : data.onChange;
+        this.onConfirm = typeof data.onConfirm == 'undefined' ? function(){} : data.onConfirm;
+
+        this.bgColor = typeof data.bgColor == 'undefined' ? 0xFFFFFF : data.onbgColor;
+        this.fontColor = typeof data.fontColor == 'undefined' ? 0x000000 : data.fontColor;
         this.font = data.font;
+
     	this.container = data.container;
     	this.name = data.name;
     	this.c = new PIXI.Container();
@@ -58,7 +63,7 @@
         })
         this.gfx = new PIXI.Graphics();
     	this.gfx2 = new PIXI.Graphics();
-    	this.textSprite = new PIXI.Text('',{font:this.font,fill: 'black'});
+    	this.textSprite = new PIXI.Text('',{font:this.font,fill: this.fontColor});
     	this.textSprite.anchor.x = 0;
     	this.textSprite.anchor.y = 0.5;
     	this.textSprite.position.x = 5;
@@ -67,7 +72,7 @@
     	this.c.addChild(this.gfx2);
     	this.c.addChild(this.textSprite);
         this.gfx.lineStyle(2,0x000000,1);
-        this.gfx.beginFill(0xFFFFFF,1)
+        this.gfx.beginFill(this.bgColor,1)
        	this.gfx.drawRect(0,0,this.width,this.height);
         this.gfx.endFill();
 
@@ -96,7 +101,6 @@
     },
 
     TextBox.prototype.keyDown = function(key){
-        console.log(key);
         if (this.active){
             switch(key){
                 case 8: //backspace
@@ -106,23 +110,31 @@
                     this.addToText('undo');
                     break;
                 case 27: //escape
-                    this.text = '';
-                    this.addToText('');
+                    this.clear();
                     break;
                 case 32: //space
                     this.addToText(' ');
                     break;
+                case 13: //Confirm!
+                    this.onConfirm(this);
+                    break;
             }
-            this.onChange();
+            this.onChange(this);
         }
     },
     TextBox.prototype.keyPress = function(key){
+        console.log(key);
         if(this.active) {
             if(key !== 13) {
                 this.addToText(String.fromCharCode(key));
             }
-            this.onChange();
+            this.onChange(this);
         }
+    }
+
+    TextBox.prototype.clear = function(){
+        this.text = '';
+        this.addToText('');
     }
 
     TextBox.prototype.addToText = function(char){
@@ -153,13 +165,12 @@
         if (this.text == ''){
             x = this.textSprite.position.x+2;
         }
-        this.gfx2.lineStyle(1,0x000000,1);
+        this.gfx2.lineStyle(1,this.fontColor,1);
         this.gfx2.moveTo(x,this.textSprite.position.y-this.textSprite.height/2);
         this.gfx2.lineTo(x,this.textSprite.position.y+this.textSprite.height/2);
     }
 
     TextBox.prototype.activate = function(){
-        console.log("activate!!")
         if (this.active){
             return;
         }
@@ -171,7 +182,6 @@
     }
 
     TextBox.prototype.deactivate = function(){
-        console.log('deactivate')
     	this.active = false;
         //this.textSprite.text = '';
         this.gfx2.clear();

@@ -27,8 +27,8 @@ Character = function(){
 
     }
 
-    character.getClientData = function(){
-    	var data = this._getClientData();
+    character.getClientData = function(less){
+    	var data = this._getClientData(less);
         data[this.engine.enums.SLOT] = this.slot;
         data[this.engine.enums.CLASS] = this.class;
         data[this.engine.enums.RACE] = this.race;

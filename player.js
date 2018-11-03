@@ -3,6 +3,7 @@
 //----------------------------------------------------------------
 var User = require('./user.js').User,
     Character = require('./character.js').Character,
+    PlayerItem = require('./inventory.js').PlayerItem,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     Zone = require('./zone.js').Zone;
@@ -25,6 +26,8 @@ var Player = function(){
     this.checkName = false;
     this.checkNameTicker = 0;
     this.checkNameText = ''
+
+    this.currentChatType = 'say';
 };
 
 Player.prototype.init = function (data) {
@@ -229,89 +232,49 @@ Player.prototype.setupSocket = function() {
 
 
     this.socket.on(this.engine.enums.CLIENTCOMMAND, function(data) {
-        // this needs to be parsed: data.cString
-        // format: >COMMAND ID AMOUNT
-        //commands:
-        /*if (data.cString.length > 128){
+        if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
+        var cmd = data[that.engine.enums.COMMAND];
+        //MAX LENGTH?
+        if (cmd.length > 200 || cmd == ''){
             return;
         }
         try{
-            if (data.cString.charAt(0) != '/'){
-                //its a SAY command
-                if (data.cString == ''){
-                    return;
-                }
-                if (that.battle){
-                    var u = that.user.userData.username
-                    that.battle.sendChat(u.toUpperCase() + ': ' + data.cString);
-                    return
-                }
-                console.log('Say: ' + data.cString);
-                var players = [];
-                //send a move command to all players in adjacent sectors
-                var zone = that.engine.zones[that.character.currentMap];
-                var coords = zone.getSectorXY(that.character.currentSector);
-                for (var i = -1;i < 2;i++){
-                    for (var j = -1;j < 2;j++){
-                        try{
-                            for (var pl in zone.map[(coords.x+i) + 'x' + (coords.y+j)].players){
-                                var player = zone.map[(coords.x+i) + 'x' + (coords.y+j)].players[pl];
-                                that.engine.queuePlayer(player,"say", {id: that.id,text: data.cString});
-                            }
-                        }catch(e){
-                            that.engine.debug(that,{id: 'chatAttempt', error: e.stack});
-                        }
+            if (cmd.charAt(0) == ':'){ //TODO && user.admin == true
+                //parse dev command
+                cmd = cmd.substring(0,cmd.length);
+                var command = '';
+                var string = '';
+                for (var i = 1; i < cmd.length;i++){
+                    if (cmd.charAt(i) == ' '){
+                        string = cmd.substring(i+1,cmd.length);
+                        break;
                     }
+                    command += cmd.charAt(i);
                 }
-                return;
+                that.parseCommand(command,string,true);
             }
-            var commandBool = false;
-            var c = data.cString.substring(1,data.cString.length);
-            var commands = [];
-            var from = 0;
-            for (var i = 0; i < c.length; i++){
-                if (c.charAt(i) === ' '){
-                    commands.push(c.substring(from,i))
-                    from = i+1;
-                }
-            }
-            commands.push(c.substring(from,c.length));
-            console.log(commands);
-            switch (commands[0]){
-                case 'battle':
-                    if (that.battle != null){console.log("Battle exists");return;}
-                    console.log("Start Battle");
-                    var pokemon = [Math.ceil(Math.random()*15)];
-                    var levels = [5];//[Math.ceil(Math.random()*20)];
-
-                    var battle = new Battle(that.engine);
-                    var pkmn = new Trainer(that.engine);
-                    pkmn.init({wild: true,pokemon:pokemon,levels:levels});
-                    if (battle.init({team1: [that.character],team2: [pkmn],type: '1v1'})){
-                        console.log("Battle successfully initialized!!");
-                        that.battle = battle;
-                        that.engine.activeBattles[battle.id] = battle;
+            if (cmd.charAt(0) != '/'){
+                //use default chat type to send message
+                that.parseCommand(that.currentChatType,cmd);
+            }else{
+                //parse normal command
+                cmd = cmd.substring(0,cmd.length);
+                var command = '';
+                var string = '';
+                for (var i = 1; i < cmd.length;i++){
+                    if (cmd.charAt(i) == ' '){
+                        string = cmd.substring(i+1,cmd.length);
+                        break;
                     }
-                    break;
-                case 'arp':
-                    console.log("Adding Random Pokemon!");
-                    var pokemon = Math.ceil(Math.random()*15);
-                    var level = Math.ceil(Math.random()*100);
-
-                    var newPoke = new Pokemon();
-                    newPoke.init(that.engine.pokemon[pokemon],{
-                        character: that.character,
-                        nickname: '',
-                        level: level,
-                        id: that.engine.getId()
-                    })
-                    that.character.addPokemon(newPoke);
-                    break;
+                    command += cmd.charAt(i);
+                }
+                that.parseCommand(command,string,false);
             }
+
         }catch(e){
-            console.log(e);
+            that.engine.debug('clientCommandError',e,data);
         }
-        */
+        
     });
 
     this.socket.on(this.engine.enums.DISCONNECT, function () {
@@ -329,6 +292,7 @@ Player.prototype.setupSocket = function() {
         }
     });
 
+    //TODO CONVERT LOGIN COMMANDS TO ENUMS
     
     this.socket.on(this.engine.enums.LOGINATTEMPT, function (d) {
         if (that.user){return;}
@@ -498,6 +462,86 @@ Player.prototype.setupSocket = function() {
             console.log(e.stack);
         }
     });
+};
+
+Player.prototype.parseCommand = function(cmd,string,dev) {
+    cmd = cmd.toLowerCase();
+    if (dev){
+        console.log("Parsing DEV Command: " + cmd);
+        console.log('args-' + string);
+        switch(cmd){
+            case 'addAll':
+                for (var i in this.engine.items){
+                    this.activeChar.inventory.addItemById(i);
+                }
+                break
+        }
+        return;
+    }
+    console.log("Parsing Command: " + cmd);
+    console.log('args-' + string);
+    switch(cmd){
+        case 'say':
+            this.currentChatType = 's';
+            this.activeChar.currentZone.say(this.activeChar,string);
+            break;
+        case 's':
+            this.currentChatType = 's';
+            this.activeChar.currentZone.say(this.activeChar,string);
+            break;
+        case 'party':
+            break;
+        case 'p':
+            break;
+        case 'guild':
+            break;
+        case 'g':
+            break;
+        case 'zone':
+            this.currentChatType = 'z';
+            this.activeChar.currentZone.msg(this.activeChar,string);
+            break;
+        case 'z':
+            this.currentChatType = 'z';
+            this.activeChar.currentZone.msg(this.activeChar,string);
+            break;
+        case 'shout':
+            this.currentChatType = 'sh';
+            this.activeChar.currentZone.shout(this.activeChar,string);
+            break;
+        case 'sh':
+            this.currentChatType = 'sh';
+            this.activeChar.currentZone.shout(this.activeChar,string);
+            break;
+        case 'tell':
+            break;
+        case 't':
+            break;
+        case 'whisper':
+            this.currentChatType = 'w';
+            this.activeChar.currentZone.whisper(this.activeChar,string);
+            break;
+        case 'w':
+            this.currentChatType = 'w';
+            this.activeChar.currentZone.whisper(this.activeChar,string);
+            break;
+        case 'raid':
+            break;
+        case 'r':
+            break;
+        case 'auction':
+            break;
+        case 'a':
+            break;
+        case 'yell':
+            this.currentChatType = 'y';
+            this.activeChar.currentZone.shout(this.activeChar,string);
+            break;
+        case 'y':
+            this.currentChatType = 'y';
+            this.activeChar.currentZone.shout(this.activeChar,string);
+            break;
+    }
 };
 
 exports.Player = Player;

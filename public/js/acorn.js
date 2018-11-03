@@ -49,12 +49,19 @@
             DOWN: 1,
             LEFT: 2,
             RIGHT: 3,
-            //MOD_CTRL: 4,
-            //MOD_ALT: 5,
-            //MOD_SHIFT: 6
+            ENTER: 4,
+            COMMAND: 5,
+            DEVCOMMAND: 6,
+            MOD_SHIFT: 7,
+            MOD_CTRL: 8,
+            MOD_ALT: 9
         },
         keysPressed: [],
         keyBindings: [],
+
+        requiresShiftMod: [],
+        requiresCtrlMod: [],
+        requiresAltMod: [],
 
         // Mouse inputs
         mouse: {
@@ -81,16 +88,23 @@
             window.onwheel = Acorn.Input.handleScroll;
         },
         bind: function() {
-            this.keyBindings[87] = Acorn.Input.Key.UP; //W
-            this.keyBindings[83] = Acorn.Input.Key.DOWN; //S
-            this.keyBindings[65] = Acorn.Input.Key.LEFT; //A
-            this.keyBindings[68] = Acorn.Input.Key.RIGHT; //D
+            this.keyBindings[87] = Acorn.Input.Key.UP; // default W
+            this.keyBindings[83] = Acorn.Input.Key.DOWN; //default S
+            this.keyBindings[65] = Acorn.Input.Key.LEFT; //default A
+            this.keyBindings[68] = Acorn.Input.Key.RIGHT; //default D
+            this.keyBindings[13] = Acorn.Input.Key.ENTER; //default Enter
+            this.keyBindings[191] = Acorn.Input.Key.COMMAND; //default /
+            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
+            this.keyBindings[16] = Acorn.Input.Key.MOD_SHIFT; //default /
+            this.keyBindings[17] = Acorn.Input.Key.MOD_CTRL; //default /
+            this.keyBindings[18] = Acorn.Input.Key.MOD_ALT; //default /
+
+            this.requiresShiftMod[Acorn.Input.DEVCOMMAND] = true;
         },
         getBinding: function(keyCode) {
             return this.keyBindings[keyCode];
         },
         keyDown: function(keyCode) {
-            console.log(keyCode);
             this.keysPressed[this.getBinding(keyCode)] = true;
         },
         keyUp: function(keyCode) {
@@ -100,6 +114,24 @@
             this.keysPressed[binding] = value;
         },
         isPressed: function(binding) {
+            if (this.requiresShiftMod[binding]){
+                if (this.keysPressed[Acorn.Input.Key.MOD_SHIFT]){
+                    return this.keysPressed[binding];
+                }
+                return false;
+            }
+            if (this.requiresCtrlMod[binding]){
+                if (this.keysPressed[Acorn.Input.Key.MOD_CTRL]){
+                    return this.keysPressed[binding];
+                }
+                return false;
+            }
+            if (this.requiresAltMod[binding]){
+                if (this.keysPressed[Acorn.Input.Key.MOD_ALT]){
+                    return this.keysPressed[binding];
+                }
+                return false;
+            }
             return this.keysPressed[binding];
         },
 

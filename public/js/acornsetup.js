@@ -42,7 +42,7 @@
             });
 
             Acorn.Net.on(Enums.CREATECHARERROR, function (data) {
-                alert(data[Enums.CREATECHARERROR])
+                alert(data[Enums.CREATECHARERROR]);
             });
 
             Acorn.Net.on(Enums.ADDCHARACTER, function (data) {
@@ -55,16 +55,23 @@
                 console.log(data);
                 Game.map = new GameMap();
                 Game.map.init(data[Enums.MAPDATA]);
+                PCS.init(data);
+                NPCS.init(data);
+
                 for (var i = 0; i < data[Enums.PLAYERS].length;i++){
                     if (data[Enums.PLAYERS][i][Enums.ID] == Player.currentCharacter.id){
                         continue;
                     }
                     PCS.addPC(data[Enums.PLAYERS][i]);
                 }
+                for (var i = 0; i < data[Enums.NPCS].length;i++){
+                    NPCS.addNPC(data[Enums.NPCS][i]);
+                }
                 Game.ready = true;
                 Graphics.unitContainer.addChild(Player.currentCharacter.sprite);
                 Graphics.unitContainer2.addChild(Player.currentCharacter.sprite2);
                 Graphics.unitContainer2.addChild(Player.currentCharacter.spriteMask);
+                Graphics.unitContainer2.addChild(Player.currentCharacter.nameTag);
             });
 
             Acorn.Net.on(Enums.ADDPC, function (data) {
@@ -80,11 +87,22 @@
                     PCS.removePC(data);
                 }
             });
+            Acorn.Net.on(Enums.ADDNPC, function (data) {
+                console.log(data);
+            });
+
+            Acorn.Net.on(Enums.REMOVENPC, function (data) {
+                console.log(data);
+            });
 
             Acorn.Net.on(Enums.POSUPDATE, function (data) {
                 if (data[Enums.ID] != Player.currentCharacter.id){
                     PCS.updatePCPos(data);
                 }
+            });
+
+            Acorn.Net.on(Enums.MESSAGE, function (data) {
+                Game.addMessage(data);
             });
 
             Acorn.Net.on('changeMap', function (data) {
@@ -132,7 +150,6 @@
             Acorn.Net.on(Enums.LOGGEDIN, function (data) {
                 console.log(data);
                 Player.init(data);
-                PCS.init(data);
                 document.body.removeChild(MainMenu.mainPanel);
                 MainMenu.showCharacterSelection();
             });
@@ -200,7 +217,6 @@
 
         input: function(){
             Acorn.Input.onMouseClick(function(e) {
-                console.log(e);
                 Acorn.Input.mouseDown = true;
                 if (Graphics.currentTextBox){
                     if (!Graphics.textBoxes[Graphics.currentTextBox].pointerOver){

@@ -16,7 +16,14 @@
         };
         unit.updateStats = function(data){
             for (var i in data){
-                this[i] = data[i];
+                switch(i){
+                    case Enums.CURRENTENERGY:
+                        this.currentEnergy = data[i];
+                        break;
+                    case Enums.MAXENERGY:
+                        this.maxEnergy = data[i];
+                        break;
+                }
             }
         };
         return unit;

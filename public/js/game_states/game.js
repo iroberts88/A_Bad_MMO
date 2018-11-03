@@ -15,8 +15,45 @@
         screenChange: false,
         screenTicker: 0,
 
+        mainChat: null,
+
+        uiUpdateList: null,
+
         init: function() {
             Graphics.app.renderer.backgroundColor = 0x000000;
+            this.uiUpdateList = [];
+            this.mainChat = ChatWindow();
+            this.mainChat.init({
+                id: 'mainChat',
+                name: 'Main Chat',
+                width: Graphics.width/4.5,
+                height: Graphics.height/5,
+                main: true,
+                maxWidth: 900,
+                maxHeight: 500,
+                minHeight: 100,
+                minWidth: 180
+            });
+            this.mainChat.activate();
+
+
+            this.playerStatus = UnitStatusBar();
+            this.playerStatus.init({
+                id: 'playerStatus',
+                unit: Player.currentCharacter,
+                width: 160,
+                height: 80,
+                x: 10,
+                y: 10,
+                maxWidth: 400,
+                maxHeight: 200,
+                minHeight: 80,
+                minWidth: 100
+            });
+            this.playerStatus.activate();
+
+            this.uiUpdateList.push(this.playerStatus);
+            this.setUILock(true);
         },
 
         update: function(deltaTime){
@@ -32,11 +69,33 @@
             if (cmX != Player.currentCharacter.moveVector.x || cmY != Player.currentCharacter.moveVector.y){
                 Player.sendMove();
             }
+            //update the player and move the world viewport
             Player.update(deltaTime);
-
             Graphics.world.position.x = Math.round((Graphics.width/2) - Player.currentCharacter.sprite.position.x*Graphics.world.scale.x);
             Graphics.world.position.y = Math.round((Graphics.height/2) - Player.currentCharacter.sprite.position.y*Graphics.world.scale.y);
+            //update all player characters
             PCS.update(deltaTime);
+            //update ui list
+            for (var i = 0; i < this.uiUpdateList.length;i++){
+                this.uiUpdateList[i].update(deltaTime);
+            }
+            //check Keys
+            if (Acorn.Input.isPressed(Acorn.Input.Key.COMMAND)){
+                this.mainChat.textBox.text = '';
+                this.mainChat.textBox.activate();
+                this.mainChat.textBox.addToText('/');
+                Acorn.Input.setValue(Acorn.Input.Key.COMMAND,false)
+            }
+            if (Acorn.Input.isPressed(Acorn.Input.Key.DEVCOMMAND)){
+                this.mainChat.textBox.text = '';
+                this.mainChat.textBox.activate();
+                this.mainChat.textBox.addToText(':');
+                Acorn.Input.setValue(Acorn.Input.Key.DEVCOMMAND,false)
+            }
+            if (Acorn.Input.isPressed(Acorn.Input.Key.ENTER)){
+                this.mainChat.textBox.activate();
+                Acorn.Input.setValue(Acorn.Input.Key.ENTER,false)
+            }
         },
 
         updateScreenChange: function(deltaTime){
@@ -50,6 +109,11 @@
                 Graphics.uiPrimitives2.drawRect(0,0,Graphics.width,Graphics.height);
                 Graphics.uiPrimitives2.endFill();
             }
+        },
+
+        setUILock: function(b){
+            this.mainChat.setLock(b);
+            this.playerStatus.setLock(b);
         },
 
         setNewMap: function(name){
@@ -89,7 +153,59 @@
             Player.currentCharacter.moveVector.x = x - Player.currentCharacter.sprite.position.x;
             Player.currentCharacter.moveVector.y = y - Player.currentCharacter.sprite.position.y;
             Player.currentCharacter.moveVector.normalize();
-        }
+        },
+
+        addMessage: function(data){
+            switch(data[Enums.MESSAGETYPE]){
+                case Enums.SAY:
+                    if (data[Enums.ID] == Player.currentCharacter.id){
+                        this.mainChat.addMessage('You say: ' + data[Enums.TEXT], 0xFFFFFF);
+                    }else{
+                        this.mainChat.addMessage(data[Enums.NAME] + ' says: ' + data[Enums.TEXT], 0xFFFFFF);
+                    }
+                    break;
+                case Enums.SHOUT:
+                    if (data[Enums.ID] == Player.currentCharacter.id){
+                        this.mainChat.addMessage('You shout: ' + data[Enums.TEXT] + '!', 0xFF0000);
+                    }else{
+                        this.mainChat.addMessage(data[Enums.NAME] + ' shouts: ' + data[Enums.TEXT] + '!', 0xFF0000);
+                    }
+                    break;
+                case Enums.WHISPER:
+                    if (data[Enums.ID] == Player.currentCharacter.id){
+                        this.mainChat.addMessage('You whisper: ' + data[Enums.TEXT], 0xff99f8);
+                    }else{
+                        this.mainChat.addMessage(data[Enums.NAME] + ' whispers: ' + data[Enums.TEXT], 0xff99f8);
+                    }
+                    break;
+                case Enums.ZONE:
+                    if (data[Enums.ID] == Player.currentCharacter.id){
+                        this.mainChat.addMessage('You say to the zone: ' + data[Enums.TEXT], 0x81ff7f);
+                    }else{
+                        this.mainChat.addMessage(data[Enums.NAME] + ' says to the zone: ' + data[Enums.TEXT], 0x81ff7f);
+                    }
+                    break;
+
+            }
+        },
+
+        checkClientCommand: function(txt){
+            switch(txt){
+                case '/uilock':
+                    Settings.toggleUILock();
+                    if (Settings.uilocked){
+                        this.mainChat.addMessage('*UI LOCKED*', 0xFFFF00);
+                        document.body.style.cursor = "default";
+                    }else{
+                        this.mainChat.addMessage('*UI UNLOCKED*', 0xFFFF00);
+                    }
+                    return true;
+                case '/help':
+                    this.mainChat.addMessage('TODO: ADD HELP MSG!', 0xFFFF00);
+                    return true;
+            }
+            return false;
+        }   
 
     }
     window.Game = Game;

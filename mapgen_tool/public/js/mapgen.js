@@ -12,13 +12,15 @@
         currentDoTrigger: 'changeMap',
         triggerDoInfo: {},
 
+        spawnID: '',
+
         changesMade: false,
 
-        mapName: '',
+        mapid: '',
+        mapname: '',
         data: {},
         //Modes:
             //place - change tile textures and place new sectors
-            //overlay - add/change overlay textures
             //blocked - apply blocked status to tiles
             //settrigger - choose the current trigger
             //applytrigger - apply the current trigger to tiles
@@ -27,12 +29,7 @@
             //deletetriggers - remove all triggers from tiles
             //deletesectors - delete sectors
 
-            //addNPC - add an NPC to the map
-            //editNPC - edit an NPC's properties
-            //deleteNPC - remove the NPC
-
-            //setPKMN - set wild pokemon chances on a tile
-            //deletePKMN - delete wild pokemon chances on a tile
+            //
 
         //TODO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         //NPCS
@@ -126,22 +123,10 @@
             });
             Graphics.uiContainer.addChild(this.placeButton);
 
-            this.overlayButton = Graphics.makeUiElement({
-                text: 'overlay',
-                style: style,
-                position: [5, this.placeButton.position.y + 5 + this.placeButton.height],
-                anchor: [0,0],
-                interactive: true,buttonMode: true,buttonGlow: true,
-                clickFunc: function onClick(){
-                    MapGen.changeMode('overlay');
-                }
-            });
-            Graphics.uiContainer.addChild(this.overlayButton);
-
             this.blockedButton = Graphics.makeUiElement({
                 text: 'blocked',
                 style: style,
-                position: [5, this.overlayButton.position.y + 5 + this.overlayButton.height],
+                position: [5, this.placeButton.position.y + 5 + this.placeButton.height],
                 anchor: [0,0],
                 interactive: true,buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
@@ -163,10 +148,24 @@
             });
             Graphics.uiContainer.addChild(this.triggersButton);
 
+
+            this.spawnButton = Graphics.makeUiElement({
+                text: 'apply spawnpoint',
+                style: style,
+                position: [5, this.triggersButton.position.y + 5 + this.triggersButton.height],
+                anchor: [0,0],
+                interactive: true,buttonMode: true,buttonGlow: true,
+                clickFunc: function onClick(){
+                    MapGen.changeMode('setspawn');
+                    MapGen.spawnID = prompt('enter spawnID',this.spawnID);
+                }
+            });
+            Graphics.uiContainer.addChild(this.spawnButton);
+
             this.triggers2Button = Graphics.makeUiElement({
                 text: 'apply trigger',
                 style: style,
-                position: [5, this.triggersButton.position.y + 5 + this.triggersButton.height],
+                position: [5, this.spawnButton.position.y + 5 + this.spawnButton.height],
                 anchor: [0,0],
                 interactive: true,buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
@@ -223,6 +222,18 @@
             });
             Graphics.uiContainer.addChild(this.deleteTriggersButton);
 
+            this.deleteSpawnButton = Graphics.makeUiElement({
+                text: 'remove spawn',
+                style: style,
+                position: [5, this.deleteTriggersButton.position.y + 5 + this.deleteTriggersButton.height],
+                anchor: [0,0],
+                interactive: true,buttonMode: true,buttonGlow: true,
+                clickFunc: function onClick(){
+                    MapGen.changeMode('deletespawn');
+                }
+            });
+            Graphics.uiContainer.addChild(this.deleteSpawnButton);
+
             //back button
             this.exitButton = Graphics.makeUiElement({
                 text: 'Exit',
@@ -232,12 +243,12 @@
                     if (MapGen.changesMade){
                         if (confirm('Exit and lose unsaved data?') == true) {
                             MapGen.data = null;
-                            MapGen.mapName = '';
+                            MapGen.mapid = '';
                             Acorn.changeState('mainmenu');
                         }
                     }else{
                         MapGen.data = null;
-                        MapGen.mapName = '';
+                        MapGen.mapid = '';
                         Acorn.changeState('mainmenu');
                     }
                 }
@@ -307,8 +318,9 @@
                 interactive: true,
                 buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
-                    var name = prompt("Please enter a name for the map", MapGen.mapName);
-                    if (!name || name == ''){
+                    var id = prompt("Please enter the ID of this map", MapGen.mapid);
+                    var name = prompt("Please enter a name for the map", MapGen.mapname);
+                    if (!id || id == ''){
                         alert('Map not saved.');
                     }else{
                         var mapData = {};
@@ -324,8 +336,9 @@
                             }
                         }
                         MapGen.changesMade = false;
-                        MapGen.mapName = name;
-                        Acorn.Net.socket_.emit('createMap',{name:name,mapData: mapData});
+                        MapGen.mapid = id;
+                        MapGen.mapname = name;
+                        Acorn.Net.socket_.emit('createMap',{id:id,name:name,mapData: mapData});
                     }
                 }
             });
@@ -339,8 +352,8 @@
                 interactive: true,
                 buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
-                    if (confirm('Delete map "' + MapGen.mapName + '"?') == true) {
-                        Acorn.Net.socket_.emit('deleteMap',{name:MapGen.mapName});
+                    if (confirm('Delete map "' + MapGen.mapid + '"?') == true) {
+                        Acorn.Net.socket_.emit('deleteMap',{id:MapGen.mapid});
                         Acorn.changeState('mainmenu');
                     }
                 }
@@ -411,6 +424,25 @@
                                 tile.sprite.tint =  0xc0d5f7;
                                 if (tile.overlaySprite){
                                     tile.overlaySprite.tint = 0xc0d5f7;
+                                }
+                            }else{
+                                tile.sprite.tint =  0xFFFFFF;
+                                if (tile.overlaySprite){
+                                    tile.overlaySprite.tint = 0xFFFFFF;
+                                }
+                            }
+                        }
+                    }
+                }
+            }else if (mode == 'setspawn' || mode == 'deletespawn'){
+                for (var k in this.map.sectors){
+                    for (var i = 0; i < this.map.sectors[k].tiles.length;i++){
+                        for (var j = 0; j < this.map.sectors[k].tiles[i].length;j++){
+                            var tile = this.map.sectors[k].tiles[i][j];
+                            if (tile.spawnID){
+                                tile.sprite.tint =  0x9dff9b;
+                                if (tile.overlaySprite){
+                                    tile.overlaySprite.tint = 0x9dff9b;
                                 }
                             }else{
                                 tile.sprite.tint =  0xFFFFFF;
@@ -517,7 +549,7 @@
                     clickFunc: function onClick(e){
                         MapGen.triggerDoInfo = {};
                         if (e.currentTarget.doCommand == 'changeMap'){
-                            MapGen.triggerDoInfo.map = prompt('enter map name','');
+                            MapGen.triggerDoInfo.map = prompt('enter map id','');
                             MapGen.triggerDoInfo.sector = prompt('enter sector','');
                             MapGen.triggerDoInfo.tile = prompt('enter tile','');
                         }
@@ -642,7 +674,7 @@
                 this.currentTriggerText.text = str;
             }
 
-            if (this.mapName != ''){this.deleteButton.visible = true}
+            if (this.id != ''){this.deleteButton.visible = true}
             var zoom = this.ZOOM_SETTINGS[this.currentZoomSetting];
             if (Acorn.Input.isPressed(Acorn.Input.Key.UP)){
                 Graphics.worldContainer.position.y += this.map.fullSectorSize;
@@ -739,23 +771,6 @@
                         this.map.reDraw();
                         Acorn.Input.buttons = {}
                         break;
-                    case 'overlay':
-                        //set overlay sprite
-                        var tile = this.map.getTile();
-                        var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
-                        var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
-                        //clicked on a sector?
-                        if (typeof this.map.sectors[sectorX + 'x' + sectorY] == 'undefined'){
-                            break;
-                        }else{
-                            Acorn.Input.buttons = {2:true}
-                            Acorn.Input.mouseDown = true;
-                            if (tile.resource != this.currentPlaceTile){
-                                tile.setOverlaySprite(this.currentPlaceTile);
-                                this.changesMade = true;
-                            }
-                        }
-                        break;
                     case 'deleteoverlay':
                         //set overlay sprite
                         var tile = this.map.getTile();
@@ -817,6 +832,26 @@
                             }
                         }
                         break;
+                    case 'setspawn':
+                        //set spawn
+                        var tile = this.map.getTile();
+                        var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        //clicked on a sector?
+                        if (typeof this.map.sectors[sectorX + 'x' + sectorY] == 'undefined'){
+                            break;
+                        }else{
+                            Acorn.Input.buttons = {2:true}
+                            Acorn.Input.mouseDown = true;
+
+                            tile.spawnID = this.spawnID;
+                            this.changesMade = true;
+                            tile.sprite.tint = 0x9dff9b;
+                            if (tile.overlaySprite){
+                                tile.overlaySprite.tint = 0x9dff9b;
+                            }
+                        }
+                        break;
                     case 'applytrigger':
                         //set trigger
                         var tile = this.map.getTile();
@@ -868,6 +903,25 @@
                                 if (tile.overlaySprite){
                                     tile.overlaySprite.tint = 0xffffff;
                                 }
+                            }
+                        }
+                        break;
+                    case 'deletespawn':
+                        //toggle blocked on a node
+                        var tile = this.map.getTile();
+                        var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        //clicked on a sector?
+                        if (typeof this.map.sectors[sectorX + 'x' + sectorY] == 'undefined'){
+                            break;
+                        }else{
+                            Acorn.Input.buttons = {2:true}
+                            Acorn.Input.mouseDown = true;
+                            tile.spawnID = null;
+                            this.changesMade = true;
+                            tile.sprite.tint = 0xffffff;
+                            if (tile.overlaySprite){
+                                tile.overlaySprite.tint = 0xffffff;
                             }
                         }
                         break;

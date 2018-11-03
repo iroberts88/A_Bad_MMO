@@ -5,7 +5,10 @@
 var Player = require('./player.js').Player,
     Zone = require('./zone.js').Zone,
     Race = require('./race.js').Race,
-    CharClass = require('./charclass.js').CharClass, 
+    CharClass = require('./charclass.js').CharClass,
+    Inventory = require('./inventory.js').Inventory,
+    PlayerItem = require('./inventory.js').PlayerItem,
+    Item = require('./inventory.js').Item,
     fs = require('fs'),
     utils = require('./utils.js').Utils,
     Utils = new utils(),
@@ -24,6 +27,9 @@ var GameEngine = function() {
 
     this.classes = {};
     this.races = {};
+    this.enemies = {};
+    this.buffs = {};
+    this.spawns = {};
     this.items = {};
 
     //database objects
@@ -48,33 +54,95 @@ var GameEngine = function() {
     this.filter = new Filter();
     
     this.enums = {
-        //DB
-        //need to match the DB values
-        MAPDATA: 'mapData',
-        CLASSID: 'classid',
-        DESCRIPTION: 'description',
-        DISCONNECT: 'disconnect',
-        NAME: 'name',
-        ATTRIBUTES: 'attributes',
-        AVAILABLECLASSES: 'availableClasses',
-        RACEID: 'raceid',
-        RESOURCE: 'resource',
-        SECTORARRAY: 'sectorArray',
-        TILES: 'tiles',
-        TRIGGERS: 'triggers',
-        MAPID: 'mapid',
-        OPEN: 'open',
-        OVERLAYRESOURCE: 'overlayResource',
+        //TODO change to just numbers...
+        MAPDATA: 'mapDat',
+        CLASSID: 'classi',
+        DESCRIPTION: 'descriptio',
+        DISCONNECT: 'disconnec',
+        NAME: 'nam',
+        ATTRIBUTES: 'attribute',
+        AVAILABLECLASSES: 'availableClasse',
+        RACEID: 'racei',
+        RESOURCE: 'resourc',
+        SECTORARRAY: 'sectorArr',
+        TILES: 'tifdsafd',
+        TRIGGERS: 'triggerfdsaf',
+        MAPNAME: 'mapidfdsaf',
 
-        //client
-        //TODO these can get changed to just numbers
+        OPEN: 'openfds',
+        OVERLAYRESOURCE: 'overlayResourcefds',
+        IDLEBEHAVIOUR: 'idleBehaviourfdsa',
+        COMBATBEHAVIOUR: 'combatBehaviourfdsa',
+        ACQUIRETARGET: 'acquireTargetasdf',
+
+
+        EAR: 'ear',
+        EAR2: 'ear2',
+        HEAD: 'head',
+        FACE: 'face',
+        NECK: 'neck',
+        ARMS: 'arms',
+        BACK: 'back',
+        CHEST: 'chest',
+        WRIST: 'wrist',
+        WRIST2: 'wrist2',
+        HANDS: 'hands',
+        FINGER: 'finger',
+        FINGER2: 'finger2',
+        WAIST: 'waist',
+        LEGS: 'legs',
+        FEET: 'feet',
+        TRINKET: 'trinket',
+        TRINKET2: 'trinket2',
+        MAIN: 'main',
+        MAIN2H: 'main2h',
+        RANGED: 'ranged',
+        AMMO: 'ammo',
+        SECONDARY: 'secondary',
+        AMMO: 'ammo',
+        BAG1: 'bag1',
+        BAG2: 'bag2',
+        BAG3: 'bag3',
+        BAG4: 'bag4',
+
         AC: 'ac',
-        ADDCHARACTER: 'addcharacter',
-        ADDPC: 'addPC',
         AGILITY: 'agility',
-        BOOL: 'bool',
-        CHARACTERS: 'characters',
+        ARCANERES: 'arcaneRes',
         CHARISMA: 'charisma',
+        ADDCHARACTER: 'addcharacter',
+        CURRENTHEALTH: 'currentHealth',
+        DEXTERITY: 'dexterity',
+        DISEASERES: 'diseaseRes',
+        EARTHRES: 'earthRes',
+        FIRERES: 'fireRes',
+        FROSTRES: 'frostRes',
+        HOLYRES: 'holyres',
+        LUCK: 'luck',
+        MAXENERGY: 'maxEnergy',
+        MAXHEALTH: 'maxHealth',
+        MAXMANA: 'maxMana',
+        CURRENTENERGY: 'currentEnergy',
+        CURRENTEXP: 'currentExp',
+        CURRENTMANA: 'currentMana',
+        POISONRES: 'poisonRes',
+        PERCEPTION: 'perception',
+        RANGEDPOWER: 'rangedPower',
+        MELEEPOWER: 'meleePower',
+        SPELLPOWER: 'spellPower',
+        HEALINGPOWER: 'healingPower',
+        SHADOWRES: 'shadowres',
+        SHOCKRES: 'shockRes',
+        SPEED: 'speed',
+        STRENGTH: 'strength',
+        STAMINA: 'stamina',
+        WINDRES: 'windRes',
+        WISDOM: 'wisdom',
+
+        ADDPC: 'addPC',
+        ADDNPC: 'addNPC',
+        BOOL: 'bool',
+        CARRYWEIGHT: 'carryWeight',
+        CHARACTERS: 'characters',
         CHECKNAME: 'checkName',
         CLIENTCOMMAND: 'clientCommand',
         CLASSES: 'classes',
@@ -83,52 +151,41 @@ var GameEngine = function() {
         CONNINFO: 'connInfo',
         CREATECHAR: 'CreateChar',
         CREATECHARERROR: 'createCharError',
-        CURRENTENDURANCE: 'currentEndurance',
-        CURRENTEXP: 'currentExp',
-        CURRENTHEALTH: 'currentHealth',
-        CURRENTMANA: 'currentMana',
-        DEXTERITY: 'dexterity',
-        EARTHRES: 'earthRes',
+        CURRENTWEIGHT: 'currentWeight',
         ENTERGAME: 'entergame',
-        FOCUS: 'focus',
-        FIRERES: 'fireRes',
-        FROSTRES: 'frostRes',
-        HOLYRES: 'holyres',
         ID: 'id',
         INTELLIGENCE: 'intelligence',
+        JUMPSPEED: 'jumpSpeed',
+        JUMPTIME: 'jumpTime',
         LEVEL: 'level',
         LOGINATTEMPT: 'loginAttempt',
         LOGOUT: 'logout',
         LOGGEDIN: 'loggedIn',
-        LUCK: 'luck',
-        MAXENDURANCE: 'maxEndurance',
-        MAXHEALTH: 'maxHealth',
-        MAXMANA: 'macMana',
+        MESSAGE: 'message',
+        MESSAGETYPE: 'messageType',
         MOVE: 'move',
         MOVEVECTOR: 'moveVector',
         NEWMAP: 'newmap',
+        NPCS: 'NPCS',
+
         OWNER: 'owner',
-        PERCEPTION: 'perception',
         PLAYERS: 'players',
         PLAYERUPDATE: 'playerUpdate',
-        POISONRES: 'poisonRes',
         POSITION: 'position',
         POSUPDATE: 'posUpdate',
-        POWER: 'power',
+        QUANTITY: 'quantity',
         RACES: 'races',
         RACE: 'race',
         REMOVEPC: 'removePC',
+        REMOVENPC: 'removeNPC',
+        SAY: 'say',
         SETLOGINERRORTEXT: 'setLoginErrorText',
-        SHADOWRES: 'shadowres',
-        SHOCKRES: 'shockRes',
-        SKILL: 'skil',
+        SPAWNID: 'spawnID',
+        SHOUT: 'shout',
         SLOT: 'slot',
-        SPEED: 'speed',
-        STRENGTH: 'strength',
-        STAMINA: 'stamina',
         TEXT: 'text',
-        WINDRES: 'windRes',
-        WISDOM: 'wisdom'
+        WHISPER: 'whisper',
+        ZONE: 'zone'
   };
 }
 
@@ -151,11 +208,9 @@ GameEngine.prototype.tick = function() {
     var now = Date.now();
     var deltaTime = (now-self.lastTime) / 1000.0;
     //update all zones with players
-    for (var z in self.zoneUpdateList){
-        var zone = self.zones[z];
-        zone.tick(deltaTime);
+    for (var z in self.zones){
+        self.zones[z].tick(deltaTime);
     }
-
 
     for (var p in self.players){
         self.players[p].tick(deltaTime);
@@ -211,6 +266,16 @@ GameEngine.prototype.loadMaps = function(arr) {
     console.log('loaded ' + arr.length + ' Maps from file');
 }
 
+GameEngine.prototype.loadItems = function(arr){
+    for (var i = 0; i < arr.length;i++){
+        var item = new Item();
+        item.init(arr[i]);
+        self.items[arr[i].itemid] = item;
+    }
+    console.log(self.items);
+    console.log('loaded ' + arr.length + ' Classes from file');
+}
+
 GameEngine.prototype.loadRaces = function(arr){
     for (var i = 0; i < arr.length;i++){
         var race = new Race(self);
@@ -219,6 +284,7 @@ GameEngine.prototype.loadRaces = function(arr){
     }
     console.log('loaded ' + arr.length + ' Races from file');
 }
+
 GameEngine.prototype.loadClasses = function(arr){
     for (var i = 0; i < arr.length;i++){
         var charclass = new CharClass(self);
@@ -226,6 +292,25 @@ GameEngine.prototype.loadClasses = function(arr){
         self.classes[arr[i].classid] = charclass;
     }
     console.log('loaded ' + arr.length + ' Classes from file');
+}
+
+GameEngine.prototype.loadEnemies = function(arr){
+    for (var i = 0; i < arr.length;i++){
+        self.enemies[arr[i].enemyid] = arr[i];
+    }
+    console.log('loaded ' + arr.length + ' Enemies from file');
+}
+GameEngine.prototype.loadSpawns = function(arr){
+    for (var i = 0; i < arr.length;i++){
+        self.spawns[arr[i].spawnid] = arr[i];
+    }
+    console.log('loaded ' + arr.length + ' Spawns from file');
+}
+GameEngine.prototype.loadBuffs = function(arr){
+    for (var i = 0; i < arr.length;i++){
+        self.buffs[arr[i].buffid] = arr[i];
+    }
+    console.log('loaded ' + arr.length + ' Buffs from file');
 }
 
 //Player functions
@@ -279,6 +364,14 @@ GameEngine.prototype.checkData = function(obj,key){
         return false;
     }else{
         return true;
+    }
+}
+
+GameEngine.prototype.getItem = function(id){
+    if (Utils._udCheck(this.items[id])){
+        return false;
+    }else{
+        return this.items[id];
     }
 }
 

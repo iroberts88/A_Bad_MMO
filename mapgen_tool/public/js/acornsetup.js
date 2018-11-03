@@ -21,6 +21,8 @@
                 console.log(data);
                 if (data.found){
                   MapGen.data = data;
+                  MapGen.mapid = data.mapid;
+                  MapGen.mapname = data.mapname;
                   Acorn.changeState('mapgen');
                 }else{
                     Graphics.showLoadingMessage(false);
@@ -28,8 +30,8 @@
             });
 
              Acorn.Net.on('confirmMapSave', function (data) {
-                if (confirm('Overwrite map "' + data.name + '"?') == true) {
-                    Acorn.Net.socket_.emit('confirmMapSave',{name:data.name,c:true});
+                if (confirm('Overwrite map "' + data.id + '"?') == true) {
+                    Acorn.Net.socket_.emit('confirmMapSave',{id:data.id,c:true});
                 }else{
                     Acorn.Net.socket_.emit('confirmMapSave',{c:false});
                 }

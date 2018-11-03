@@ -51,17 +51,18 @@ Player.prototype.setupSocket = function() {
                 for (var i in that.mapData.mapData){
                     sectorList.push(i);
                 }
-                that.mapTool.maps[that.mapData.name] = {
-                    'mapid': that.mapData.name,
+                that.mapTool.maps[that.mapData.id] = {
+                    'mapid': that.mapData.id,
+                    'mapname': that.mapData.name,
                     'sectorArray': sectorList,
                     'mapData': that.mapData.mapData
                 }
-                fs.writeFile('./maps/' + that.mapData.name + '.json',JSON.stringify(that.mapTool.maps[that.mapData.name], null, 2), function(err){
+                fs.writeFile('./maps/' + that.mapData.id + '.json',JSON.stringify(that.mapTool.maps[that.mapData.id], null, 2), function(err){
                     if (err){
                         return console.log(err);
                     }
                 });
-                that.mapTool.queuePlayer(that,"mapSaved", {name:that.mapData.name});
+                that.mapTool.queuePlayer(that,"mapSaved", {id:that.mapData.id});
             }else{
                 that.mapData = null;
             }
@@ -73,17 +74,17 @@ Player.prototype.setupSocket = function() {
     this.socket.on('deleteMap', function (d) {
         console.log(d);
         try{
-            if (typeof that.mapTool.maps[d.name] == 'undefined'){
+            if (typeof that.mapTool.maps[d.id] == 'undefined'){
                 that.mapTool.debug(that, {'id': 'deleteMapError', 'error': "no map found"});
             }else{
-                console.log('deleting map ' + d.name);
-                fs.unlink('./maps/' + d.name + '.json',function(err){
+                console.log('deleting map ' + d.id);
+                fs.unlink('./maps/' + d.id + '.json',function(err){
                     if(err) return console.log(err);
                     console.log('file deleted successfully');
                 });
-                delete that.mapTool.maps[d.name];
+                delete that.mapTool.maps[d.id];
                 for (var i = 0; i < that.mapTool.mapids.length;i++){
-                    if (d.name == that.mapTool.mapids[i]){
+                    if (d.id == that.mapTool.mapids[i]){
                         that.mapTool.mapids.splice(i,1);
                     }
                 }
@@ -97,25 +98,26 @@ Player.prototype.setupSocket = function() {
     this.socket.on('createMap', function (d) {
         console.log(d);
         try{
-            if (typeof that.mapTool.maps[d.name] == 'undefined'){
+            if (typeof that.mapTool.maps[d.id] == 'undefined'){
                 //Create new map
                 var sectorList = [];
                 for (var i in d.mapData){
                     sectorList.push(i);
                 }
-                that.mapTool.mapids.push(d.name);
-                that.mapTool.maps[d.name] = {
-                    'mapid': d.name,
+                that.mapTool.mapids.push(d.id);
+                that.mapTool.maps[d.id] = {
+                    'mapid': d.id,
+                    'mapname': d.name,
                     'sectorArray': sectorList,
                     'mapData': d.mapData
                 }
-                fs.writeFile('./maps/' + d.name + '.json',JSON.stringify(that.mapTool.maps[d.name], null, 2), function(err){
+                fs.writeFile('./maps/' + d.id + '.json',JSON.stringify(that.mapTool.maps[d.id], null, 2), function(err){
                     if (err){
                         return console.log(err);
                     }
                 });
             }else{
-                that.mapTool.queuePlayer(that,"confirmMapSave", {name:d.name});
+                that.mapTool.queuePlayer(that,"confirmMapSave", {id:d.id});
                 that.mapData = d;
             }
             
@@ -127,11 +129,11 @@ Player.prototype.setupSocket = function() {
     this.socket.on('editMap', function (d) {
         console.log(d);
         try{
-            if (typeof that.mapTool.maps[d.name] != 'undefined'){
-                that.mapTool.maps[d.name].found = true;
-                that.mapTool.queuePlayer(that,"editMap", that.mapTool.maps[d.name]);
+            if (typeof that.mapTool.maps[d.id] != 'undefined'){
+                that.mapTool.maps[d.id].found = true;
+                that.mapTool.queuePlayer(that,"editMap", that.mapTool.maps[d.id]);
             }else{
-                console.log('No map named ' + d.name);
+                console.log('No map named ' + d.id);
                 that.mapTool.queuePlayer(that,"editMap", {found: false});
             }
         }catch(e){

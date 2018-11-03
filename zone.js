@@ -3,6 +3,8 @@
 //----------------------------------------------------------------
 
 var Player = require('./player.js').Player,
+    NPC = require('./npc.js').NPC,
+    Character = require('./character.js').Character,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     fs = require('fs'),
@@ -18,31 +20,36 @@ var Zone = function(ge) {
     this.map = {}; //contains all tiles
     this.sectors = {}; //all sectors
 
+    this.spawns = {};
+
+    this.npcs = {};
+
     this.players = {}; //players in this zone
     this.playerCount = 0;
 
     this.zoneData = null;
 
-
+    this.sayDistance = 750;
+    this.shoutDistance = 2000;
+    this.whisperDistance = 150;
+    this.mapData = null;
 }
 
 Zone.prototype.init = function (data) {
     //initialize the map here
-    this.mapid = data[this.engine.enums.MAPID];
-    for (var i = 0; i < data[this.engine.enums.SECTORARRAY].length;i++){
+    this.mapid = data.mapid;
+    for (var i = 0; i < data.sectorArray.length;i++){
         //create a new sector
-        var id = data[this.engine.enums.SECTORARRAY][i];
+        var id = data.sectorArray[i];
         var sector = new Sector(id,this)
         this.sectors[id] = sector;
         //add all of the tiles in this sector to map
-        var tiles = this.engine.enums.TILES;
-        var mapData = this.engine.enums.MAPDATA;
         var coords = this.getSectorXY(id);
         var xStart = coords.x*21;
         var yStart = coords.y*21;
-        for (var j = 0; j < data[mapData][id][tiles].length;j++){
-            for (var k = 0; k < data[mapData][id][tiles][j].length;k++){
-                var newTile = new Tile(k+xStart,j+yStart,data[mapData][id][tiles][j][k],this);
+        for (var j = 0; j < data.mapData[id].tiles.length;j++){
+            for (var k = 0; k < data.mapData[id].tiles[j].length;k++){
+                var newTile = new Tile(k+xStart,j+yStart,data.mapData[id].tiles[j][k],this);
                 if (Utils._udCheck(this.map[k+xStart])){
                     this.map[k+xStart] = {};
                 }
@@ -50,11 +57,106 @@ Zone.prototype.init = function (data) {
             }
         }
     }
+    this.mapData = {};
+    this.mapData[this.engine.enums.MAPDATA] = {};
+    this.mapData[this.engine.enums.MAPNAME] = data.mapname;
+    for (var i in data.mapData){
+        this.mapData[this.engine.enums.MAPDATA][i] = {};
+        this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES] = [];
+        for (var j = 0; j < data.mapData[i].tiles.length;j++){
+            this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j] = [];
+            for (var k = 0; k < data.mapData[i].tiles[j].length;k++){
+                this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k] = {};
+                if (!Utils._udCheck(data.mapData[i].tiles[j][k].resource)){
+                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.RESOURCE] = data.mapData[i].tiles[j][k].resource;
+                }
+                if (!Utils._udCheck(data.mapData[i].tiles[j][k].overlayResource)){
+                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OVERLAYRESOURCE] = data.mapData[i].tiles[j][k].overlayResource;
+                }
+                if (!Utils._udCheck(data.mapData[i].tiles[j][k].open)){
+                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OPEN] = data.mapData[i].tiles[j][k].open;
+                }
+                if (!Utils._udCheck(data.mapData[i].tiles[j][k].triggers)){
+                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.TRIGGERS] = data.mapData[i].tiles[j][k].triggers;
+                }
+            }
+        }
+    }
+
 };
 
 Zone.prototype.tick = function(deltaTime) {
+    for (var i in this.spawns){
+        this.spawns[i].tick(deltaTime);
+    }
 };
 
+Zone.prototype.say = function(p,text){
+    var players = this.getPlayers(p.currentSector);
+    var xDist = 0;
+    var yDist = 0;
+    var data = {};
+    data[this.engine.enums.ID] = p.id;
+    data[this.engine.enums.NAME] = p.name;
+    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.SAY;
+    data[this.engine.enums.TEXT] = text;
+    for (var i = 0; i <players.length;i++){
+        xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
+        yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
+        if (Math.sqrt(xDist*xDist + yDist*yDist) < this.sayDistance){
+            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+        }
+    }
+}
+
+Zone.prototype.whisper = function(p,text){
+    var players = this.getPlayers(p.currentSector);
+    var xDist = 0;
+    var yDist = 0;
+    var data = {};
+    data[this.engine.enums.ID] = p.id;
+    data[this.engine.enums.NAME] = p.name;
+    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.WHISPER;
+    data[this.engine.enums.TEXT] = text;
+    for (var i = 0; i <players.length;i++){
+        xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
+        yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
+        if (Math.sqrt(xDist*xDist + yDist*yDist) < this.whisperDistance){
+            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+        }
+    }
+}
+Zone.prototype.shout = function(p,text){
+    var players = this.getPlayers(p.currentSector);
+    var xDist = 0;
+    var yDist = 0;
+    var data = {};
+    data[this.engine.enums.ID] = p.id;
+    data[this.engine.enums.NAME] = p.name;
+    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.SHOUT;
+    data[this.engine.enums.TEXT] = text;
+    for (var i = 0; i <players.length;i++){
+        xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
+        yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
+        if (Math.sqrt(xDist*xDist + yDist*yDist) < this.shoutDistance){
+            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+        }
+    }
+}
+Zone.prototype.msg = function(p,text){
+    var xDist = 0;
+    var yDist = 0;
+    var data = {};
+    data[this.engine.enums.ID] = p.id;
+    data[this.engine.enums.NAME] = p.name;
+    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.ZONE;
+    data[this.engine.enums.TEXT] = text;
+    for (var i in this.players){
+        xDist = Math.abs(this.players[i].hb.pos.x-p.hb.pos.x);
+        yDist = Math.abs(this.players[i].hb.pos.y-p.hb.pos.y);
+        this.engine.queuePlayer(this.players[i].owner,this.engine.enums.MESSAGE,data);
+    }
+}
 Zone.prototype.getSectorXY = function(string){
     var x = '';
     var y = '';
@@ -96,14 +198,25 @@ Zone.prototype.collideUnit = function(unit,dt){
     }
 };
 Zone.prototype.changeSector = function(p,sector){
+    var isNPC = p instanceof NPC ? true : false;
     //p = the player to change sector
+    //change sectors
+    //this will not update client
     var current = p.currentSector;
     if (current){
-        current.removePlayer(p);
+        if (isNPC){
+            current.removeNPC(p);
+        }else{
+            current.removePlayer(p);
+        }
     }
     var newSector = this.getSector(p.hb.pos.x,p.hb.pos.y);
     if (newSector){
-        newSector.addPlayer(p);
+        if (isNPC){
+            newSector.addNPC(p);
+        }else{
+            newSector.addPlayer(p);
+        }
     }
 
     var arr = [newSector.x-current.x,newSector.y-current.y];
@@ -145,11 +258,17 @@ Zone.prototype.changeSector = function(p,sector){
             removeList.push(this.getSectorById((newSector.x+i) + 'x' + (newSector.y-2)));
         }
     }
+
+    //update the client here
     for (var i = 0; i < addList.length;i++){
         try{
             if (addList[i] == null){continue;}
             for (var pl in addList[i].players){
                 var player = addList[i].players[pl];
+                if (isNPC){
+                    this.engine.queuePlayer(player.owner,this.engine.enums.ADDNPC,p.getLessClientData());
+                    continue;
+                }
                 this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
                 this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
@@ -165,6 +284,10 @@ Zone.prototype.changeSector = function(p,sector){
                 console.log('derp' + player.id)
                 var d = {};
                 d[this.engine.enums.ID] = p.id;
+                if (isNPC){
+                    this.engine.queuePlayer(player.owner,this.engine.enums.REMOVENPC,d);
+                    continue;
+                }
                 this.engine.queuePlayer(player.owner,this.engine.enums.REMOVEPC,d);
                 var d = {};
                 d[this.engine.enums.ID] = player.id;
@@ -175,8 +298,10 @@ Zone.prototype.changeSector = function(p,sector){
         }
     }
     //get the new list of players to update for each player in the old sectors
-    for (var i = 0; i < p.pToUpdate.length;i++){
-        p.pToUpdate[i].pToUpdate = this.getPlayers(p.pToUpdate[i].currentSector);
+    if (!isNPC){
+        for (var i = 0; i < p.pToUpdate.length;i++){
+            p.pToUpdate[i].pToUpdate = this.getPlayers(p.pToUpdate[i].currentSector);
+        }
     }
     //set the new pToUpdate
     p.pToUpdate = this.getPlayers(p.currentSector);
@@ -231,6 +356,22 @@ Zone.prototype.getPlayers = function(sector){
     return players;
 }
 
+Zone.prototype.getNPCS = function(sector){
+    var npcs = [];
+    for (var i = -1;i < 2;i++){
+        for (var j = -1;j < 2;j++){
+            if (typeof this.sectors[(sector.x+i) + 'x' + (sector.y+j)] == 'undefined'){
+                continue;
+            }
+            for (var n in this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs){
+                var npc = this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs[n];
+                npcs.push(npc);
+            }
+        }
+    }
+    return npcs;
+}
+
 Zone.prototype.getPlayerData = function(sector){
     var pArr = [];
     var players = this.getPlayers(sector);
@@ -238,6 +379,15 @@ Zone.prototype.getPlayerData = function(sector){
         pArr.push(players[i].getLessClientData());
     }
     return pArr;
+}
+
+Zone.prototype.getNPCData = function(sector){
+    var nArr = [];
+    var npcs = this.getNPCS(sector);
+    for (var i = 0; i < npcs.length;i++){
+        nArr.push(npcs[i].getLessClientData());
+    }
+    return nArr;
 }
 
 Zone.prototype.addPlayer = function(p){
@@ -271,6 +421,33 @@ Zone.prototype.removePlayer = function(p){
     return this.playerCount;
 }
 
+Zone.prototype.addNPC = function(n){
+    this.npcs[n.id] = n;
+    n.currentZone = this;
+    var sector = this.getSector(n.hb.pos.x,n.hb.pos.y);
+    var players = this.getPlayers(sector);
+    for (var i = 0; i < players.length;i++){
+        this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDNPC,n.getLessClientData());
+    }
+    sector.addNPC(n);
+    this.playerCount += 1;
+    n.pToUpdate = this.getPlayers(n.currentSector);
+    return null;
+}
+
+Zone.prototype.removeNPC = function(n){
+    var cid = n.currentSector.id;
+    n.currentSector.removeNPC(n);
+    var players = this.getPlayers(this.sectors[cid]);
+    for (var i = 0; i < players.length;i++){
+        var data = {};
+        data[this.engine.enums.ID] = n.id;
+        this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVENPC,data);
+    }
+    delete this.npcs[n.id];
+    return null;
+}
+
 Zone.prototype.sendMapDataTo = function(character) {
     var that = this;
     fs.readFile('./mapgen_tool/maps/' + that.mapid + '.json', "utf8",function read(err, fsdata) {
@@ -280,7 +457,8 @@ Zone.prototype.sendMapDataTo = function(character) {
         //TODO also get NPC's
         var data = {}
         data[that.engine.enums.PLAYERS] = that.getPlayerData(character.currentSector);
-        data[that.engine.enums.MAPDATA] = JSON.parse(fsdata);
+        data[that.engine.enums.NPCS] = that.getNPCData(character.currentSector);
+        data[that.engine.enums.MAPDATA] = that.mapData;
         that.engine.queuePlayer(character.owner,that.engine.enums.NEWMAP,data);
     });
 }
@@ -295,6 +473,7 @@ exports.Zone = Zone;
 //Sector
 var Sector = function(id,zone) {
     this.players = {}; //players in this zone
+    this.npcs = {};
     this.playerCount = 0; //players in this sector
     this.id = id;
     this.zone = zone;
@@ -314,6 +493,15 @@ Sector.prototype.removePlayer = function(p){
     delete this.players[p.id];
     this.playerCount -= 1;
 };
+Sector.prototype.addNPC = function(n){
+    this.npcs[n.id] = n;
+    n.currentSector = this;
+};
+
+Sector.prototype.removeNPC = function(n){
+    n.currentSector = null;
+    delete this.npcs[n.id];
+};
 
 exports.Sector = Sector;
 
@@ -325,6 +513,87 @@ var Tile = function(x,y,data,zone) {
     this.resource = Utils.udCheck(data[zone.engine.enums.RESOURCE],'0x0',data[zone.engine.enums.RESOURCE]);
     this.overlayResource = Utils.udCheck(data[zone.engine.enums.OVERLAYRESOURCE],'0x0',data[zone.engine.enums.OVERLAYRESOURCE]);
     this.open = Utils.udCheck(data[zone.engine.enums.OPEN],true,data[zone.engine.enums.OPEN]);
+    if (!Utils._udCheck(zone.engine.spawns[data[zone.engine.enums.SPAWNID]])){
+        console.log(data);
+        var id = zone.engine.getId();
+        zone.spawns[id] = new Spawn(zone.engine.spawns[data[zone.engine.enums.SPAWNID]],this);
+        zone.spawns[id].spawnid = id;
+        this.spawn = id;
+    }
 };
 
 exports.Tile = Tile;
+
+var Spawn = function(data,tile) {
+    this.spawnid = null;
+    this.tile = tile;
+    this.zone = tile.zone;
+    this.engine = tile.zone.engine;
+    this.t = data['t'];
+    this.def = data['def'];
+    this.enemies = data['enemies'];
+    this.chances = data['chances'];
+
+    this.enemyAlive = false;
+
+    this.currentEnemy;
+    this.ticker = this.t;
+};
+
+Spawn.prototype.tick = function(deltaTime){
+    var enemyToSpawn = null;
+    if (!this.enemyAlive && this.ticker >= this.t){
+        //attempt to spawn an enemy!
+        //get enemy id
+        var rand = Math.random()*100;
+        var chance = 0;
+        for (var i = 0; i < this.chances.length;i++){
+            chance += this.chances[i];
+            if (rand <= chance){
+                if (this.enemies[i] == 'skip'){
+                    this.ticker = 0;
+                    console.log('skip');
+                    return;
+                }else{
+                    //spawn enemy
+                    enemyToSpawn = this.enemies[i];
+                    break;
+                }
+            }
+        }
+        //no enemy spawned?
+        if (!enemyToSpawn){
+            enemyToSpawn = this.def;
+        }
+    }else if (!this.enemyAlive){
+        this.ticker += deltaTime;
+    }
+    if (enemyToSpawn){
+        console.log(enemyToSpawn);
+        if (typeof this.engine.enemies[enemyToSpawn] == 'undefined'){
+            console.log(enemyToSpawn + ' does not exist');
+            this.ticker = 0;
+            return;
+        }
+        var newEnemy = new NPC();
+        var e = this.engine.enemies[enemyToSpawn];
+        var data = {};
+        data.spawn = this;
+        data.engine = this.engine;
+        data.classid = 'enemy';
+        data.name = e['name'];
+        data.idleBehaviour = e['idleBehaviour'];
+        data.combatBehaviour = e['combatBehaviour'];
+        data.level = e['level'];
+        data.resource = e['resource'];
+        newEnemy.init(data);
+        this.enemyAlive = true;
+        this.zone.addNPC(newEnemy);
+        //add enemy to current players in zone
+
+        this.ticker = 0;
+    }
+
+}
+
+exports.Spawn = Spawn;
