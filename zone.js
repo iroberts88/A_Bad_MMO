@@ -188,7 +188,7 @@ Zone.prototype.collideUnit = function(unit,dt){
     var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
     for (var i = 0; i < hyp;i++){
         unit.hb.pos.x += xDist/hyp;
-        if (!this.getTile((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
+        if (!this.getTileOpen((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
             unit.hb.pos.x -= xDist/hyp;
         }
         unit.hb.pos.y += yDist/hyp;

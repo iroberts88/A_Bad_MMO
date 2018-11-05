@@ -87,7 +87,7 @@ function Unit() {
             this.name = data.name;
             this.owner = data.owner;
 
-            this.cRadius = 20;
+            this.cRadius = 8;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 
@@ -121,18 +121,18 @@ function Unit() {
             this.speed.init({
                 id: this.engine.enums.SPEED,
                 owner: this,
-                value: Utils.udCheck(data.speed,100,data.speed),
+                value: Utils.udCheck(data.speed,75,data.speed),
                 min: 0,
                 max: 250,
                 formula: function(){
-                    this.base = 100+(this.owner.agility.value*(this.owner.level/1200));
+                    this.base = 75+(this.owner.agility.value*(this.owner.level/1200));
                     return Math.round((this.base+this.nMod)*this.pMod);
                 }
             });
 
             if (this.isEnemy){
                 this.speed.formula = function(){
-                    this.base = 110+(this.owner.agility.value*this.owner.levelMod);
+                    this.base = 80+(this.owner.agility.value*this.owner.levelMod);
                     return Math.round((this.base+this.nMod)*this.pMod);
                 }
             }

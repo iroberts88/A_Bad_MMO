@@ -89,13 +89,19 @@ Inventory.prototype.changeWeight = function(){
 Inventory.prototype.equipItem = function(index){
    
 }
-Inventory.prototype.addItemById = function(id){
-   //add a single new item by item id
+Inventory.prototype.addItemById = function(id,amt){
+    //add a single new item by item id
+    if (this._addItemById(id)){
+        console.log('added ' + amt + ' item(s)');
+    }else{
+        console.log("item " + id + ' NOT added!');
+    }
+}
+Inventory.prototype._addItemById = function(id,amt){
    var item = this.engine.getItem(id);
-   if (!item){return;}
-
+   if (!item){return false;}
    if (this.itemIndex[id]){
-
+   
    }else{
 
    }
@@ -142,7 +148,7 @@ PlayerItem.prototype.init = function(data){
 
     this.quantity = data.quantity;
 
-    //additionbal info about the item?
+    //additional info about the item?
     //enchantements... etc?
 }
 PlayerItem.prototype.getClientData = function(){
@@ -181,6 +187,8 @@ Item.prototype.init = function(data){
     this.onEquip = Utils.udCheck(data['onEquip'],null,data['onEquip']);
     this.onEquipText = Utils.udCheck(data['onEquipText'],null,data['onEquipText']);
     this.stats = Utils.udCheck(data['stats'],null,data['stats']);
+
+
 };
 Item.prototype.getClientData = function(){
     var data = {};

@@ -58,7 +58,6 @@ var GameEngine = function() {
         MAPDATA: 'mapDat',
         CLASSID: 'classi',
         DESCRIPTION: 'descriptio',
-        DISCONNECT: 'disconnec',
         NAME: 'nam',
         ATTRIBUTES: 'attribute',
         AVAILABLECLASSES: 'availableClasse',
@@ -272,7 +271,6 @@ GameEngine.prototype.loadItems = function(arr){
         item.init(arr[i]);
         self.items[arr[i].itemid] = item;
     }
-    console.log(self.items);
     console.log('loaded ' + arr.length + ' Classes from file');
 }
 

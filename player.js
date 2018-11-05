@@ -231,53 +231,8 @@ Player.prototype.setupSocket = function() {
     });
 
 
-    this.socket.on(this.engine.enums.CLIENTCOMMAND, function(data) {
-        if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
-        var cmd = data[that.engine.enums.COMMAND];
-        //MAX LENGTH?
-        if (cmd.length > 200 || cmd == ''){
-            return;
-        }
-        try{
-            if (cmd.charAt(0) == ':'){ //TODO && user.admin == true
-                //parse dev command
-                cmd = cmd.substring(0,cmd.length);
-                var command = '';
-                var string = '';
-                for (var i = 1; i < cmd.length;i++){
-                    if (cmd.charAt(i) == ' '){
-                        string = cmd.substring(i+1,cmd.length);
-                        break;
-                    }
-                    command += cmd.charAt(i);
-                }
-                that.parseCommand(command,string,true);
-            }
-            if (cmd.charAt(0) != '/'){
-                //use default chat type to send message
-                that.parseCommand(that.currentChatType,cmd);
-            }else{
-                //parse normal command
-                cmd = cmd.substring(0,cmd.length);
-                var command = '';
-                var string = '';
-                for (var i = 1; i < cmd.length;i++){
-                    if (cmd.charAt(i) == ' '){
-                        string = cmd.substring(i+1,cmd.length);
-                        break;
-                    }
-                    command += cmd.charAt(i);
-                }
-                that.parseCommand(command,string,false);
-            }
 
-        }catch(e){
-            that.engine.debug('clientCommandError',e,data);
-        }
-        
-    });
-
-    this.socket.on(this.engine.enums.DISCONNECT, function () {
+    this.socket.on('disconnect', function () {
         try{
             that.user.unlock();
             console.log('Player ' + that.id + ' (' + that.user.userData.username + ') has disconnected.');
@@ -462,6 +417,53 @@ Player.prototype.setupSocket = function() {
             console.log(e.stack);
         }
     });
+
+    this.socket.on(this.engine.enums.CLIENTCOMMAND, function(data) {
+        if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
+        var cmd = data[that.engine.enums.COMMAND];
+        //MAX LENGTH?
+        if (cmd.length > 200 || cmd == ''){
+            return;
+        }
+        try{
+            if (cmd.charAt(0) == ':'){ //TODO && user.admin == true
+                //parse dev command
+                cmd = cmd.substring(0,cmd.length);
+                var command = '';
+                var string = '';
+                for (var i = 1; i < cmd.length;i++){
+                    if (cmd.charAt(i) == ' '){
+                        string = cmd.substring(i+1,cmd.length);
+                        break;
+                    }
+                    command += cmd.charAt(i);
+                }
+                that.parseCommand(command,string,true);
+                return;
+            }
+            if (cmd.charAt(0) != '/'){
+                //use default chat type to send message
+                that.parseCommand(that.currentChatType,cmd);
+            }else{
+                //parse normal command
+                cmd = cmd.substring(0,cmd.length);
+                var command = '';
+                var string = '';
+                for (var i = 1; i < cmd.length;i++){
+                    if (cmd.charAt(i) == ' '){
+                        string = cmd.substring(i+1,cmd.length);
+                        break;
+                    }
+                    command += cmd.charAt(i);
+                }
+                that.parseCommand(command,string,false);
+            }
+
+        }catch(e){
+            that.engine.debug('clientCommandError',e,data);
+        }
+        
+    });
 };
 
 Player.prototype.parseCommand = function(cmd,string,dev) {
@@ -469,11 +471,30 @@ Player.prototype.parseCommand = function(cmd,string,dev) {
     if (dev){
         console.log("Parsing DEV Command: " + cmd);
         console.log('args-' + string);
+        var args = [];
+        start = 0;
+        for (var i = 0; i < string.length;i++){
+            if (string.charAt(i) == ' ' || i == string.length-1){
+                args.push(string.substring(start,i));
+                start = i+1;
+            }
+        }
+        console.log(args);
         switch(cmd){
-            case 'addAll':
+            case 'addall':
                 for (var i in this.engine.items){
                     this.activeChar.inventory.addItemById(i);
                 }
+                break
+            case 'additem':
+                if (typeof args[0] == 'undefined'){
+                    console.log("missing item id");
+                    return;
+                }
+                if (typeof args[1] == 'undefined'){
+                    args.push(1);
+                }
+                this.activeChar.inventory.addItemById(args[0],parseInt(args[1]));
                 break
         }
         return;
