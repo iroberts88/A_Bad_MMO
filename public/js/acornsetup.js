@@ -20,6 +20,11 @@
             fill: Graphics.pallette.color1,
             align: 'left'
         },
+        style4: {
+            font: '18px Lato',
+            fill: 0xFFFFFF,
+            align: 'left'
+        },
 
         net: function() {
             Acorn.Net.on(Enums.CONNINFO, function (data) {
@@ -92,6 +97,18 @@
             });
 
             Acorn.Net.on(Enums.REMOVENPC, function (data) {
+                console.log(data);
+            });
+
+            Acorn.Net.on(Enums.ADDITEM, function (data) {
+                console.log(data);
+            });
+
+            Acorn.Net.on(Enums.SETITEMQUANTITY, function (data) {
+                console.log(data);
+            });
+
+            Acorn.Net.on(Enums.REMOVEITEM, function (data) {
                 console.log(data);
             });
 
@@ -199,17 +216,6 @@
                 },
                 update: function(dt){
                     Game.update(dt);
-                }
-            });
-
-            Acorn.addState({
-                stateId: 'battle',
-                init: function(){
-                    document.body.style.cursor = 'default';
-                    Battle.init();
-                },
-                update: function(dt){
-                    Battle.update(dt);
                 }
             });
             

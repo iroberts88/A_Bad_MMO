@@ -4,6 +4,8 @@
     "name" : "Worn Quarterstaff", 
     "info" : "", 
     "lore" : false, 
+    "magic" : false, 
+    "soulbound" : false, 
     "scale" : {
         "x" : 1.0, 
         "y" : 8.0
@@ -15,8 +17,9 @@
         100.0
     ], 
     "slots" : [
-        "main2h"
+        "main"
     ], 
+    "twoHanded" : true, 
     "onEquip" : {
 
     }, 
@@ -38,10 +41,12 @@
     "itemid" : "w_rusty_dagger", 
     "name" : "Rusty Dagger", 
     "info" : "", 
+    "magic" : false, 
+    "soulbound" : false, 
     "lore" : false, 
     "scale" : {
         "x" : 1.0, 
-        "y" : 8.0
+        "y" : 2.0
     }, 
     "resource" : "w_dagger", 
     "pierce" : [
@@ -108,6 +113,8 @@
     "name" : "Shortbow", 
     "info" : "", 
     "lore" : false, 
+    "magic" : false, 
+    "soulbound" : false, 
     "scale" : {
         "x" : 2.0, 
         "y" : 4.0
@@ -148,6 +155,8 @@
     "name" : "Apocalypse", 
     "info" : "Derp derp derp", 
     "lore" : true, 
+    "magic" : true, 
+    "soulbound" : false, 
     "scale" : {
         "x" : 2.0, 
         "y" : 5.0
@@ -193,4 +202,24 @@
     "value" : 300000.0, 
     "weight" : 2.5, 
     "flavorText" : "Sword that may end the world."
+}
+{ 
+    "_id" : ObjectId("5be32db8b16cbc2db05eba8b"), 
+    "itemid" : "w_abyssal_blood_gem", 
+    "name" : "Abyssal Blood Gem", 
+    "info" : "", 
+    "lore" : true, 
+    "magic" : true, 
+    "soulbound" : true, 
+    "scale" : {
+        "x" : 1.0, 
+        "y" : 1.0
+    }, 
+    "resource" : "gem_blood", 
+    "onUse" : {
+
+    }, 
+    "value" : 20000000.0, 
+    "weight" : 1.0, 
+    "flavorText" : ""
 }

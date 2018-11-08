@@ -11,10 +11,13 @@ var P = SAT.Polygon,
             name: null,
             currentHealth: null,
             maxHealth: null,
+            currentEnergy: null,
+            maxEnergy: null,
             level: null,
             speed: null,
             race: null,
             class: null,
+
 
             spriteid: 'human',
             spritenum: 1,
@@ -81,7 +84,7 @@ var P = SAT.Polygon,
                 this.nameTag.position.y = this.sprite.position.y - this.sprite.height*0.75;
 
                 this.hb = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
-                this.updateStats(data);
+                this._updateStats(data);
             },
 
             _update: function(dt){
@@ -124,8 +127,120 @@ var P = SAT.Polygon,
                 this.sprite.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
                 this.sprite2.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
             },
-            updateStats: function(){
+            _updateStats: function(data){
+                for (var i in data){
+                    var stat = this.setStat(i,data[i]);
+                    if (stat != 'undefined'){
+                        stat = data[i];
+                    }
+                }
 
+            },
+            setStat: function(e,val){
+                switch(e){
+                    case  Enums.AC:
+                        this.ac = val;
+                        break;
+                    case  Enums.AGILITY:
+                        this.agility = val;
+                        break;
+                    case  Enums.ARCANERES:
+                        this.arcaneRes = val;
+                        break;
+                    case  Enums.CHARISMA:
+                        this.charisma = val;
+                        break; 
+                    case  Enums.CURRENTHEALTH:
+                        this.currentHealth = val;
+                        break; 
+                    case  Enums.MAXHEALTH:
+                        this.maxHealth = val;
+                        break;
+                    case  Enums.DEXTERITY:
+                        this.dexterity = val;
+                        break; 
+                    case  Enums.DISEASERES:
+                        this.diseaseRes = val;
+                        break; 
+                    case  Enums.EARTHRES:
+                        this.earthRes = val;
+                        break; 
+                    case  Enums.FIRERES:
+                        this.fireRes = val;
+                        break; 
+                    case  Enums.FROSTRES:
+                        this.frostRes = val;
+                        break; 
+                    case  Enums.HOLYRES:
+                        this.holyRes = val;
+                        break; 
+                    case  Enums.LUCK:
+                        this.luck = val;
+                        break; 
+                    case  Enums.MAXENERGY:
+                        this.maxEnergy = val;
+                        break; 
+                    case  Enums.CURRENTENERGY:
+                        this.currentEnergy = val;
+                        break; 
+                    case  Enums.CURRENTEXP:
+                        this.currentExp = val;
+                        break; 
+                    case  Enums.POISONRES:
+                        this.poisonRes = val;
+                        break; 
+                    case  Enums.PERCEPTION:
+                        this.perception = val;
+                        break; 
+                    case  Enums.RANGEDPOWER:
+                        this.rangedPower = val;
+                        break; 
+                    case  Enums.MELEEPOWER:
+                        this.meleePower = val;
+                        break; 
+                    case  Enums.SPELLPOWER:
+                        this.spellPower = val;
+                        break; 
+                    case  Enums.HEALINGPOWER:
+                        this.healingPower = val;
+                        break;
+                    case  Enums.SHADOWRES:
+                        this.shadowRes = val;
+                        break; 
+                    case  Enums.SHOCKRES:
+                        this.shockRes = val;
+                        break; 
+                    case  Enums.SPEED:
+                        this.speed = val;
+                        break;
+                    case  Enums.STRENGTH:
+                        this.strength = val;
+                        break; 
+                    case  Enums.STAMINA:
+                        this.stamina = val;
+                        break; 
+                    case  Enums.WINDRES:
+                        this.windRes = val;
+                        break;
+                    case  Enums.WISDOM:
+                        this.wisdom = val;
+                        break; 
+                    case  Enums.CURRENTWEIGHT:
+                        this.currentWeight = val;
+                        break;
+                    case  Enums.INTELLIGENCE:
+                        this.intelligence = val;
+                        break; 
+                    case  Enums.JUMPSPEED:
+                        this.jumpSpeed = val;
+                        break; 
+                    case  Enums.JUMPTIME:
+                        this.jumpTime = val;
+                        break;
+                    case  Enums.LEVEL:
+                        this.level = val;
+                        break;
+                }
             }
 
         }

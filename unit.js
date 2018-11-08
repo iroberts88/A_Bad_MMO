@@ -19,10 +19,10 @@ function Unit() {
         strength: null, //carry weight, melee power, melee crit damage
         stamina: null, //maximum health
         dexterity: null, // ranged power, weapon skill increase chance, ranged crit damage
-        agility: null, //attack speed, jump, dodge, casting concentration
+        agility: null, //attack speed, run speed,  jump, dodge, casting concentrations
         wisdom: null, // healing power
         intelligence: null, //spell power, skill increase chance
-        perception: null, //hit chance, crit chance, dodge
+        perception: null, //hit chance, crit chance, dodge, stealth detection
         charisma: null, //buy/sell prices, healing recieved
         luck: null, //slightly effects all actions
 
@@ -463,6 +463,11 @@ function Unit() {
             data[this.engine.enums.SHOCKRES] = this.shockRes.value;
             data[this.engine.enums.HOLYRES] = this.holyRes.value;
             data[this.engine.enums.SHADOWRES] = this.shadowRes.value;
+            data[this.engine.enums.ARCANERES] = this.arcaneRes.value;
+            data[this.engine.enums.DISEASERES] = this.diseaseRes.value;
+            data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
+            data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
+            data[this.engine.enums.CURRENTWEIGHT] = this.inventory.currentWeight.value;
 
             return data;
         },

@@ -24,7 +24,7 @@
             _init: function(data){
                 this.id = data.id;
                 this.name = data.name;
-                this.locked = data.locked;
+                this.locked = Settings.uilocked;
                 this.width = data.width;
                 this.height = data.height;
                 this.maxHeight = typeof data.maxHeight == 'undefined' ? this.height : data.maxHeight;
@@ -35,7 +35,7 @@
                 this.width = Math.min(this.maxWidth,Math.max(this.minWidth,this.width));
                 this.height = Math.min(this.maxHeight,Math.max(this.minHeight,this.height));
 
-                this.nameBarSize = [this.width,this.height*0.1];
+                this.nameBarSize = data.nameBarSize;
                 this.mainContainer = new PIXI.Container();
                 this.gfx = new PIXI.Graphics();
                 this.container = new PIXI.Container();

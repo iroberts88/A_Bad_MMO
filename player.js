@@ -474,16 +474,18 @@ Player.prototype.parseCommand = function(cmd,string,dev) {
         var args = [];
         start = 0;
         for (var i = 0; i < string.length;i++){
-            if (string.charAt(i) == ' ' || i == string.length-1){
+            if (string.charAt(i) == ' '){
                 args.push(string.substring(start,i));
                 start = i+1;
+            }else if (i >= string.length-1){
+                args.push(string.substring(start,string.length));
             }
         }
         console.log(args);
         switch(cmd){
             case 'addall':
                 for (var i in this.engine.items){
-                    this.activeChar.inventory.addItemById(i);
+                    this.activeChar.inventory.addItemById(i,1);
                 }
                 break
             case 'additem':

@@ -32,7 +32,8 @@
                 maxWidth: 900,
                 maxHeight: 500,
                 minHeight: 100,
-                minWidth: 180
+                minWidth: 180,
+                nameBarSize: [Graphics.width/4.5,25]
             });
             this.mainChat.activate();
 
@@ -48,9 +49,26 @@
                 maxWidth: 400,
                 maxHeight: 200,
                 minHeight: 80,
-                minWidth: 100
+                minWidth: 100,
+                nameBarSize: [400,18]
             });
             this.playerStatus.activate();
+
+            this.characterWindow = CharWindow();
+            this.characterWindow.init({
+                id: 'characterWindow',
+                name: Player.currentCharacter.name,
+                width: 475,
+                height: 650,
+                x: 100,
+                y: 100,
+                maxWidth: 475,
+                maxHeight: 650,
+                minHeight: 475,
+                minWidth: 650,
+                nameBarSize: [600,25]
+            });
+            this.characterWindow.activate();
 
             this.uiUpdateList.push(this.playerStatus);
             this.setUILock(true);

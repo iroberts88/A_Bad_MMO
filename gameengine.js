@@ -68,37 +68,58 @@ var GameEngine = function() {
         TRIGGERS: 'triggerfdsaf',
         MAPNAME: 'mapidfdsaf',
 
+
         OPEN: 'openfds',
         OVERLAYRESOURCE: 'overlayResourcefds',
         IDLEBEHAVIOUR: 'idleBehaviourfdsa',
         COMBATBEHAVIOUR: 'combatBehaviourfdsa',
         ACQUIRETARGET: 'acquireTargetasdf',
 
+        //ITEM/Inventory enums
+        ITEM: 'item',
+        ADDITEM: 'addItem',
+        REMOVEITEM: 'removeItem',
+        FLIPPED: 'flipped',
+        LORE: 'lore',
+        RESOURCE: 'resource',
+        VALUE: 'value',
+        WEIGHT: 'weight',
+        FLAVORTEXT: 'flavorText',
+        SLOTS: 'slots',
+        PIERCE: 'pierce',
+        SLASH: 'slash',
+        BLUDGEON: 'bludgeon',
+        RANGE: 'range',
+        ONEQUIPTEXT: 'onEquipText',
+        STATS: 'stats',
+        QUANTITY: 'quantity',
+        SETITEMQUANTITY: 'setItemQuantity',
 
-        EAR: 'ear',
+        EAR1: 'ear1',
         EAR2: 'ear2',
         HEAD: 'head',
         FACE: 'face',
         NECK: 'neck',
         ARMS: 'arms',
         BACK: 'back',
+        SHOULDERS: 'shoulders',
         CHEST: 'chest',
-        WRIST: 'wrist',
+        WRIST1: 'wrist1',
         WRIST2: 'wrist2',
         HANDS: 'hands',
-        FINGER: 'finger',
+        FINGER1: 'finger1',
         FINGER2: 'finger2',
         WAIST: 'waist',
         LEGS: 'legs',
         FEET: 'feet',
-        TRINKET: 'trinket',
+        TRINKET1: 'trinket1',
         TRINKET2: 'trinket2',
         MAIN: 'main',
-        MAIN2H: 'main2h',
         RANGED: 'ranged',
         AMMO: 'ammo',
         SECONDARY: 'secondary',
         AMMO: 'ammo',
+        BAG: 'bag',
         BAG1: 'bag1',
         BAG2: 'bag2',
         BAG3: 'bag3',
@@ -172,7 +193,6 @@ var GameEngine = function() {
         PLAYERUPDATE: 'playerUpdate',
         POSITION: 'position',
         POSUPDATE: 'posUpdate',
-        QUANTITY: 'quantity',
         RACES: 'races',
         RACE: 'race',
         REMOVEPC: 'removePC',
@@ -185,7 +205,43 @@ var GameEngine = function() {
         TEXT: 'text',
         WHISPER: 'whisper',
         ZONE: 'zone'
-  };
+    };
+    this.slotEnums = {
+        'ear': this.enums.EAR,
+        'head': this.enums.HEAD,
+        'face': this.enums.FACE,
+        'neck': this.enums.NECK,
+        'arms': this.enums.ARMS,
+        'back': this.enums.BACK,
+        'shoulders': this.enums.SHOULDERS,
+        'chest': this.enums.CHEST,
+        'wrist': this.enums.WRIST,
+        'hands': this.enums.HANDS,
+        'finger': this.enums.FINGER,
+        'waist': this.enums.WAIST,
+        'legs': this.enums.LEGS,
+        'feet': this.enums.FEET,
+        'trinket': this.enums.TRINKET,
+        'main': this.enums.MAIN,
+        'secondary': this.enums.SECONDARY,
+        'ranged': this.enums.RANGED,
+        'ammo': this.enums.AMMO,
+        'bag': this.enums.BAG,
+    };
+
+    this.statEnums = {
+        'strength': this.enums.STRENGTH,
+        'stamina': this.enums.STAMINA,
+        'agility': this.enums.AGILITY,
+        'dexterity': this.enums.DEXTERITY,
+        'intelligence': this.enums.INTELLIGENCE,
+        'wisdom': this.enums.WISDOM,
+        'charisma': this.enums.CHARISMA,
+        'perception': this.enums.PERCEPTION,
+        'luck': this.enums.LUCK,
+        'ac': this.enums.AC,
+        'maxHealth': this.enums.MAXHEALTH
+    };
 }
 
 GameEngine.prototype.init = function () {
@@ -267,7 +323,7 @@ GameEngine.prototype.loadMaps = function(arr) {
 
 GameEngine.prototype.loadItems = function(arr){
     for (var i = 0; i < arr.length;i++){
-        var item = new Item();
+        var item = new Item(self);
         item.init(arr[i]);
         self.items[arr[i].itemid] = item;
     }
@@ -373,6 +429,23 @@ GameEngine.prototype.getItem = function(id){
     }
 }
 
+GameEngine.prototype.getSlot = function (s) {
+    if (typeof this.slotEnums[s] == 'undefined'){
+        console.log("NO SLOT " + s);
+        return 'none';
+    }else{
+        return this.slotEnums[s];
+    }
+};
+
+GameEngine.prototype.getStat = function (s) {
+    if (typeof this.statEnums[s] == 'undefined'){
+        console.log("NO STAT " + s);
+        return 'none';
+    }else{
+        return this.statEnums[s];
+    }
+};
 // ----------------------------------------------------------
 // Socket Functions
 // ----------------------------------------------------------

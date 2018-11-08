@@ -5,10 +5,12 @@ var utils = require('./utils.js').Utils,
 
 var Inventory = function () {
     
-    //a list of items by server id
+    //actual player item container
     this.items = {};
     //list of item references by DB id
     this.itemIndex = {};
+
+    this.gridIndex = {};
 
     this.currentWeight = 0;
     this.carryWeight = 0;
@@ -21,6 +23,7 @@ var Inventory = function () {
         'neck': null,
         'arms': null,
         'back': null,
+        'shoulders': null,
         'chest': null,
         'wrist': null,
         'wrist2': null,
@@ -41,11 +44,13 @@ var Inventory = function () {
         'bag3': null,
         'bag4': null
     };
-    this.grid0 = new Grid(5,8);
+    this.grid0 = new Grid(8,8,this,0);
     this.grid1 = null;
     this.grid2 = null;
     this.grid3 = null;
     this.grid4 = null;
+
+    this.flip = false;
     this.owner = null;
     this.engine = null;
 }
@@ -91,26 +96,132 @@ Inventory.prototype.equipItem = function(index){
 }
 Inventory.prototype.addItemById = function(id,amt){
     //add a single new item by item id
-    if (this._addItemById(id)){
-        console.log('added ' + amt + ' item(s)');
-    }else{
-        console.log("item " + id + ' NOT added!');
-    }
+    var amtAdded = this._addItemById(id,amt)
+    console.log('added ' + amtAdded + ' item(s)');
 }
 Inventory.prototype._addItemById = function(id,amt){
-   var item = this.engine.getItem(id);
-   if (!item){return false;}
-   if (this.itemIndex[id]){
-   
-   }else{
+    var item = this.engine.getItem(id);
+    var startAmt = amt;
+    if (!item || amt == NaN){return 0;}
+    if (this.itemIndex[id] && item.stack){
+        //item is stackable and in inventory.
+        for (var i = 0; i < this.itemIndex[id].length;i++){
+            var nextItem = this.items[this.itemIndex[id][i]];
+            if (nextItem.quantity + amt <= item.stack){
+                console.log("adding " + amt + '!!!')
+                nextItem.addQuantity(amt);
+                amt = 0;
+                return startAmt;
+            }else if (item.stack - nextItem.quantity > 0){
+                console.log("adding " + (item.stack - nextItem.quantity) + ' items');
+                amt -= (item.stack - nextItem.quantity);
+                nextItem.addQuantity(item.stack - nextItem.quantity);
+            }
+        }
+        while (amt > 0){
+            //still left over items.
+            //add a new player item
+            if (amt >= item.stack){
 
-   }
+                if (this.addItem(item,item.stack)){
+                    amt -= item.stack
+                }else{
+                    return startAmt - amt;
+                }
+            }else{
+                if (this.addItem(item,amt)){
+                    return startAmt;
+                }else{
+                    return startAmt - amt;
+                }
+            }
+        }
+        return startAmt;
+    }else{
+        if (item.stack){
+            while (amt > 0){
+                var nextAmt = Math.min(amt,item.stack);
+                if (this.addItem(item,nextAmt)){
+                    amt -= nextAmt;
+                }else{
+                    return startAmt - amt;
+                }
+            }
+            return startAmt;
+        }else{
+            while(amt){
+                if (this.addItem(item,1)){
+                    amt -= 1;
+                }else{
+                    return startAmt - amt;
+                }
+            }
+            return startAmt;
+        }
+    }
 }
-Inventory.prototype.addItem = function(item,amount){
-   
+Inventory.prototype.willFit = function(x,y){
+    //find an open spot for an item of the given dimensions
+    var grids = [this.grid0,this.grid1,this.grid2,this.grid3,this.grid4];
+    this.flip = false;
+    for (var i = 0; i <grids.length;i++){
+        if (grids[i]){
+            var f = grids[i].willFit(x,y);
+            if (f){
+                return f;
+            }
+        }
+    }
+    return false;
 }
-Inventory.prototype._addItem = function(position){
+Inventory.prototype.addItem = function(item,amt){
+    //otherwise, add a new item
+    console.log("Adding " + amt + ' ' + item.name + '(s)');
+    var newItem = new PlayerItem();
+    newItem.init({
+        owner: this.owner,
+        item: item,
+        quantity: amt
+    });
+    var fit = this.willFit(item.xSize,item.ySize);
+    fit.pitem = newItem;
+    fit.item = item;
+    if (fit){
+        //additem?
+        this._addItem(fit);
+        return true;
+    }else{
+        return false;
+    }
+}
+Inventory.prototype._addItem = function(data){
+    var itemid = data.pitem.id;
+    var xSize = this.flip ? data.item.ySize : data.item.xSize;
+    var ySize = this.flip ? data.item.xSize : data.item.ySize;
 
+    for (var i = 0; i < xSize;i++){
+        for (var j = 0; j < ySize;j++){
+            data.grid.arr[data.x+i][data.y+j] = itemid;
+        }
+    }
+    this.items[itemid] = data.pitem;
+    data.grid.itemLocIndex[itemid] = {
+        x: data.x,
+        y: data.y
+    }
+    this.gridIndex[itemid] = data.grid;
+    if (typeof this.itemIndex[data.item.itemid] != 'undefined'){
+        this.itemIndex[data.item.itemid].push(itemid);
+    }else{
+        this.itemIndex[data.item.itemid] = [itemid];
+    }
+    data.grid.print();
+    var d = {};
+    d[this.engine.enums.ITEM] = data.pitem.getClientData();
+    d[this.engine.enums.FLIPPED] = this.flip;
+    d[this.engine.enums.POSITION] = [data.x,data.y];
+    d[this.engine.enums.BAG] = data.grid.bag;
+    this.engine.queuePlayer(this.owner.owner,this.engine.enums.ADDITEM,d);
 }
 Inventory.prototype.removeItemByIndex = function(itemIndex,amount){
 
@@ -126,7 +237,15 @@ Inventory.prototype.sortByType = function(dir){
 }
 Inventory.prototype.getClientData = function(){
     var data = {};
-
+    data.items = {};
+    for (var i in this.items){
+        data.items[i] = this.items.getClientData();
+    }
+    data.grid0Data = this.grid0.getClientData();
+    data.grid1Data = this.grid1.getClientData();
+    data.grid2Data = this.grid2.getClientData();
+    data.grid3Data = this.grid3.getClientData();
+    data.grid4Data = this.grid4.getClientData();
     return data;
 }
 Inventory.prototype.getDBObj = function(){
@@ -142,6 +261,7 @@ var PlayerItem = function () {}
 
 PlayerItem.prototype.init = function(data){
     this.owner = data.owner;
+    this.engine = data.owner.engine;
     this.id = this.owner.engine.getId();
     this.itemid = data.itemid;
     this.item = data.item;
@@ -150,6 +270,8 @@ PlayerItem.prototype.init = function(data){
 
     //additional info about the item?
     //enchantements... etc?
+    this.clientData = this.getClientData();
+    console.log("new player item created");
 }
 PlayerItem.prototype.getClientData = function(){
     var data = this.item.getClientData();
@@ -158,10 +280,24 @@ PlayerItem.prototype.getClientData = function(){
     data[e.ID] = this.id;
     return data;
 }
+PlayerItem.prototype.setQuantity = function(amt){
+    this.quantity = amt;
+    this.clientData[this.owner.engine.enums.QUANTITY] = this.quantity;
+    this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
+}
+PlayerItem.prototype.addQuantity = function(amt){
+    this.quantity += amt;
+    this.clientData[this.owner.engine.enums.QUANTITY] = this.quantity;
+    var data = {};
+    data[this.engine.enums.QUANTITY] = this.quantity;
+    this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
+}
 
 exports.PlayerItem = PlayerItem;
 
-var Item = function () {}
+var Item = function (engine) {
+    this.engine = engine;
+}
 
 Item.prototype.init = function(data){
     this.itemid = data['itemid'];
@@ -174,15 +310,16 @@ Item.prototype.init = function(data){
     this.flavorText = data['flavorText'];
     this.weight = data['weight'];
 
-    this.xSize = data['scale']['x'];
-    this.ySize = data['scale']['y'];
+    this.xSize = parseInt(data['scale']['x']);
+    this.ySize = parseInt(data['scale']['y']);
 
-    //optional values
+    //optional / equipment values
     this.stack = Utils.udCheck(data['stack'],null,data['stack']);
     this.pierce = Utils.udCheck(data['pierce'],null,data['pierce']);
     this.bludgeon = Utils.udCheck(data['bludgeon'],null,data['bludgeon']);
     this.slash = Utils.udCheck(data['slash'],null,data['slash']);
     this.slots = Utils.udCheck(data['slots'],null,data['slots']);
+    this.twoHanded = Utils.udCheck(data['twoHanded'],null,data['twoHanded']);
     this.range = Utils.udCheck(data['range'],null,data['range']);
     this.onEquip = Utils.udCheck(data['onEquip'],null,data['onEquip']);
     this.onEquipText = Utils.udCheck(data['onEquipText'],null,data['onEquipText']);
@@ -192,22 +329,138 @@ Item.prototype.init = function(data){
 };
 Item.prototype.getClientData = function(){
     var data = {};
-    var e = this.owner.engine.enums;
+    var e = this.engine.enums;
 
     data[e.NAME] = this.name;
+    data[e.LORE] = this.lore;
+    data[e.RESOURCE] = this.resource;
+    data[e.VALUE] = this.value;
+    data[e.WEIGHT] = this.weight;
+    data[e.FLAVORTEXT] = this.flavorText;
+    if (this.slots){
+        //this is an equippable item...
+        data[e.SLOTS] = [];
+        for (var i = 0; i < this.slots.length;i++){
+            data[e.SLOTS].push(this.engine.getSlot(this.slots[i]));
+        }
+        data[e.PIERCE] = this.pierce;
+        data[e.SLASH] = this.slash;
+        data[e.BLUDGEON] = this.bludgeon;
+        data[e.RANGE] = this.range;
+        data[e.ONEQUIPTEXT] = this.onEquipText;
+        if (this.stats){
+            data[e.STATS] = {};
+            for (var i = 0; i < this.stats.length;i++){
+                data[e.STATS][this.engine.getStat(i)] = this.stats[i];
+            }
+        }
+    }
     return data;
 }
 exports.Item = Item;
 
 
-var Grid = function (x,y,inventory) {
+var Grid = function (x,y,inventory,bag) {
+    //item location reference;
+    this.itemLocIndex = {};
+    this.i = inventory;
+    this.bag = bag;
     this.x = x;
     this.y = y;
+    this.arr = {};
     for (var i = 0 ; i < x;i++){
-        this[i] = {};
+        this.arr[i] = {};
         for (var j = 0; j < y;j++){
-            this[i][j] = null;
+            this.arr[i][j] = null;
         }
+    }
+}
+Grid.prototype.getClientData = function(){
+    var data = {}
+    data.x = this.x;
+    data.x = this.y;
+    data.grid = {};
+    for (var i in this.arr[i]){
+        data.grid[i] = {};
+        for (var j in this.arr[i][j]){
+            data.grid[i][j] = this.arr[i][j];
+        }
+    }
+}
+Grid.prototype.print = function(){
+    for (var i = 0; i < this.y;i++){
+        var str = '';
+        for (var j = 0; j < this.x;j++){
+            if (this.arr[j][i]){
+                str +=this.i.items[this.arr[j][i]].item.name.charAt(0);
+            }else{
+                str += '-'
+            }
+        }
+        console.log(str);
+    }
+}
+
+Grid.prototype.willFit = function(x,y){
+    for (var i = 0; i < this.y;i++){
+        for (var j = 0; j < this.x;j++){
+            if (this.arr[j][i] == null){
+                var willFit = this.willFitInNode(parseInt(j),parseInt(i),x,y);
+                if (willFit){
+                    return {
+                        grid: this,
+                        x: parseInt(j),
+                        y: parseInt(i)
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+Grid.prototype.willFitInNode = function(sX,sY,x,y){
+    var open1 = true;
+    var open2 = true;
+    for (var i = 0; i < x;i++){
+        if (sX+i >= this.x){
+            open1 = false;
+            continue;
+        }
+        for (var j = 0; j < y;j++){
+            if (sY+j >= this.y){
+                open1 = false;
+                continue;
+            }
+            if (this.arr[sX+i][sY+j] != null){
+                open1 = false;
+            }
+        }
+    }
+    if (open1){
+        return true;
+    }
+    for (var i = 0; i < y;i++){
+        if (sX+i >= this.x){
+            open2 = false;
+            continue;
+        }
+        for (var j = 0; j < x;j++){
+            if (sY+j >= this.y){
+                open2 = false;
+                continue;
+            }
+            if (this.arr[sX+i][sY+j] != null){
+                open2 = false;
+            }
+        }
+    }
+
+    if (open2){
+        this.i.flip = true;
+        return true;
+    }else{
+        return false;
     }
 }
 
