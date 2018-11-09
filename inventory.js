@@ -45,10 +45,10 @@ var Inventory = function () {
         'bag4': null
     };
     this.grid0 = new Grid(8,8,this,0);
-    this.grid1 = null;
-    this.grid2 = null;
-    this.grid3 = null;
-    this.grid4 = null;
+    this.grid1 = new Grid(8,8,this,1);
+    this.grid2 = new Grid(8,8,this,2);
+    this.grid3 = new Grid(8,8,this,3);
+    this.grid4 = new Grid(8,8,this,4);
 
     this.flip = false;
     this.owner = null;
@@ -242,10 +242,10 @@ Inventory.prototype.getClientData = function(){
         data.items[i] = this.items.getClientData();
     }
     data.grid0Data = this.grid0.getClientData();
-    data.grid1Data = this.grid1.getClientData();
-    data.grid2Data = this.grid2.getClientData();
-    data.grid3Data = this.grid3.getClientData();
-    data.grid4Data = this.grid4.getClientData();
+    data.grid1Data = this.grid1 ? this.grid1.getClientData() : null;
+    data.grid2Data = this.grid2 ? this.grid2.getClientData() : null;
+    data.grid3Data = this.grid3 ? this.grid3.getClientData() : null;
+    data.grid4Data = this.grid4 ? this.grid4.getClientData() : null;
     return data;
 }
 Inventory.prototype.getDBObj = function(){
@@ -378,14 +378,15 @@ var Grid = function (x,y,inventory,bag) {
 Grid.prototype.getClientData = function(){
     var data = {}
     data.x = this.x;
-    data.x = this.y;
+    data.y = this.y;
     data.grid = {};
-    for (var i in this.arr[i]){
+    for (var i in this.arr){
         data.grid[i] = {};
-        for (var j in this.arr[i][j]){
+        for (var j in this.arr[i]){
             data.grid[i][j] = this.arr[i][j];
         }
     }
+    return data;
 }
 Grid.prototype.print = function(){
     for (var i = 0; i < this.y;i++){

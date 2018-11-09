@@ -188,15 +188,15 @@ Player.prototype.setupSocket = function() {
                 case that.engine.enums.ENTERGAME:
                     //check if the slot is a valid character
                     if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
-                    console.log(data);
                     var slot = data[that.engine.enums.SLOT];
-                    console.log(that.user.characters[slot].id);
                     if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] == 'undefined'){
                         console.log('Player Error - Invalid Slot')
                         return;
                     }
                     //Add to zone/sector
                     that.activeChar = that.user.characters[slot];
+                    console.log(that.activeChar.inventory.getClientData())
+                    that.engine.queuePlayer(that,that.engine.enums.GETINVENTORY,that.activeChar.inventory.getClientData());
                     that.engine.addPlayerToZone(that.activeChar,that.activeChar.zoneid);
                     break;
                 case that.engine.enums.REQUESTMAPDATA:

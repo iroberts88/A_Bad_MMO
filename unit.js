@@ -404,7 +404,6 @@ function Unit() {
             this.inventory = new Inventory();
             this.inventory.init({
                 owner: this
-
             });
 
             for (var i in this){

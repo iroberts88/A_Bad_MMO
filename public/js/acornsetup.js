@@ -56,6 +56,11 @@
                 Acorn.changeState('mainmenu');
             });
             
+            Acorn.Net.on(Enums.GETINVENTORY, function (data) {
+                console.log(data);
+                Game.initBagWindow(data);
+            });
+
             Acorn.Net.on(Enums.NEWMAP, function (data) {
                 console.log(data);
                 Game.map = new GameMap();

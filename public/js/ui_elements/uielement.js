@@ -55,11 +55,14 @@
                     e.currentTarget.localPositionForMove = e.data.getLocalPosition(e.currentTarget);
                 }
                 this.moveRect.on('pointerdown', onClick);
+                this.moveRect.on('touchstart', onClick);
                 var onClickUp = function(e){
                     e.currentTarget.clicked = false;
                 }
                 this.moveRect.on('pointerup', onClickUp);
                 this.moveRect.on('pointerupoutside', onClickUp);
+                this.moveRect.on('touchend', onClickUp);
+                this.moveRect.on('touchendoutside', onClickUp);
                 var onMove = function(e){
                     if (e.target){
                         document.body.style.cursor = e.target.cursorType;
@@ -67,14 +70,15 @@
                         document.body.style.cursor = "default";
                     }
                     if (e.currentTarget.clicked){
-                        var xPos = Acorn.Input.mouse.X/Graphics.actualRatio[0];
-                        var yPos = Acorn.Input.mouse.Y/Graphics.actualRatio[1];
+                        var xPos = e.data.originalEvent.clientX/Graphics.actualRatio[0];
+                        var yPos = e.data.originalEvent.clientY/Graphics.actualRatio[1];
                         xPos -= (e.currentTarget.localPositionForMove.x + e.currentTarget.position.x);
                         yPos -= e.currentTarget.localPositionForMove.y;
                         e.currentTarget.uiElement.move(xPos,yPos)
                     }
                 }
                 this.moveRect.on('pointermove', onMove);
+                this.moveRect.on('touchmove', onMove);
 
 
                 var onClick = function(e){

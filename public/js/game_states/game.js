@@ -70,8 +70,21 @@
             });
             this.characterWindow.activate();
 
+            this.bagWindow = null;
             this.uiUpdateList.push(this.playerStatus);
             this.setUILock(true);
+        },
+
+        initBagWindow: function(data){
+            this.bagWindow = BagWindow();
+            this.bagWindow.init({
+                id: 'bagWindow',
+                name: 'Inventory',
+                sData: data,
+                x: 100,
+                y: 100
+            });
+            this.bagWindow.activate();
         },
 
         update: function(deltaTime){

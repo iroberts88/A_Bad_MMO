@@ -173,6 +173,7 @@ var GameEngine = function() {
         CREATECHARERROR: 'createCharError',
         CURRENTWEIGHT: 'currentWeight',
         ENTERGAME: 'entergame',
+        GETINVENTORY: 'getInventory',
         ID: 'id',
         INTELLIGENCE: 'intelligence',
         JUMPSPEED: 'jumpSpeed',

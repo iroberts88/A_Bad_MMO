@@ -54,7 +54,9 @@
             DEVCOMMAND: 6,
             MOD_SHIFT: 7,
             MOD_CTRL: 8,
-            MOD_ALT: 9
+            MOD_ALT: 9,
+            CHARACTERWINDOW: 10,
+            BAGWINDOW: 11
         },
         keysPressed: [],
         keyBindings: [],
@@ -95,9 +97,15 @@
             this.keyBindings[13] = Acorn.Input.Key.ENTER; //default Enter
             this.keyBindings[191] = Acorn.Input.Key.COMMAND; //default /
             this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
-            this.keyBindings[16] = Acorn.Input.Key.MOD_SHIFT; //default /
-            this.keyBindings[17] = Acorn.Input.Key.MOD_CTRL; //default /
-            this.keyBindings[18] = Acorn.Input.Key.MOD_ALT; //default /
+            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
+            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
+            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
+            this.keyBindings[66] = Acorn.Input.Key.BAGWINDOW; //default B
+            this.keyBindings[73] = Acorn.Input.Key.BAGWINDOW; //default I
+            this.keyBindings[67] = Acorn.Input.Key.CHARACTERWINDOW; //default C
+            this.keyBindings[16] = Acorn.Input.Key.MOD_SHIFT; //shift mod
+            this.keyBindings[17] = Acorn.Input.Key.MOD_CTRL; //ctrl mod
+            this.keyBindings[18] = Acorn.Input.Key.MOD_ALT; //alt mod
 
             this.requiresShiftMod[Acorn.Input.DEVCOMMAND] = true;
         },
@@ -105,6 +113,7 @@
             return this.keyBindings[keyCode];
         },
         keyDown: function(keyCode) {
+            console.log(keyCode);
             this.keysPressed[this.getBinding(keyCode)] = true;
         },
         keyUp: function(keyCode) {

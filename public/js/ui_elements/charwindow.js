@@ -569,8 +569,6 @@
             this.container.addChild(this.statDisplays[Enums.SHADOWRES]);
             yStart += stat.height + 5;
 
-            console.log(yStart + "DKJSALJDSLKAJDKLASJDLJK");
-
             this.active = false;
             this._active = false;
             this.color = typeof data.color == 'undefined' ? 0x000000 : data.color;
@@ -599,7 +597,10 @@
             this.nameText.position.y = this.nameBarSize[1]/2;
             this.nameText.anchor.y = 0.5;
             this.mainContainer.addChild(this.nameText);
+
+            this.mainContainer.removeChild(this.resizeRect);
             this.resizeRect = null;
+
             this.resize(this.width,this.height);
             this.mainContainer.position.x = typeof data.x == 'undefined' ? 4 : data.x;
             this.mainContainer.position.y = typeof data.y == 'undefined' ? Graphics.height - 28 - this.height : data.y;

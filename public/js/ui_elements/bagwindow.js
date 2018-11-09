@@ -6,6 +6,16 @@
         bagWindow.init = function(data){
             this._init(data);
 
+            this.currentBag = 0;
+
+            this.bag0 = data.sData[Enums.BAG0];
+            this.bag1 = data.sData[Enums.BAG1];
+            this.bag2 = data.sData[Enums.BAG2];
+            this.bag3 = data.sData[Enums.BAG3];
+            this.bag4 = data.sData[Enums.BAG4];
+
+            this.items = data[Enums.ITEMS];
+
             this.active = false;
             this._active = false;
             this.color = typeof data.color == 'undefined' ? 0x000000 : data.color;
@@ -19,7 +29,11 @@
             }
             this.font = typeof data.font == 'undefined' ? defaultFont : data.font;
 
-            this.resize(this.width,this.height);
+
+            this.mainContainer.removeChild(this.resizeRect);
+            this.resizeRect = null;
+
+            this.setBag(0);
             this.mainContainer.position.x = typeof data.x == 'undefined' ? 4 : data.x;
             this.mainContainer.position.y = typeof data.y == 'undefined' ? Graphics.height - 28 - this.height : data.y;
         };
@@ -31,8 +45,13 @@
             this._move(x,y);
             this.checkBounds();
         };
-        bagWindow.resize = function(x,y){
-            this._resize(x,y);
+        bagWindow.setBag = function(x,y){
+            this.gfx.clear();
+            this.container.removeChildren();
+            //set width/height ect based on bag size
+            //draw tabs/money display
+            //draw grid!
+            //add items!
         };
         bagWindow.setLock = function(b){
             this._setLock(b);  
