@@ -45,10 +45,10 @@ var Inventory = function () {
         'bag4': null
     };
     this.grid0 = new Grid(8,8,this,0);
-    this.grid1 = new Grid(8,8,this,1);
-    this.grid2 = new Grid(8,8,this,2);
-    this.grid3 = new Grid(8,8,this,3);
-    this.grid4 = new Grid(8,8,this,4);
+    this.grid1 = new Grid(10,10,this,1);
+    this.grid2 = new Grid(2,2,this,2);
+    this.grid3 = new Grid(2,2,this,3);
+    this.grid4 = new Grid(2,2,this,4);
 
     this.flip = false;
     this.owner = null;
@@ -237,15 +237,20 @@ Inventory.prototype.sortByType = function(dir){
 }
 Inventory.prototype.getClientData = function(){
     var data = {};
-    data.items = {};
+    data[this.engine.enums.ITEMS] = {};
     for (var i in this.items){
-        data.items[i] = this.items.getClientData();
+        data[this.engine.enums.ITEMS][i] = this.items.getClientData();
     }
-    data.grid0Data = this.grid0.getClientData();
-    data.grid1Data = this.grid1 ? this.grid1.getClientData() : null;
-    data.grid2Data = this.grid2 ? this.grid2.getClientData() : null;
-    data.grid3Data = this.grid3 ? this.grid3.getClientData() : null;
-    data.grid4Data = this.grid4 ? this.grid4.getClientData() : null;
+    data[this.engine.enums.BAG] = this.grid0.getClientData();
+    data[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+    data[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+    data[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+    data[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+
+    data[this.engine.enums.COPPER] = this.owner.copper;
+    data[this.engine.enums.SILVER] = this.owner.silver;
+    data[this.engine.enums.GOLD] = this.owner.gold;
+    data[this.engine.enums.PLATINUM] = this.owner.platinum;
     return data;
 }
 Inventory.prototype.getDBObj = function(){

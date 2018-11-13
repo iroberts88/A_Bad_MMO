@@ -105,7 +105,7 @@ var P = SAT.Polygon,
         var xDist = unit.moveVector.x*unit.speed*dt;
         var yDist = unit.moveVector.y*unit.speed*dt;
         var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
-        for (var i = 0; i < hyp;i++){
+        for (var i = 0; i <= hyp;i++){
             unit.hb.pos.x += xDist/hyp;
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
             if (!tile.open){
@@ -113,9 +113,6 @@ var P = SAT.Polygon,
             }
             unit.hb.pos.y += yDist/hyp;
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
-            if (!tile.open){
-                unit.hb.pos.y -= yDist/hyp;
-            }
         }
     };
     window.GameMap = GameMap;

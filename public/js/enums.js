@@ -23,8 +23,10 @@
 
         //ITEM/Inventory enums
         ITEM: 'item',
+        ITEMS: 'items',
         ADDITEM: 'addItem',
         REMOVEITEM: 'removeItem',
+        SETITEMQUANTITY: 'setItemQuantity',
         FLIPPED: 'flipped',
         LORE: 'lore',
         RESOURCE: 'resource',
@@ -39,8 +41,12 @@
         ONEQUIPTEXT: 'onEquipText',
         STATS: 'stats',
         QUANTITY: 'quantity',
-        SETITEMQUANTITY: 'setItemQuantity',
+        COPPER: 'copper',
+        SILVER: 'silver',
+        GOLD: 'gold',
+        PLATINUM: 'platinum',
 
+        //EQ slot enums
         EAR1: 'ear1',
         EAR2: 'ear2',
         HEAD: 'head',
@@ -71,6 +77,7 @@
         BAG3: 'bag3',
         BAG4: 'bag4',
 
+        //stat enums
         AC: 'ac',
         AGILITY: 'agility',
         ARCANERES: 'arcaneRes',
@@ -104,6 +111,7 @@
         WINDRES: 'windRes',
         WISDOM: 'wisdom',
 
+        //client call/data enums
         ADDPC: 'addPC',
         ADDNPC: 'addNPC',
         BOOL: 'bool',
@@ -134,7 +142,6 @@
         MOVEVECTOR: 'moveVector',
         NEWMAP: 'newmap',
         NPCS: 'NPCS',
-
         OWNER: 'owner',
         PLAYERS: 'players',
         PLAYERUPDATE: 'playerUpdate',

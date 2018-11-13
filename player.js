@@ -195,7 +195,6 @@ Player.prototype.setupSocket = function() {
                     }
                     //Add to zone/sector
                     that.activeChar = that.user.characters[slot];
-                    console.log(that.activeChar.inventory.getClientData())
                     that.engine.queuePlayer(that,that.engine.enums.GETINVENTORY,that.activeChar.inventory.getClientData());
                     that.engine.addPlayerToZone(that.activeChar,that.activeChar.zoneid);
                     break;

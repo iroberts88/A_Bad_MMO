@@ -67,7 +67,6 @@ function Unit() {
         copper: null,
         silver: null,
         gold: null,
-        electrum: null,
         platinum: null,
 
         currentZone: null,
@@ -401,10 +400,15 @@ function Unit() {
             this.currentSector = null;
             this.currentTile = null;
 
+            this.copper = Utils.udCheck(data[this.engine.enums.COPPER],0,data[this.engine.enums.COPPER]);
+            this.silver = Utils.udCheck(data[this.engine.enums.SILVER],0,data[this.engine.enums.SILVER]);
+            this.gold = Utils.udCheck(data[this.engine.enums.GOLD],0,data[this.engine.enums.GOLD])
+            this.platinum = Utils.udCheck(data[this.engine.enums.PLATINUM],0,data[this.engine.enums.PLATINUM])
             this.inventory = new Inventory();
             this.inventory.init({
                 owner: this
             });
+
 
             for (var i in this){
                 if (this[i] instanceof Attribute){

@@ -77,8 +77,10 @@ var GameEngine = function() {
 
         //ITEM/Inventory enums
         ITEM: 'item',
+        ITEMS: 'items',
         ADDITEM: 'addItem',
         REMOVEITEM: 'removeItem',
+        SETITEMQUANTITY: 'setItemQuantity',
         FLIPPED: 'flipped',
         LORE: 'lore',
         RESOURCE: 'resource',
@@ -93,7 +95,6 @@ var GameEngine = function() {
         ONEQUIPTEXT: 'onEquipText',
         STATS: 'stats',
         QUANTITY: 'quantity',
-        SETITEMQUANTITY: 'setItemQuantity',
 
         EAR1: 'ear1',
         EAR2: 'ear2',

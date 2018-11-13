@@ -81,9 +81,17 @@
                 id: 'bagWindow',
                 name: 'Inventory',
                 sData: data,
-                x: 100,
-                y: 100
+                width: 324,
+                height: 300,
+                x: 700,
+                y: 100,
+                maxWidth: 1000,
+                maxHeight: 1000,
+                minHeight: 300,
+                minWidth: 324,
+                nameBarSize: [0,0]
             });
+            this.bagWindow.setBag(0);
             this.bagWindow.activate();
         },
 
