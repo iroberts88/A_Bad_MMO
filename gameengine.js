@@ -68,9 +68,9 @@ var GameEngine = function() {
         TRIGGERS: 'triggerfdsaf',
         MAPNAME: 'mapidfdsaf',
 
-
         OPEN: 'openfds',
         OVERLAYRESOURCE: 'overlayResourcefds',
+        OVERLAYTYPE: 'oType',
         IDLEBEHAVIOUR: 'idleBehaviourfdsa',
         COMBATBEHAVIOUR: 'combatBehaviourfdsa',
         ACQUIRETARGET: 'acquireTargetasdf',
@@ -78,6 +78,7 @@ var GameEngine = function() {
         //ITEM/Inventory enums
         ITEM: 'item',
         ITEMS: 'items',
+        ITEMID: 'itemid',
         ADDITEM: 'addItem',
         REMOVEITEM: 'removeItem',
         SETITEMQUANTITY: 'setItemQuantity',
@@ -94,8 +95,15 @@ var GameEngine = function() {
         RANGE: 'range',
         ONEQUIPTEXT: 'onEquipText',
         STATS: 'stats',
+        STACK: 'stack',
+        SIZE: 'size',
         QUANTITY: 'quantity',
+        COPPER: 'copper',
+        SILVER: 'silver',
+        GOLD: 'gold',
+        PLATINUM: 'platinum',
 
+        //EQ slot enums
         EAR1: 'ear1',
         EAR2: 'ear2',
         HEAD: 'head',
@@ -125,7 +133,12 @@ var GameEngine = function() {
         BAG2: 'bag2',
         BAG3: 'bag3',
         BAG4: 'bag4',
+        GRID: 'grid',
+        X: 'x',
+        Y: 'y',
+        MOVEITEM: 'moveItem',
 
+        //stat enums
         AC: 'ac',
         AGILITY: 'agility',
         ARCANERES: 'arcaneRes',
@@ -159,6 +172,7 @@ var GameEngine = function() {
         WINDRES: 'windRes',
         WISDOM: 'wisdom',
 
+        //client call/data enums
         ADDPC: 'addPC',
         ADDNPC: 'addNPC',
         BOOL: 'bool',
@@ -189,7 +203,6 @@ var GameEngine = function() {
         MOVEVECTOR: 'moveVector',
         NEWMAP: 'newmap',
         NPCS: 'NPCS',
-
         OWNER: 'owner',
         PLAYERS: 'players',
         PLAYERUPDATE: 'playerUpdate',

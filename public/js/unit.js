@@ -28,7 +28,7 @@ var P = SAT.Polygon,
             hb: null,
             moveVector: null,
             mapCollide: true,
-            cRadius: 8,
+            cRadius: 16,
 
             aTicker: null,
 
@@ -73,7 +73,7 @@ var P = SAT.Polygon,
                 this.sprite2.mask = this.spriteMask;
 
                 var nameFont =  {
-                    font: '18px Lato',
+                    font: '14px Lato',
                     fill: 0x91d1ff,
                     align: 'left'
                 };

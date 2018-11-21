@@ -103,6 +103,7 @@
                     d.open = (typeof data.tiles[i][j].open == 'undefined') ? 0 : data.tiles[i][j].open;
                     d.triggers = (typeof data.tiles[i][j].triggers == 'undefined') ? [] : data.tiles[i][j].triggers;
                     d.overlayResource = (typeof data.tiles[i][j].overlayResource == 'undefined') ? null : data.tiles[i][j].overlayResource;
+                    d.oType = (typeof data.tiles[i][j].oType == 'undefined') ? null : data.tiles[i][j].oType;
                     newTile.init(d);
                 }else{
                     newTile.init({
@@ -208,13 +209,15 @@
 
             this.overlayResource = data.overlayResource;
             this.overlaySprite = null; //2nd layer sprite
-
+            this.oType = data.oType;
+            //0 - normal overlay
+            //1 = grass overlay
+            //2 - top layer overlay
             this.spawnID = null;
             if (this.overlayResource){
                 this.overlaySprite = Graphics.getSprite(data.overlayResource); //tile sprite
                 this.overlaySprite.scale.x = 2;
                 this.overlaySprite.scale.y = 2;
-                this.overlaySprite.alpha = 0.5;
             }
             this.triggers = data.triggers;
         }catch(e){
@@ -259,9 +262,22 @@
         this.overlaySprite.position.y = posY;
         this.overlaySprite.scale.x = 2;
         this.overlaySprite.scale.y = 2;
-        this.overlaySprite.alpha = 0.5;
         Graphics.worldContainer.addChild(this.overlaySprite);
         this.overlayResource = resource;
+    };
+    Tile.prototype.setOverlayType = function(type){
+        this.oType = type;
+        switch(type){
+            case 0:
+                this.overlaySprite.tint = 0xAFD6FF;
+                break;
+            case 1:
+                this.overlaySprite.tint = 0xAFFFB7;
+                break;
+            case 2:
+                this.overlaySprite.tint = 0xFFAFAF;
+                break;
+        }
     };
     Tile.prototype.getTileData = function(){
         var data = {}
@@ -271,6 +287,7 @@
         }
         if (this.overlayResource){
             data.overlayResource = this.overlayResource;
+            data.oType = this.oType;
         }
         if (this.triggers.length > 0){
             data.triggers = this.triggers;

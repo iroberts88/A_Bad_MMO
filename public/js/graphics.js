@@ -40,7 +40,8 @@
 
             this.buttonCD = 0;
             //create the PIXI stage
-            this.app = new PIXI.Application(this.width, this.height, {backgroundColor: 0xFFFFFF});
+            this.app = new PIXI.Application(this.width, this.height, {backgroundColor: 0x000000});
+            this.app.renderer.plugins.interaction.moveWhenInside = true;
             //this.app.renderer.plugins.interaction.moveWhenInside = true;
             this.filtersToApply = [];
 
@@ -58,7 +59,7 @@
             this.bgContainer = new PIXI.Graphics();
             this.bgContainer.position.x = 0;
             this.bgContainer.position.y = 0;
-            this.drawBG();
+            //this.drawBG();
             this.app.stage.addChild(this.bgContainer);
             this.app.stage.addChild(this.world);
             this.app.stage.addChild(this.ui);
@@ -90,6 +91,11 @@
             this.worldPrimitives.position.x = Graphics.width/2;
             this.worldPrimitives.position.y = Graphics.width/2;
             this.world.addChild(this.worldPrimitives); //ADD WORLD PRIMS (Cleared on update);
+            this.worldContainer3 = new PIXI.Container();
+            this.worldContainer3.position.x = Graphics.width/2;
+            this.worldContainer3.position.y = Graphics.width/2;
+            this.worldContainer3.interactive = true;
+            this.world.addChild(this.worldContainer3); // ADD WORLD CONTAINER 3
             this.uiPrimitives = new PIXI.Graphics();
             this.ui.addChild(this.uiPrimitives); // ADD UI PRIMS
             this.uiContainer = new PIXI.Container();
@@ -155,6 +161,9 @@
             this.worldContainer2.removeChildren();
             this.worldContainer2.position.x = 0;
             this.worldContainer2.position.y = 0;
+            this.worldContainer3.removeChildren();
+            this.worldContainer3.position.x = 0;
+            this.worldContainer3.position.y = 0;
             this.worldPrimitives.clear();
             this.worldPrimitives.position.x = 0;
             this.worldPrimitives.position.y = 0;
@@ -174,7 +183,6 @@
             this.uiPrimitives2.position.x = 0;
             this.uiPrimitives2.position.y = 0;
             this.consoleContainer.removeChildren();
-            this.drawBG();
         },
 
         resize: function(offset){
@@ -266,10 +274,6 @@
 
             var r = Graphics.app._loader.resources['img/mapSprites.json'];
             for (var i in r.textures){
-                if (typeof Graphics.letters[i.charAt(0)] != 'undefined'){
-                    //this is an animation
-                    continue;
-                }
                 var texture = PIXI.Texture.fromFrame(i);
                 var name = i.slice(0,i.length-4);
                 if (typeof Graphics.animationSpeeds[name] == 'undefined'){

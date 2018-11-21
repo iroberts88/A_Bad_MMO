@@ -5,7 +5,7 @@
         this.texture = null;
         this.sprite = null;
         this.style1 = {
-            font: '20px Pokemon', 
+            font: '16px Verdana', 
             fill: 'white', 
             align: 'left',
             wordWrap: true,
@@ -14,6 +14,18 @@
         this.position = {
             x: 0,
             y: 0
+        }
+        this.numbers = {
+            0: true,
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: true,
+            6: true,
+            7: true,
+            8: true,
+            9: true,
         }
     };
 
@@ -44,15 +56,14 @@
         gfx.endFill();
         scene.addChild(gfx);
         scene.addChild(cont);
-
-        var words = {};
+        
+        var textObjects = [];
         var yStart = padding;
         for (var i = 0; i < this.ttInfo.ttArray.length;i++){
             //create the text object
             var start = 0;
             var text = this.ttInfo.ttArray[i].text;
             var xStart = padding;
-            words[i] = {arr: [],w: 0};
             for (var sI = 0; sI < text.length; sI++){
                 if (text.charAt(sI) == ' ' || sI == text.length-1){
                     //found word'
@@ -61,6 +72,20 @@
                         for (var c = start; c < text.length; c++){
                             t = t + text.charAt(c);
                             if (text.charAt(c) == '>' || text.charAt(c) == '}'){
+                                start = c+1;
+                                sI = c;
+                                if (data.unit && text.charAt(c) == '>'){
+                                    t = Utils.parseStringCode(t,data.unit);
+                                }
+                                var nextWord = new PIXI.Text(t,this.style1);
+                                break;
+                            }
+                        }
+                    }else if (text.charAt(start) == '('){
+                        //ignore this
+                        var t= '';
+                        for (var c = start; c < text.length; c++){
+                            if (text.charAt(c) == ')'){
                                 start = c+1;
                                 sI = c;
                                 var nextWord = new PIXI.Text(t,this.style1);
@@ -88,6 +113,8 @@
                     }else if (nextWord.text.charAt(0) == '{'){
                         nextWord.style.fill = 0x42f450;
                         nextWord.text = nextWord.text.slice(1,nextWord.text.length-1) + '';
+                    }else if (this.numbers[nextWord.text.charAt(0)]){
+                        nextWord.style.fill = 0xfcd174;
                     }
                     nextWord.anchor.x = 0.5;
                     nextWord.anchor.y = 0.5;
@@ -104,11 +131,7 @@
                     if (nextWord.position.x + nextWord.width/2 > w){
                         w = nextWord.position.x + nextWord.width/2 + padding;
                     }
-                    words[i].w += nextWord.width;
-                    if (words[i].w > this.maxWidth){
-                        words[i].w = this.maxWidth;
-                    }
-                    words[i].arr.push(nextWord);
+                    textObjects.push(nextWord);
                     cont.addChild(nextWord);
                     lastHeight = nextWord.height;
                 }
@@ -119,30 +142,26 @@
         }
         h = yStart + padding;
         //check alignment
-        for (var i in words){
-            var move = 0;
-            if (typeof this.ttInfo.ttArray[i].align == 'undefined'){
-                continue;
+        /*for (var j = 0; j < textObjects.length; j++){
+            try{
+                if (this.ttInfo.ttArray[j].align == 'center'){
+                    textObjects[j].position.x = w/2;
+                }else if(this.ttInfo.ttArray[j].align == 'right'){
+                    textObjects[j].position.x = w-textObjects[j].width/2;
+                }
+            }catch(e){
+                console.log(e);
             }
-            if (this.ttInfo.ttArray[i].align == 'center'){
-                move = (w-words[i].w)/2;
-            }else if(this.ttInfo.ttArray[i].align == 'right'){
-                 move = (w-words[i].w);
-            }
-            for (var j = 0; j < words[i].arr.length;j++){
-                words[i].arr[j].position.x += move;
-            }
-        }
-        console.log(words);
+        }*/
         //draw outline
         gfx.lineStyle(3,0xFFFFFF,1);
         gfx.moveTo(2,2);
-        gfx.lineTo(w+-2,2);
-        gfx.lineTo(w-2,h-2-eHeight);
-        gfx.lineTo(2,h-2-eHeight);
+        gfx.lineTo(w+padding*2-2,2);
+        gfx.lineTo(w+padding*2-2,h+padding*2-2);
+        gfx.lineTo(2,h+padding*2-2);
         gfx.lineTo(2,2);
         //create and render the texture and sprite
-        this.texture = PIXI.RenderTexture.create(w,h-eHeight);
+        this.texture = PIXI.RenderTexture.create(w+padding*2,h+padding*2);
         var renderer = new PIXI.CanvasRenderer();
         Graphics.app.renderer.render(scene,this.texture);
         this.sprite = new PIXI.Sprite(this.texture);
@@ -151,13 +170,10 @@
 
         this.position.x = Graphics.width - this.sprite.width - 5;
         this.position.y = Graphics.height - this.sprite.height - 5;
-        //OPTIONAL: data.noInputEvents
-        if (data.noInputEvents){
-            return;
-        }
         var overFunc = function(e){
             if (!e.currentTarget.tooltipAdded){
-                Graphics.uiContainer2.addChild(e.currentTarget.tooltip.sprite);
+                Graphics.uiContainer.addChild(e.currentTarget.tooltip.sprite);
+                Game.currentToolTip = e.currentTarget.tooltip.sprite;
                 e.currentTarget.tooltipAdded = true;
             }
             e.currentTarget.tooltip.sprite.position.x =  e.currentTarget.tooltip.position.x;
@@ -165,7 +181,8 @@
         }
         var outFunc = function(e){
             if (e.currentTarget.tooltipAdded){
-                Graphics.uiContainer2.removeChild(e.currentTarget.tooltip.sprite);
+                Graphics.uiContainer.removeChild(e.currentTarget.tooltip.sprite);
+                Game.currentToolTip = null;
                 e.currentTarget.tooltipAdded = false;
             }
         }
@@ -183,19 +200,31 @@
         data.owner.on('touchend', outFunc);
         data.owner.on('touchendoutside', outFunc);
         data.owner.on('pointerout', outFunc);
+        data.owner.interactive = true;
+        data.owner.buttonMode = true;
     }
 
-    Tooltip.prototype.getItemTooltip = function(element,item){
+    Tooltip.prototype.getItemTooltip = function(item,element){
         // element = the element containing the tooltip
         //item = the item to work on
 
-        var ttArray = [{text: '<' + item.name + '>'}];
+        var ttArray = [{text: item.name}];
         if (typeof item.weight != 'undefined'){ttArray.push({text: '{Weight: }' + item.weight});}
-        if (typeof item.description != 'undefined'){ttArray.push({text: item.description,color: '#ffd9b3'});}
-        if (typeof item.eqData.damage != 'undefined'){ttArray.push({text: '{Damage: }' + Math.round(item.eqData.damage/10)});}
+        //if (typeof item.value != 'undefined'){ttArray.push({text: '{Value: }' + item.value});}
+        /*if (typeof item.description != 'undefined'){ttArray.push({text: item.description,color: '#ffd9b3'});}
+        if (typeof item.eqData.damage != 'undefined'){ttArray.push({text: '{Damage: }' + item.eqData.damage});}
         if (typeof item.eqData.rangeMin != 'undefined'){ttArray.push({text: '{Range: }' + item.eqData.rangeMin + '-' + item.eqData.rangeMax});}
-        if (typeof item.eqData.delay != 'undefined'){ttArray.push({text: '{Recharge Delay: }' + item.eqData.delay + ' turns'});}
-        if (typeof item.eqData.recharge != 'undefined'){ttArray.push({text: '{Recharge Rate: }' + item.eqData.recharge + '% per turn'});}
+        var t = "Recharges <";
+        if (typeof item.eqData.recharge != 'undefined'){t += item.eqData.recharge + '%> shield capacity per turn'}
+        if (typeof item.eqData.delay != 'undefined'){
+            if (item.eqData.delay == 1){
+                t += '.'
+            }else{
+                t += ' after not taking damage for <' + (item.eqData.delay-1) + '> turns.';
+            }
+            ttArray.push({text: t});
+        }
+
         if (typeof item.classes != 'undefined'){
             var cText = '';
             if (item.classes == 'ALL'){
@@ -218,11 +247,30 @@
             for (var i = 0; i < item.onEquipText.length;i++){
                 ttArray.push({text: item.onEquipText[i]});
             }
-        }
+        }*/
         element.tooltip.set({
             owner: element,
             ttArray: ttArray,
             alpha: 0.5
+        });
+    };
+
+    Tooltip.prototype.setAbilityTooltip = function(element,ability,unit){
+        // element = the element containing the tooltip
+        //a = the ability to work on
+        var ttArray = [{text: ability.description}];
+        if (typeof ability.sCost != 'undefined'){ttArray.push({text: "{Slot Cost:} " + ability.sCost})}
+        if (typeof ability.eCost != 'undefined'){ttArray.push({text: "{Energy Cost:} " + ability.eCost})}
+        if (typeof ability.range != 'undefined'){ttArray.push({text: "{Range:} " + ability.range})}
+        if (typeof ability.radius != 'undefined'){ttArray.push({text: "{Radius:} " + ability.radius})}
+        if (typeof ability.type != 'undefined'){ttArray.push({text: "{Type:} " + ability.type})}
+        if (typeof ability.speed != 'undefined'){ttArray.push({text: "{Speed:} " + ability.speed})}
+        unit = typeof unit == 'undefined' ? null : unit;
+        this.set({
+            owner: element,
+            ttArray: ttArray,
+            alpha: 0.5,
+            unit: unit
         });
     }
 

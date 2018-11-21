@@ -223,6 +223,13 @@ Player.prototype.setupSocket = function() {
                         that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,that.engine.enums.POSUPDATE, d);
                     }
                     break;
+                case that.engine.enums.MOVEITEM:
+                    if (!that.engine.checkData(data,that.engine.enums.BAG)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.POSITION)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.FLIPPED)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.ID)){return;}
+                    that.activeChar.inventory.moveItem(data);
+                    break;
             }
         }catch(e){
             console.log(that.engine.debug('playerUpdateError',e,data));

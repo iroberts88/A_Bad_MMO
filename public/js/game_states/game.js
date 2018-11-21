@@ -19,8 +19,13 @@
 
         uiUpdateList: null,
 
+        cursorItem: null,
+        cursorItemFlipped: null,
+        previousPos: null,
+        previousFlip: null,
+
         init: function() {
-            Graphics.app.renderer.backgroundColor = 0x000000;
+            Graphics.app._options.backgroundColor = 0x000000;
             this.uiUpdateList = [];
             this.mainChat = ChatWindow();
             this.mainChat.init({
@@ -118,6 +123,23 @@
             for (var i = 0; i < this.uiUpdateList.length;i++){
                 this.uiUpdateList[i].update(deltaTime);
             }
+            if (this.cursorItem){
+                if (this.cursorItemFlipped){
+                    this.cursorItem.sprite.position.x = Acorn.Input.mouse.actualX-16;
+                    this.cursorItem.sprite.position.y = Acorn.Input.mouse.actualY-16+this.cursorItem.sprite.width;
+                    if (this.cursorItem.stackText){
+                        this.cursorItem.stackText.position.x = Acorn.Input.mouse.actualX + this.cursorItem.size[1]*16;
+                        this.cursorItem.stackText.position.y = Acorn.Input.mouse.actualY + this.cursorItem.size[0]*16;
+                    }
+                }else{
+                    this.cursorItem.sprite.position.x = Acorn.Input.mouse.actualX-16;
+                    this.cursorItem.sprite.position.y = Acorn.Input.mouse.actualY-16;
+                    if (this.cursorItem.stackText){
+                        this.cursorItem.stackText.position.x = Acorn.Input.mouse.actualX + this.cursorItem.size[0]*16;
+                        this.cursorItem.stackText.position.y = Acorn.Input.mouse.actualY + this.cursorItem.size[1]*16;
+                    }
+                }
+            }
             //check Keys
             if (Acorn.Input.isPressed(Acorn.Input.Key.COMMAND)){
                 this.mainChat.textBox.text = '';
@@ -134,6 +156,16 @@
             if (Acorn.Input.isPressed(Acorn.Input.Key.ENTER)){
                 this.mainChat.textBox.activate();
                 Acorn.Input.setValue(Acorn.Input.Key.ENTER,false)
+            }
+
+
+            if (Acorn.Input.isPressed(Acorn.Input.Key.CHARACTERWINDOW)){
+                this.characterWindow.toggle();
+                Acorn.Input.setValue(Acorn.Input.Key.CHARACTERWINDOW,false)
+            }
+            if (Acorn.Input.isPressed(Acorn.Input.Key.BAGWINDOW)){
+                this.bagWindow.toggle();
+                Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false)
             }
         },
 
@@ -226,6 +258,25 @@
                     break;
 
             }
+        },
+
+        addClientMessage: function(data){
+            switch(data.type){
+                case 'ui':
+                        this.mainChat.addMessage(data.txt, 0xFFFF00);
+                    break;
+            }
+        },
+
+        setCursorItem: function(item){
+            this.cursorItem = item;
+            this.previousPos = item.position;
+            this.previousFlip = item.flipped;
+            Graphics.uiContainer.addChild(item.sprite);
+            if (item.stackText){
+                Graphics.uiContainer.addChild(item.stackText);
+            }
+            this.cursorItemFlipped = item.flipped;
         },
 
         checkClientCommand: function(txt){

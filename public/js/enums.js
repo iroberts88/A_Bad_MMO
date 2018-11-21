@@ -17,12 +17,14 @@
 
         OPEN: 'openfds',
         OVERLAYRESOURCE: 'overlayResourcefds',
+        OVERLAYTYPE: 'oType',
         IDLEBEHAVIOUR: 'idleBehaviourfdsa',
         COMBATBEHAVIOUR: 'combatBehaviourfdsa',
         ACQUIRETARGET: 'acquireTargetasdf',
 
         //ITEM/Inventory enums
         ITEM: 'item',
+        ITEMID: 'itemid',
         ITEMS: 'items',
         ADDITEM: 'addItem',
         REMOVEITEM: 'removeItem',
@@ -40,6 +42,8 @@
         RANGE: 'range',
         ONEQUIPTEXT: 'onEquipText',
         STATS: 'stats',
+        STACK: 'stack',
+        SIZE: 'size',
         QUANTITY: 'quantity',
         COPPER: 'copper',
         SILVER: 'silver',
@@ -76,6 +80,10 @@
         BAG2: 'bag2',
         BAG3: 'bag3',
         BAG4: 'bag4',
+        GRID: 'grid',
+        X: 'x',
+        Y: 'y',
+        MOVEITEM: 'moveItem',
 
         //stat enums
         AC: 'ac',

@@ -86,7 +86,7 @@ function Unit() {
             this.name = data.name;
             this.owner = data.owner;
 
-            this.cRadius = 8;
+            this.cRadius = 16;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 

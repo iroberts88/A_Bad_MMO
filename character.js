@@ -19,7 +19,7 @@ Character = function(){
         this.slot = data[this.engine.enums.SLOT];
         this.class = data[this.engine.enums.CLASS];
         this.race = data[this.engine.enums.RACE];
-        this.zoneid = 'test1';
+        this.zoneid = 'marinn_tavern';
     }
 
     character.update = function(deltaTime){

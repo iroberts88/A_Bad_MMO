@@ -53,11 +53,13 @@
                 var onClick = function(e){
                     e.currentTarget.clicked = true;
                     e.currentTarget.localPositionForMove = e.data.getLocalPosition(e.currentTarget);
+                    Graphics.app.renderer.plugins.interaction.moveWhenInside = false;
                 }
                 this.moveRect.on('pointerdown', onClick);
                 this.moveRect.on('touchstart', onClick);
                 var onClickUp = function(e){
                     e.currentTarget.clicked = false;
+                    Graphics.app.renderer.plugins.interaction.moveWhenInside = true;
                 }
                 this.moveRect.on('pointerup', onClickUp);
                 this.moveRect.on('pointerupoutside', onClickUp);
@@ -80,6 +82,12 @@
                 this.moveRect.on('pointermove', onMove);
                 this.moveRect.on('touchmove', onMove);
 
+                var onOut = function(e){
+                    document.body.style.cursor = "default";
+                }
+                this.moveRect.on('pointerout', onOut);
+                this.resizeRect.on('pointerout', onOut);
+
 
                 var onClick = function(e){
                     e.currentTarget.clicked = true;
@@ -88,10 +96,12 @@
                         x: e.currentTarget.uiElement.mainContainer.position.x+e.currentTarget.localPositionForResize.x,
                         y: e.currentTarget.uiElement.mainContainer.position.y+e.currentTarget.localPositionForResize.y
                     }
+                    Graphics.app.renderer.plugins.interaction.moveWhenInside = false;
                 }
                 this.resizeRect.on('pointerdown', onClick);
                 var onClickUp = function(e){
                     e.currentTarget.clicked = false;
+                    Graphics.app.renderer.plugins.interaction.moveWhenInside = true;
                 }
                 this.resizeRect.on('pointerup', onClickUp);
                 this.resizeRect.on('pointerupoutside', onClickUp);
@@ -164,6 +174,14 @@
                 this.active = false
                 if (this.mainContainer.parent){
                     this.mainContainer.parent.removeChild(this.mainContainer);
+                }
+            },
+
+            toggle: function(){
+                if (this.active){
+                    this._deActivate();
+                }else{
+                    this._activate();
                 }
             },
 

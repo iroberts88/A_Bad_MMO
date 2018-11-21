@@ -93,6 +93,7 @@
             this.ui.addChild(this.consoleContainer); //ADD CONSOLE CONTAINER
 
             this.resources = {};
+            this.sets = {};
             this.resourcesReady = false;
             this.animationSpeeds = {};
 
@@ -210,14 +211,30 @@
                 Graphics.resources[animations[j]] = animTextures;
 
             }
-
+            Graphics.sets['deep'] = ['deep_water'];
 
             var r = Graphics.app._loader.resources['img/mapSprites.json'];
+
             for (var i in r.textures){
-                if (typeof Graphics.letters[i.charAt(0)] != 'undefined'){
-                    //this is an animation
+                var set = '';
+                var base = true;
+                for (var j = 0; j <i.length;j++){
+                    if (i.charAt(j) == '_'){
+                        base = false;
+                        break;
+                    }else{
+                        set += i.charAt(j);
+                    }
+                }
+                if (set == 'deep'){
                     continue;
                 }
+                if (base){set = '';}
+                if (typeof Graphics.sets[set] == 'undefined'){
+                    Graphics.sets[set] = [];
+                }
+                Graphics.sets[set].push(i.substring(0,i.length-4));
+
                 var texture = PIXI.Texture.fromFrame(i);
                 var name = i.slice(0,i.length-4);
                 if (typeof Graphics.animationSpeeds[name] == 'undefined'){

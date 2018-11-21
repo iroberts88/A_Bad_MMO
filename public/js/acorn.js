@@ -71,6 +71,8 @@
             Y: null,
             prevX: null,
             prevY: null,
+            actualX: null,
+            actualY: null
         },
         buttons: {},
         mouseUpCallback: null,
@@ -96,9 +98,6 @@
             this.keyBindings[68] = Acorn.Input.Key.RIGHT; //default D
             this.keyBindings[13] = Acorn.Input.Key.ENTER; //default Enter
             this.keyBindings[191] = Acorn.Input.Key.COMMAND; //default /
-            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
-            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
-            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
             this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
             this.keyBindings[66] = Acorn.Input.Key.BAGWINDOW; //default B
             this.keyBindings[73] = Acorn.Input.Key.BAGWINDOW; //default I
@@ -150,6 +149,8 @@
             Acorn.Input.mouse.prevY = Acorn.Input.mouse.Y;
             Acorn.Input.mouse.X = e.layerX;
             Acorn.Input.mouse.Y = e.layerY;
+            Acorn.Input.mouse.actualX = e.layerX/Graphics.actualRatio[0];
+            Acorn.Input.mouse.actualY = e.layerY/Graphics.actualRatio[1];
             if(Acorn.Input.mouseMoveCallback && typeof Acorn.Input.mouseMoveCallback === 'function') {
                 Acorn.Input.mouseMoveCallback(e);
             }

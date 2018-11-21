@@ -12,6 +12,9 @@
 
         net: function() {
             Acorn.Net.on('connInfo', function (data) {
+                if (Acorn.Net.ready){
+                    return;
+                }
                 console.log('Connected to server: Info Received');
                 Acorn.Net.ready = true;
                 window.playerID = data.id;

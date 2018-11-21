@@ -7,6 +7,7 @@
 
         tileSelectorOn: false,
         triggerSelectorOn: false,
+        currentSet: '',
 
         currentOnTrigger: 'arrival',
         currentDoTrigger: 'changeMap',
@@ -19,6 +20,7 @@
         mapid: '',
         mapname: '',
         data: {},
+        overlayType: 0,
         //Modes:
             //place - change tile textures and place new sectors
             //blocked - apply blocked status to tiles
@@ -36,6 +38,8 @@
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         currentMode: 'place',
         currentPlaceTile: '1',
+
+        toolSize: 1,
 
         linesOn: true,
 
@@ -77,7 +81,32 @@
                 interactive: true,
                 buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
-                    MapGen.showTileSelector();
+                    var tilesets = {
+                        c: true,
+                        c2: true,
+                        ca: true,
+                        ci: true,
+                        cr: true,
+                        cv: true,
+                        d: true,
+                        f: true,
+                        i: true,
+                        k: true,
+                        l: true,
+                        m: true,
+                        mo: true,
+                        p: true,
+                        r: true,
+                        t: true,
+                        v: true,
+                        x: true,
+                        deep: true
+                    }
+                    var set = prompt("Select Map Type: \n c,c2,ca,ci,cr,cv,d,f,i,k,l,m,mo,p,r,t,v,x, or blank",'');
+                    if (typeof tilesets[set] == 'undefined'){
+                        set = '';
+                    }
+                    MapGen.showTileSelector(set);
                 }
             });
             this.tileSelector.position.x = 5 + this.tileSelector.width/2;
@@ -123,10 +152,27 @@
             });
             Graphics.uiContainer.addChild(this.placeButton);
 
+            this.overlayButton = Graphics.makeUiElement({
+                text: 'overlay',
+                style: style,
+                position: [5, this.placeButton.position.y + 5 + this.placeButton.height],
+                anchor: [0,0],
+                interactive: true,buttonMode: true,buttonGlow: true,
+                clickFunc: function onClick(){
+                    MapGen.changeMode('overlay');
+                    var type = prompt("Overlay type? (0=bottom layer, 1=grass, 2 = top layer",0);
+                    MapGen.overlayType = parseInt(type);
+                    if (type != 0 && type != 1 && type != 2){
+                        MapGen.overlayType = parseInt(type);
+                    }
+                }
+            });
+            Graphics.uiContainer.addChild(this.overlayButton);
+
             this.blockedButton = Graphics.makeUiElement({
                 text: 'blocked',
                 style: style,
-                position: [5, this.placeButton.position.y + 5 + this.placeButton.height],
+                position: [5, this.overlayButton.position.y + 5 + this.overlayButton.height],
                 anchor: [0,0],
                 interactive: true,buttonMode: true,buttonGlow: true,
                 clickFunc: function onClick(){
@@ -453,6 +499,22 @@
                         }
                     }
                 }
+            }else if (mode == 'overlay' || mode == 'deleteoverlay'){
+                for (var k in this.map.sectors){
+                    for (var i = 0; i < this.map.sectors[k].tiles.length;i++){
+                        for (var j = 0; j < this.map.sectors[k].tiles[i].length;j++){
+                            var tile = this.map.sectors[k].tiles[i][j];
+                            if (tile.overlaySprite){
+                                tile.setOverlayType(tile.oType);
+                            }else{
+                                tile.sprite.tint =  0xFFFFFF;
+                                if (tile.overlaySprite){
+                                    tile.overlaySprite.tint = 0xFFFFFF;
+                                }
+                            }
+                        }
+                    }
+                }
             }else{
                 for (var k in this.map.sectors){
                     for (var i = 0; i < this.map.sectors[k].tiles.length;i++){
@@ -587,8 +649,9 @@
             Graphics.uiContainer2.addChild(okButton);
         },
 
-        showTileSelector: function(){
+        showTileSelector: function(set){
             if (this.tileSelectorOn){return;}
+            MapGen.currentSet = set;
             this.clearSelectors();
             this.tileSelectorOn = true;
             Graphics.uiPrimitives1.lineStyle(1,0x000000,0.8);
@@ -599,15 +662,16 @@
             var ypos = 100;
             var xpos = 100;
             var mapanims = {'deep_water': '0x12'};
-            for(var i in Graphics.resources) {
-                if (typeof Graphics.resources[i].isAMapTexture == 'undefined'){
-                    if (typeof mapanims[i] == 'undefined'){
+            for(var i = 0; i < Graphics.sets[set].length;i++) {
+                var res = Graphics.sets[set][i];
+                if (typeof Graphics.resources[res].isAMapTexture == 'undefined'){
+                    if (typeof mapanims[res] == 'undefined'){
                         continue;
                     }
                 }
                 try{
                     var s = Graphics.makeUiElement({
-                        sprite: i,
+                        sprite: res,
                         interactive: true,
                         buttonMode: true,
                         anchor: [0,0],
@@ -618,16 +682,21 @@
                                 sprite: e.currentTarget.resource,
                                 position: [MapGen.currentTileSprite.position.x,MapGen.currentTileSprite.position.y]
                             })
-                            sprite.scale.x = 2;
-                            sprite.scale.y = 2;
+                            sprite.scale.x = 1.5;
+                            sprite.scale.y = 1.5;
                             Graphics.uiContainer.removeChild(MapGen.currentTileSprite);
                             MapGen.currentTileSprite = sprite;
                             Graphics.uiContainer.addChild(MapGen.currentTileSprite);
                         }
                     });
-                    var string = i;
-                    if (typeof mapanims[i] != 'undefined'){
-                        string = mapanims[i]
+                    var string = res;
+                    if (typeof mapanims[res] != 'undefined'){
+                        string = mapanims[res]
+                    }
+                    for (var j = 0; j < string.length;j++){
+                        if (string.charAt(j) == '_'){
+                            string = string.substr(j+1);
+                        }
                     }
                     var tilex = '';
                     var tiley = '';
@@ -645,11 +714,11 @@
                             break;
                         }
                     }
-                    s.scale.x = 2;
-                    s.scale.y = 2;
-                    s.position.x = 100 + 40* parseInt(tilex);
-                    s.position.y = 100 + 40* parseInt(tiley);
-                    s.resource = i;
+                    s.scale.x = 1.5;
+                    s.scale.y = 1.5;
+                    s.position.x = 100 + 30* parseInt(tilex);
+                    s.position.y = 100 + 30* parseInt(tiley);
+                    s.resource = res;
                     Graphics.uiContainer2.addChild(s);
                     xpos += 20;
                     if (xpos > Graphics.width-116){
@@ -704,7 +773,7 @@
                 Acorn.Input.setValue(Acorn.Input.Key.HOME, false);
             }
             if (Acorn.Input.isPressed(Acorn.Input.Key.TILESELECT)){
-                MapGen.showTileSelector();
+                MapGen.showTileSelector(MapGen.currentSet);
                 Acorn.Input.setValue(Acorn.Input.Key.TILESELECT, false);
             }
             if (Acorn.Input.isPressed(Acorn.Input.Key.ESCAPE)){
@@ -715,6 +784,7 @@
                 switch(this.currentMode){
                     case 'place':
                     //get sector and tile
+
                         var tile = this.map.getTile();
                         if (tile == 'none'){
                             var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
@@ -726,34 +796,62 @@
                             Acorn.Input.buttons = {};
                             break;
                         }
-                        if (this.currentPlaceTile.charAt(this.currentPlaceTile.length-1) == 'o' || this.currentPlaceTile.charAt(this.currentPlaceTile.length-1) == 'e'){
-                            //set overlay sprite
-                            var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
-                            var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
-                            Acorn.Input.buttons = {2:true}
-                            Acorn.Input.mouseDown = true;
-                            if (tile.resource != this.currentPlaceTile){
-                                tile.setOverlaySprite(this.currentPlaceTile);
-                                this.changesMade = true;
-                            }
-                            break;
-                        }
-                        Acorn.Input.buttons = {2:true};
-                        Acorn.Input.mouseDown = true;
-                        if (tile.resource != this.currentPlaceTile){
-                            tile.setSprite(this.currentPlaceTile);
-                            this.changesMade = true;
-                            if (tile.sprite instanceof PIXI.extras.MovieClip){
-                                for (var k in this.map.sectors){
-                                    for (var i = 0; i < this.map.sectors[k].tiles.length;i++){
-                                        for (var j = 0; j < this.map.sectors[k].tiles[i].length;j++){
-                                            if (this.map.sectors[k].tiles[i][j].sprite instanceof PIXI.extras.MovieClip){
-                                                this.map.sectors[k].tiles[i][j].sprite.gotoAndPlay(1);
+                        for (var x = this.toolSize-1;x >= -(this.toolSize-1);x--){
+                            for (var y = this.toolSize-1;y >= -(this.toolSize-1);y--){
+                                Acorn.Input.buttons = {2:true};
+                                Acorn.Input.mouseDown = true;
+                                var sectorPos = [this.map.sectors[tile.sectorId].x,this.map.sectors[tile.sectorId].y];
+                                var tPos = [tile.x+x,tile.y+y];
+                                if (tPos[0] < 0){
+                                    sectorPos[0] -= 1;
+                                    tPos[0] = 20;
+                                }else if (tPos[0] > 20){
+                                    sectorPos[0] += 1;
+                                    tPos[0] = 0;
+                                }if (tPos[1] < 0){
+                                    sectorPos[1] -= 1;
+                                    tPos[1] = 20;
+                                }else if (tPos[1] > 20){
+                                    sectorPos[1] += 1;
+                                    tPos[1] = 0;
+                                }
+                                if (typeof this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]] == 'undefined'){
+                                    continue;
+                                }
+                                var cTile = this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]].tiles[tPos[0]][tPos[1]];
+                                if (cTile.resource != this.currentPlaceTile){
+                                    cTile.setSprite(this.currentPlaceTile);
+                                    this.changesMade = true;
+                                    if (cTile.sprite instanceof PIXI.extras.MovieClip){
+                                        for (var k in this.map.sectors){
+                                            for (var i = 0; i < this.map.sectors[k].tiles.length;i++){
+                                                for (var j = 0; j < this.map.sectors[k].tiles[i].length;j++){
+                                                    if (this.map.sectors[k].tiles[i][j].sprite instanceof PIXI.extras.MovieClip){
+                                                        this.map.sectors[k].tiles[i][j].sprite.gotoAndPlay(1);
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
+                        break;
+                    case 'overlay':
+                    //get sector and tile
+                        var tile = this.map.getTile();
+                        if (tile == 'none'){
+                            break;
+                        }
+                        //set overlay sprite
+                        var sectorX = Math.floor(((Acorn.Input.mouse.X / Graphics.actualRatio[0]) - Graphics.worldContainer.position.x)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        var sectorY = Math.floor(((Acorn.Input.mouse.Y / Graphics.actualRatio[1]) - Graphics.worldContainer.position.y)/(this.map.SECTOR_TILES*this.map.TILE_SIZE*zoom));
+                        Acorn.Input.buttons = {2:true}
+                        Acorn.Input.mouseDown = true;
+                        if (tile.resource != this.currentPlaceTile){
+                            tile.setOverlaySprite(this.currentPlaceTile);
+                            tile.setOverlayType(MapGen.overlayType);
+                            this.changesMade = true;
                         }
                         break;
                     case 'deleteSectors':
@@ -787,6 +885,7 @@
                                 Graphics.worldContainer.removeChild(tile.overlaySprite);
                                 tile.overlaySprite = null;
                                 tile.overlayResource = null;
+                                tile.oType = null;
                             }
                         }
                         break;

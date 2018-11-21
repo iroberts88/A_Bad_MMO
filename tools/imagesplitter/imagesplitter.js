@@ -3,7 +3,7 @@ var fs = require('fs'),
 
 var interval,
 	columns = 16,
-	rows = 32,
+	rows = 16,
 	s = 16,
 	x = 0,
 	y = 0,
@@ -29,11 +29,11 @@ function tick(){
 	}
 }
 function cutImage(){
-	Jimp.read('town.png', function (err,image){
+	Jimp.read('void.png', function (err,image){
 		if (err){throw err}
 		console.log('cutting ' + x + 'x' + y);
 		image.crop(x*s,y*s,s,s);
-		var file = x + 'x' + y + '_t.' + image.getExtension();
+		var file = 'v_' + x + 'x' + y + '.' + image.getExtension();
 		image.write(file);
 		next = true;
 		if (end){

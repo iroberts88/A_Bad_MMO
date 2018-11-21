@@ -10,8 +10,6 @@ var Inventory = function () {
     //list of item references by DB id
     this.itemIndex = {};
 
-    this.gridIndex = {};
-
     this.currentWeight = 0;
     this.carryWeight = 0;
     this.cursorItem = null;
@@ -44,11 +42,11 @@ var Inventory = function () {
         'bag3': null,
         'bag4': null
     };
-    this.grid0 = new Grid(8,8,this,0);
-    this.grid1 = new Grid(10,10,this,1);
-    this.grid2 = new Grid(2,2,this,2);
-    this.grid3 = new Grid(2,2,this,3);
-    this.grid4 = new Grid(2,2,this,4);
+    this.grid0 = new Grid(12,12,this,0);
+    this.grid1 = new Grid(12,12,this,1);
+    this.grid2 = new Grid(12,12,this,2);
+    this.grid3 = new Grid(12,12,this,3);
+    this.grid4 = new Grid(12,12,this,4);
 
     this.flip = false;
     this.owner = null;
@@ -90,6 +88,62 @@ Inventory.prototype.changeWeight = function(){
     //change the current weight
     var cf = 10;
     this.currentWeight = ((this.currentWeight*cf + (amt*cf)*mult) / cf);
+}
+Inventory.prototype.moveItem = function(data){
+    //move an item from one slot to another..
+    console.log(data);
+    var bag = this.getBag(data[this.engine.enums.BAG]);
+    if (!bag){return;}
+    var pos = data[this.engine.enums.POSITION];
+    var flip = data[this.engine.enums.FLIPPED];
+    var id = data[this.engine.enums.ID];
+    var item = this.items[id];
+    var x = flip ? item.item.ySize : item.item.xSize;
+    var y = flip ? item.item.xSize : item.item.ySize;
+    //check that position is available
+    var open = true;
+    for (var i = 0; i < x;i++){
+        if (pos[0]+i >= bag.x){
+            open = false;
+            continue;
+        }
+        for (var j = 0; j < y;j++){
+            if (pos[1]+j >= bag.y){
+                open = false;
+                continue;
+            }
+            if (bag.arr[pos[0]+i][pos[1]+j] != null){
+                if (bag.arr[pos[0]+i][pos[1]+j] != id){
+                    open = false;
+                }
+            }
+        }
+    }
+    if (open){
+        console.log("It fits!");
+        //remove from old position
+        var oldX = item.flipped ? item.item.ySize : item.item.xSize;
+        var oldY = item.flipped ? item.item.xSize : item.item.ySize;
+        for (var i = 0; i < oldX;i++){
+            for (var j = 0; j < oldY;j++){
+                item.grid.arr[item.position[0]+i][item.position[1]+j] = null;
+            }
+        }
+        //add to new position
+        for (var i = 0; i < x;i++){
+            for (var j = 0; j < y;j++){
+                bag.arr[pos[0]+i][pos[1]+j] = id;
+            }
+        }
+        item.position = pos;
+        item.flipped = flip;
+        item.grid = bag;
+        bag.itemLocIndex[id] = {
+            x: pos[0],
+            y: pos[1]
+        }
+        bag.print();
+    }
 }
 Inventory.prototype.equipItem = function(index){
    
@@ -209,12 +263,14 @@ Inventory.prototype._addItem = function(data){
         x: data.x,
         y: data.y
     }
-    this.gridIndex[itemid] = data.grid;
     if (typeof this.itemIndex[data.item.itemid] != 'undefined'){
         this.itemIndex[data.item.itemid].push(itemid);
     }else{
         this.itemIndex[data.item.itemid] = [itemid];
     }
+    this.items[itemid].flipped = this.flip;
+    this.items[itemid].position = [data.x,data.y];
+    this.items[itemid].grid = this.getBag(data.grid.bag);
     data.grid.print();
     var d = {};
     d[this.engine.enums.ITEM] = data.pitem.getClientData();
@@ -234,6 +290,26 @@ Inventory.prototype.contains = function(id){
 }
 Inventory.prototype.sortByType = function(dir){
 
+}
+Inventory.prototype.getBag = function(num){
+    switch(num){
+        case 0:
+            return this.grid0;
+            break;
+        case 1:
+            return this.grid1;
+            break;
+        case 2:
+            return this.grid2;
+            break;
+        case 3:
+            return this.grid3;
+            break;
+        case 4:
+            return this.grid4;
+            break;
+    }
+    return null;
 }
 Inventory.prototype.getClientData = function(){
     var data = {};
@@ -270,8 +346,10 @@ PlayerItem.prototype.init = function(data){
     this.id = this.owner.engine.getId();
     this.itemid = data.itemid;
     this.item = data.item;
-
+    this.flipped = data.flipped;
+    this.position = data.position;
     this.quantity = data.quantity;
+    this.grid = data.grid;
 
     //additional info about the item?
     //enchantements... etc?
@@ -295,6 +373,7 @@ PlayerItem.prototype.addQuantity = function(amt){
     this.clientData[this.owner.engine.enums.QUANTITY] = this.quantity;
     var data = {};
     data[this.engine.enums.QUANTITY] = this.quantity;
+    data[this.engine.enums.ID] = this.id;
     this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
 }
 
@@ -336,10 +415,13 @@ Item.prototype.getClientData = function(){
     var data = {};
     var e = this.engine.enums;
 
+    data[e.ITEMID] = this.itemid;
     data[e.NAME] = this.name;
     data[e.LORE] = this.lore;
     data[e.RESOURCE] = this.resource;
     data[e.VALUE] = this.value;
+    data[e.STACK] = this.stack;
+    data[e.SIZE] = [this.xSize,this.ySize];
     data[e.WEIGHT] = this.weight;
     data[e.FLAVORTEXT] = this.flavorText;
     if (this.slots){
@@ -382,13 +464,14 @@ var Grid = function (x,y,inventory,bag) {
 }
 Grid.prototype.getClientData = function(){
     var data = {}
-    data.x = this.x;
-    data.y = this.y;
-    data.grid = {};
+    data[this.i.engine.enums.X] = this.x;
+    data[this.i.engine.enums.Y] = this.y;
+    data[this.i.engine.enums.GRID] = {};
+    data[this.i.engine.enums.BAG] = this.bag;
     for (var i in this.arr){
-        data.grid[i] = {};
+        data[this.i.engine.enums.GRID][i] = {};
         for (var j in this.arr[i]){
-            data.grid[i][j] = this.arr[i][j];
+            data[this.i.engine.enums.GRID][i][j] = this.arr[i][j];
         }
     }
     return data;

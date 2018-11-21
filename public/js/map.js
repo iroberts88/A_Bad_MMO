@@ -113,6 +113,9 @@ var P = SAT.Polygon,
             }
             unit.hb.pos.y += yDist/hyp;
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+            if (!tile.open){
+                unit.hb.pos.y -= yDist/hyp;
+            }
         }
     };
     window.GameMap = GameMap;
@@ -166,20 +169,19 @@ var getSectorXY = function(string){
                     resource: data[Enums.TILES][i][j][Enums.RESOURCE],
                     open: data[Enums.TILES][i][j][Enums.OPEN],
                     triggers: data[Enums.TILES][i][j][Enums.TRIGGERS],
-                    overlayResource: data[Enums.TILES][i][j][Enums.OVERLAYRESOURCE]
+                    overlayResource: data[Enums.TILES][i][j][Enums.OVERLAYRESOURCE],
+                    overlayType: data[Enums.TILES][i][j][Enums.OVERLAYTYPE]
                 });
                 newTile.sprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                 newTile.sprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                if (r == 'deep_water' || r.charAt(r.length-1) == 'e'){
-                    Graphics.worldContainer2.addChild(newTile.sprite);
-                }else{
-                    Graphics.worldContainer.addChild(newTile.sprite);
-                }
+                Graphics.worldContainer.addChild(newTile.sprite);
                 if (newTile.overlaySprite){
                     newTile.overlaySprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                     newTile.overlaySprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                    if (r == 'deep_water' || or.charAt(or.length-1) == 'e'){
+                    if (r == 'deep_water' || newTile.overlayType == 1){
                         Graphics.worldContainer2.addChild(newTile.overlaySprite);
+                    }else if (newTile.overlayType == 2){
+                        Graphics.worldContainer3.addChild(newTile.overlaySprite);
                     }else{
                         Graphics.worldContainer.addChild(newTile.overlaySprite);
                     }
@@ -216,6 +218,8 @@ var getSectorXY = function(string){
             this.sprite.scale.y = mainObj.GAME_SCALE;
             this.open = (typeof data.open == 'undefined')  ? false : data.open;
             this.overlayResource = (typeof data.overlayResource == 'undefined')  ? null : data.overlayResource;
+            this.overlayType = (typeof data.overlayType == 'undefined')  ? null : data.overlayType;
+
             this.overlaySprite = null; //2nd layer sprite
             if (this.overlayResource){
                 this.overlaySprite = Graphics.getSprite(data.overlayResource); //tile sprite

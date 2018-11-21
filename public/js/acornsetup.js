@@ -106,11 +106,13 @@
             });
 
             Acorn.Net.on(Enums.ADDITEM, function (data) {
-                console.log(data);
+                Game.bagWindow.addNewItem(data);
             });
 
             Acorn.Net.on(Enums.SETITEMQUANTITY, function (data) {
-                console.log(data);
+                if (typeof Game.bagWindow.items[data[Enums.ID]] != 'undefined'){
+                    Game.bagWindow.items[data[Enums.ID]].setQuantity(data[Enums.QUANTITY]);
+                };
             });
 
             Acorn.Net.on(Enums.REMOVEITEM, function (data) {
@@ -235,13 +237,23 @@
                     }
                 }
                 if (e.button == 2 && Game.ready){
-                    Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
-                    Player.sendMove();
+                    if (Game.cursorItem){
+                        if (Game.cursorItemFlipped){
+                            Game.cursorItemFlipped = false;
+                            Game.cursorItem.sprite.rotation = 0;
+                        }else{
+                            Game.cursorItemFlipped = true;
+                            Game.cursorItem.sprite.rotation = -1.5708;
+                        }
+                    }else{
+                        Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
+                        Player.sendMove();
+                    }
                 }
             });
             Acorn.Input.onMouseUp(function(e) {
                 Acorn.Input.mouseDown = false;
-                if (e.button == 2 && Game.ready){
+                if (e.button == 2 && Game.ready && Game.cursorItem == null){
                     Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
                     Player.sendMove();
                 }

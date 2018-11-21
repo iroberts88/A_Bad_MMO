@@ -72,6 +72,7 @@ Zone.prototype.init = function (data) {
                 }
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].overlayResource)){
                     this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OVERLAYRESOURCE] = data.mapData[i].tiles[j][k].overlayResource;
+                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OVERLAYTYPE] = data.mapData[i].tiles[j][k].oType;
                 }
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].open)){
                     this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OPEN] = data.mapData[i].tiles[j][k].open;
