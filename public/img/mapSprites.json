@@ -240,7 +240,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"2x9o.png":
+"2x9.png":
 {
 	"frame": {"x":480,"y":0,"w":16,"h":16},
 	"rotated": false,
@@ -248,7 +248,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"2x10o.png":
+"2x10.png":
 {
 	"frame": {"x":496,"y":0,"w":16,"h":16},
 	"rotated": false,
@@ -336,7 +336,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"4x4e.png":
+"4x4.png":
 {
 	"frame": {"x":672,"y":0,"w":16,"h":16},
 	"rotated": false,

@@ -108,12 +108,16 @@ var P = SAT.Polygon,
         for (var i = 0; i <= hyp;i++){
             unit.hb.pos.x += xDist/hyp;
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
-            if (!tile.open){
+            if (typeof tile == 'undefined'){
+                unit.hb.pos.x -= xDist/hyp;
+            }else if (!tile.open){
                 unit.hb.pos.x -= xDist/hyp;
             }
             unit.hb.pos.y += yDist/hyp;
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
-            if (!tile.open){
+            if (typeof tile == 'undefined'){
+                unit.hb.pos.y -= yDist/hyp;
+            }else if (!tile.open){
                 unit.hb.pos.y -= yDist/hyp;
             }
         }
