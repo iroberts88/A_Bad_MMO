@@ -111,7 +111,6 @@ var P = SAT.Polygon,
         for (var i = 0; i <= Math.ceil(hyp);i++){
             if (!xDist){break;}
             unit.hb.pos.x += (xDist/hyp)*(hyp/Math.ceil(hyp));
-            console.log(Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE));
             var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y)/mainObj.TILE_SIZE)];
             if (typeof tile == 'undefined'){
                 unit.hb.pos.x -= xDist/hyp;
@@ -122,7 +121,6 @@ var P = SAT.Polygon,
                 this.tileHitBox.pos.y = tile.sprite.position.y;
                 if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
                     unit.hb.pos.x += response.overlapV.x;
-                    console.log(response);
                     response.clear();
                     break;
                 }
@@ -141,7 +139,6 @@ var P = SAT.Polygon,
                 this.tileHitBox.pos.y = tile.sprite.position.y;
                 if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
                     unit.hb.pos.y += response.overlapV.y;
-                    console.log(response);
                     response.clear();
                     break;
                 }

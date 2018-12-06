@@ -72,16 +72,15 @@ slotEnums[Enums.BAG4] = 'bag';
                 this.bagSize = data[Enums.BAGSIZE];
 
                 if (typeof data[Enums.SLOTS] != 'undefined'){
-                    this.eqData = {};
                     this.slots = data[Enums.SLOTS];
-                    this.eqData.bludgeon = data[Enums.BLUDGEON];
-                    this.eqData.pierce = data[Enums.PIERCE];
-                    this.eqData.slash = data[Enums.SLASH];
-                    this.eqData.onEquipText = data[Enums.ONEQUIPTEXT];
-                    this.eqData.range = data[Enums.RANGE];
-                    this.eqData.classes = data[Enums.CLASSES];
-                    this.eqData.races = data[Enums.RACES];
-                    this.eqData.ac = data[Enums.AC];
+                    this.bludgeon = data[Enums.BLUDGEON];
+                    this.pierce = data[Enums.PIERCE];
+                    this.slash = data[Enums.SLASH];
+                    this.onEquipText = data[Enums.ONEQUIPTEXT];
+                    this.range = data[Enums.RANGE];
+                    this.classes = data[Enums.CLASSES];
+                    this.races = data[Enums.RACES];
+                    this.ac = data[Enums.AC];
                     this.stats = data[Enums.STATS];
                 }
 
@@ -112,6 +111,7 @@ slotEnums[Enums.BAG4] = 'bag';
                 this.bag = bag;
             },
             isEquipable: function(s){
+                return true;
                 if (!this.slots){
                     Game.mainChat.addMessage('That item cannot be equipped', 0xFFFF00);
                     return false;
@@ -130,14 +130,14 @@ slotEnums[Enums.BAG4] = 'bag';
                 var cBool = false;
                 var rBool = false;
                 var char = Player.currentCharacter;
-                for (var i = 0; i < this.eqData.classes.length;i++){
-                    var c = this.eqData.classes[i].toLowerCase();
+                for (var i = 0; i < this.classes.length;i++){
+                    var c = this.classes[i].toLowerCase();
                     if (c == 'all' || c == char.class){
                         cBool = true;
                     }
                 }
-                for (var i = 0; i < this.eqData.races.length;i++){
-                    var c = this.eqData.races[i].toLowerCase();
+                for (var i = 0; i < this.races.length;i++){
+                    var c = this.races[i].toLowerCase();
                     if (c == 'all' || c == char.race){
                         rBool = true;
                     }

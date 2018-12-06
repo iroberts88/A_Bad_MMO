@@ -245,7 +245,7 @@ var GameEngine = function() {
         Y: 'y',
 
         ZONE: 'zone'
-  };
+    };
     this.slotEnums = {
         'ear': this.enums.EAR,
         'head': this.enums.HEAD,
@@ -268,6 +268,37 @@ var GameEngine = function() {
         'ammo': this.enums.AMMO,
         'bag': this.enums.BAG,
     };
+
+    this.slotEnums2 = {};
+    this.slotEnums2[this.enums.HEAD] = 'head';
+
+    this.slotEnums2[this.enums.EAR1] = 'ear';
+    this.slotEnums2[this.enums.EAR2] = 'ear';
+    this.slotEnums2[this.enums.HEAD] = 'head';
+    this.slotEnums2[this.enums.FACE] = 'face';
+    this.slotEnums2[this.enums.NECK] = 'neck';
+    this.slotEnums2[this.enums.ARMS] = 'arms';
+    this.slotEnums2[this.enums.BACK] = 'back';
+    this.slotEnums2[this.enums.SHOULDERS] = 'shoulders';
+    this.slotEnums2[this.enums.CHEST] = 'chest';
+    this.slotEnums2[this.enums.WRIST1] = 'wrist';
+    this.slotEnums2[this.enums.WRIST2] = 'wrist';
+    this.slotEnums2[this.enums.HANDS] = 'hands';
+    this.slotEnums2[this.enums.FINGER1] = 'finger';
+    this.slotEnums2[this.enums.FINGER2] = 'finger';
+    this.slotEnums2[this.enums.WAIST] = 'waist';
+    this.slotEnums2[this.enums.LEGS] = 'legs';
+    this.slotEnums2[this.enums.FEET] = 'feet';
+    this.slotEnums2[this.enums.TRINKET1] = 'trinket';
+    this.slotEnums2[this.enums.TRINKET2] = 'trinket';
+    this.slotEnums2[this.enums.MAIN] = 'main';
+    this.slotEnums2[this.enums.SECONDARY] = 'secondary';
+    this.slotEnums2[this.enums.RANGED] = 'ranged';
+    this.slotEnums2[this.enums.AMMO] = 'ammo';
+    this.slotEnums2[this.enums.BAG1] = 'bag';
+    this.slotEnums2[this.enums.BAG2] = 'bag';
+    this.slotEnums2[this.enums.BAG3] = 'bag';
+    this.slotEnums2[this.enums.BAG4] = 'bag';
 
     this.statEnums = {
         'strength': this.enums.STRENGTH,

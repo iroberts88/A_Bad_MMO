@@ -231,36 +231,36 @@
             }
             ttArray.push({text: string,color: 0xe7a5ff});
 
-            if (item.eqData.ac){
-                ttArray.push({text: '<AC: > ' + item.eqData.ac});
+            if (item.ac){
+                ttArray.push({text: '<AC: > ' + item.ac});
             }
             
             var races = '';
-            for (var i = 0 ; i < item.eqData.races.length;i++){
-                races += item.eqData.races[i] + ' ';
+            for (var i = 0 ; i < item.races.length;i++){
+                races += item.races[i] + ' ';
             }
             ttArray.push({text: '<Races:> ' + races});
 
             var classes = '';
-            for (var i = 0 ; i < item.eqData.classes.length;i++){
-                classes += item.eqData.classes[i] + ' ';
+            for (var i = 0 ; i < item.classes.length;i++){
+                classes += item.classes[i] + ' ';
             }
             ttArray.push({text: '<Classes:> ' + classes});
             
-            if (item.eqData.range){
-                ttArray.push({text: '<Range: > ' + item.eqData.range});
+            if (item.range){
+                ttArray.push({text: '<Range: > ' + item.range});
             }
 
-            if (item.eqData.bludgeon){
-                ttArray.push({text: '<Bludgeon: > ' + item.eqData.bludgeon[0] + '/' + item.eqData.bludgeon[1] + ' ~ ' + item.eqData.bludgeon[2] + '%'});
+            if (item.bludgeon){
+                ttArray.push({text: '<Bludgeon: > ' + item.bludgeon[0] + '/' + item.bludgeon[1] + ' ~ ' + item.bludgeon[2] + '%'});
             }
 
-            if (item.eqData.slash){
-                ttArray.push({text: '<Slash: > ' + item.eqData.slash[0] + '/' + item.eqData.slash[1] + ' ~ ' + item.eqData.slash[2] + '%'});
+            if (item.slash){
+                ttArray.push({text: '<Slash: > ' + item.slash[0] + '/' + item.slash[1] + ' ~ ' + item.slash[2] + '%'});
             }
 
-            if (item.eqData.pierce){
-                ttArray.push({text: '<Pierce: > ' + item.eqData.pierce[0] + '/' + item.eqData.pierce[1] + ' ~ ' + item.eqData.pierce[2] + '%'});
+            if (item.pierce){
+                ttArray.push({text: '<Pierce: > ' + item.pierce[0] + '/' + item.pierce[1] + ' ~ ' + item.pierce[2] + '%'});
             }
 
             if (item.bagSize){

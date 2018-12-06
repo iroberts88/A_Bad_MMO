@@ -145,18 +145,28 @@ Inventory.prototype.moveItem = function(data){
         bag.print();
     }
 }
+
 Inventory.prototype.equipItem = function(slot,item){
     var itemToMove = this.items[item];
     //TODO make sure its equipable
+    if (!itemToMove.isEquipable(slot)){
+        console.log('failed!');
+        return;
+    }
     if (this.slots[slot] == null){
         this.slots[slot] = itemToMove;
+        console.log('equipped!!');
+    }else{
+        //swap item?
     }
 }
+
 Inventory.prototype.addItemById = function(id,amt){
     //add a single new item by item id
     var amtAdded = this._addItemById(id,amt)
     console.log('added ' + amtAdded + ' item(s)');
 }
+
 Inventory.prototype._addItemById = function(id,amt){
     var item = this.engine.getItem(id);
     var startAmt = amt;
@@ -384,7 +394,49 @@ PlayerItem.prototype.addQuantity = function(amt){
     data[this.engine.enums.ID] = this.id;
     this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
 }
-
+PlayerItem.prototype.checkSlot = function(itemSlot,slot){
+    if (this.engine.slotEnums2[itemSlot] == slot){
+        return true;
+    }
+    return false;
+}
+PlayerItem.prototype.isEquipable = function(s){
+    if (!this.item.slots){
+        console.log('not equippable...')
+        return false;
+    }
+    var slotBool = false;
+    for (var i = 0; i < this.item.slots.length;i++){
+        if (this.checkSlot(s,this.item.slots[i])){
+            slotBool = true;
+            break;
+        }
+    }
+    if (!slotBool){
+        console.log('incorrect slot......')
+        return false;
+    }
+    var cBool = false;
+    var rBool = false;
+    var char = this.owner;
+    for (var i in this.item.classes){
+        var c = i.toLowerCase();
+        if (c == 'all' || c == char.class){
+            cBool = true;
+        }
+    }
+    for (var i in this.item.races){
+        var c = i.toLowerCase();
+        if (c == 'all' || c == char.race){
+            rBool = true;
+        }
+    }
+    if (!cBool || !rBool){
+        console.log('incorrect race/class....')
+        return false;
+    }
+    return true;
+};
 exports.PlayerItem = PlayerItem;
 
 var Item = function (engine) {
@@ -464,6 +516,7 @@ Item.prototype.init = function(data){
     this.bagSize = Utils.udCheck(data['bagSize'],null,data['bagSize']);
 
 };
+
 Item.prototype.getClientData = function(){
     var data = {};
     var e = this.engine.enums;
