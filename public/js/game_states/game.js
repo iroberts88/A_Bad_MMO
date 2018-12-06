@@ -167,6 +167,12 @@
                 this.bagWindow.toggle();
                 Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false)
             }
+            if (Acorn.Input.isPressed(Acorn.Input.Key.ESCAPE)){
+                if (this.cursorItem){
+                    //re-add cursor item
+                }
+                Acorn.Input.setValue(Acorn.Input.Key.ESCAPE,false)
+            }
         },
 
         updateScreenChange: function(deltaTime){

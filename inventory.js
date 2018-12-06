@@ -145,8 +145,12 @@ Inventory.prototype.moveItem = function(data){
         bag.print();
     }
 }
-Inventory.prototype.equipItem = function(index){
-   
+Inventory.prototype.equipItem = function(slot,item){
+    var itemToMove = this.items[item];
+    //TODO make sure its equipable
+    if (this.slots[slot] == null){
+        this.slots[slot] = itemToMove;
+    }
 }
 Inventory.prototype.addItemById = function(id,amt){
     //add a single new item by item id
@@ -157,6 +161,10 @@ Inventory.prototype._addItemById = function(id,amt){
     var item = this.engine.getItem(id);
     var startAmt = amt;
     if (!item || amt == NaN){return 0;}
+    if (item.lore &&  this.itemIndex[id]){
+        //you already have this lore item!
+        return 0;
+    }
     if (this.itemIndex[id] && item.stack){
         //item is stackable and in inventory.
         for (var i = 0; i < this.itemIndex[id].length;i++){
@@ -387,7 +395,6 @@ Item.prototype.init = function(data){
     this.itemid = data['itemid'];
     this.name = data['name'];
     this.info = data['info'];
-    this.lore = data['lore'];
     this.resource = data['resource'];
     this.onUse = data['onUse'];
     this.value = data['value'];
@@ -398,17 +405,63 @@ Item.prototype.init = function(data){
     this.ySize = parseInt(data['scale']['y']);
 
     //optional / equipment values
+    this.classes = {};
+    this.races = {};
+    if (!Utils._udCheck(data['classes'])){
+        for (var i in data['classes']){
+            if (!data['classes'][i]){continue;}
+            switch (i){
+                case 'fighter':
+                    this.classes[this.engine.enums.FIGHTER] = true;
+                    break;
+                case 'all':
+                    this.classes[this.engine.enums.ALL] = true;
+                    break;
+                case 'thief':
+                    this.classes[this.engine.enums.THIEF] = true;
+                    break;
+                case 'mage':
+                    this.classes[this.engine.enums.MAGE] = true;
+                    break;
+            }
+        }
+    }
+    if (!Utils._udCheck(data['races'])){
+        for (var i in data['races']){
+            if (!data['races'][i]){continue;}
+            switch (i){
+                case 'human':
+                    this.races[this.engine.enums.HUMAN] = true;
+                    break;
+                case 'all':
+                    this.races[this.engine.enums.ALL] = true;
+                    break;
+                case 'elf':
+                    this.races[this.engine.enums.ELF] = true;
+                    break;
+                case 'dwarf':
+                    this.races[this.engine.enums.DWARF] = true;
+                    break;
+                case 'gnome':
+                    this.races[this.engine.enums.GNOME] = true;
+                    break;
+            }
+        }
+    }
     this.stack = Utils.udCheck(data['stack'],null,data['stack']);
     this.pierce = Utils.udCheck(data['pierce'],null,data['pierce']);
     this.bludgeon = Utils.udCheck(data['bludgeon'],null,data['bludgeon']);
     this.slash = Utils.udCheck(data['slash'],null,data['slash']);
     this.slots = Utils.udCheck(data['slots'],null,data['slots']);
     this.twoHanded = Utils.udCheck(data['twoHanded'],null,data['twoHanded']);
+    this.lore = Utils.udCheck(data['lore'],null,data['lore']);
+    this.magic = Utils.udCheck(data['magic'],null,data['magic']);
     this.range = Utils.udCheck(data['range'],null,data['range']);
     this.onEquip = Utils.udCheck(data['onEquip'],null,data['onEquip']);
     this.onEquipText = Utils.udCheck(data['onEquipText'],null,data['onEquipText']);
     this.stats = Utils.udCheck(data['stats'],null,data['stats']);
-
+    this.ac = Utils.udCheck(data['ac'],null,data['ac']);
+    this.bagSize = Utils.udCheck(data['bagSize'],null,data['bagSize']);
 
 };
 Item.prototype.getClientData = function(){
@@ -418,6 +471,8 @@ Item.prototype.getClientData = function(){
     data[e.ITEMID] = this.itemid;
     data[e.NAME] = this.name;
     data[e.LORE] = this.lore;
+    data[e.MAGIC] = this.magic;
+    data[e.TWOHANDED] = this.twoHanded;
     data[e.RESOURCE] = this.resource;
     data[e.VALUE] = this.value;
     data[e.STACK] = this.stack;
@@ -426,19 +481,62 @@ Item.prototype.getClientData = function(){
     data[e.FLAVORTEXT] = this.flavorText;
     if (this.slots){
         //this is an equippable item...
+        data[e.CLASSES] = [];
+        data[e.RACES] = [];
+        for (var i in this.classes){
+            if (!this.classes[i]){continue;}
+            switch (i){
+                case this.engine.enums.FIGHTER:
+                    data[e.CLASSES].push('Fighter');
+                    break;
+                case this.engine.enums.ALL:
+                    data[e.CLASSES].push('All');
+                    break;
+                case this.engine.enums.THIEF:
+                    data[e.CLASSES].push('Thief');
+                    break;
+                case this.engine.enums.MAGE:
+                    data[e.CLASSES].push('Mage');
+                    break;
+            }
+        }
+
+        for (var i in this.races){
+            if (!this.races[i]){continue;}
+            switch (i){
+                case this.engine.enums.HUMAN:
+                    data[e.RACES].push('Human');
+                    break;
+                case this.engine.enums.ALL:
+                    data[e.RACES].push('All');
+                    break;
+                case this.engine.enums.ELF:
+                    data[e.RACES].push('Elf');
+                    break;
+                case this.engine.enums.DWARF:
+                    data[e.RACES].push('Dwarf');
+                    break;
+                case this.engine.enums.GNOME:
+                    data[e.RACES].push('Gnome');
+                    break;
+            }
+        }
+
         data[e.SLOTS] = [];
         for (var i = 0; i < this.slots.length;i++){
-            data[e.SLOTS].push(this.engine.getSlot(this.slots[i]));
+            data[e.SLOTS].push(this.slots[i]);
         }
         data[e.PIERCE] = this.pierce;
         data[e.SLASH] = this.slash;
         data[e.BLUDGEON] = this.bludgeon;
         data[e.RANGE] = this.range;
         data[e.ONEQUIPTEXT] = this.onEquipText;
+        data[e.AC] = this.ac;
+        data[e.BAGSIZE] = this.bagSize;
         if (this.stats){
             data[e.STATS] = {};
-            for (var i = 0; i < this.stats.length;i++){
-                data[e.STATS][this.engine.getStat(i)] = this.stats[i];
+            for (var i in this.stats){
+                data[e.STATS][i] = this.stats[i];
             }
         }
     }

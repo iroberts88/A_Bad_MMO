@@ -69,6 +69,10 @@ function Unit() {
         gold: null,
         platinum: null,
 
+        currentMeleeMain: null,
+        currentMeleeSecond: null,
+        currentRanged: null,
+
         currentZone: null,
         currentSector: null,
         currentTile: null,

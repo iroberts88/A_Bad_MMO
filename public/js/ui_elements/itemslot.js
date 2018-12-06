@@ -41,9 +41,32 @@
 
                 this.mainCon.position.x = this.xPos-this.width/2;
                 this.mainCon.position.y = this.yPos-this.height/2;
+                this.mainCon.itemSlot = this;
 
                 this.parent.addChild(this.mainCon);
 
+                this.mainCon.interactive = true;
+                this.mainCon.buttonMode = true;
+
+                var onClick = function(e){
+                    //var tar = e.currentTarget;
+
+                    if (Game.cursorItem){
+                        //TODO check if item is equipable
+                        if (!Game.cursorItem.isEquipable(e.currentTarget.itemSlot.id)){
+                            return;
+                        }
+                        //also if theres room in the bag for currently equipped item
+                        var data = {};
+                        data[Enums.COMMAND] = Enums.EQUIPITEM;
+                        data[Enums.SLOT] = e.currentTarget.itemSlot.id;
+                        data[Enums.ITEM] = Game.cursorItem.id;
+                        Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+
+                    }
+                }
+
+                this.mainCon.on('pointerdown',onClick);
             },
 
             update: function(dt){

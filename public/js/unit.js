@@ -28,8 +28,7 @@ var P = SAT.Polygon,
             hb: null,
             moveVector: null,
             mapCollide: true,
-            cRadius: 16,
-
+            cRadius: 8,
             aTicker: null,
 
             diagM: 0.708,

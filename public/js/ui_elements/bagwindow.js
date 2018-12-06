@@ -63,6 +63,7 @@
 
             this.outlineFilter = new PIXI.filters.OutlineFilter(2,0xFF0000);
             this.outlineFilter2 = new PIXI.filters.OutlineFilter(2,0x00FF00);
+            this.outlineFilter3 = new PIXI.filters.OutlineFilter(2,0xFFFFFF);
 
             this.bag0Select = Graphics.getSprite('empty');
             this.bag0Select.interactive = true;
@@ -103,6 +104,8 @@
             this.bag4Select.on('pointerdown', onClick);
             this.bag4Select.on('touchstart', onClick);
 
+            this.itemContainer = new PIXI.Container();
+            this.mainContainer.addChild(this.itemContainer);
             this.setBag(0);
             this.mainContainer.position.x = typeof data.x == 'undefined' ? 4 : data.x;
             this.mainContainer.position.y = typeof data.y == 'undefined' ? Graphics.height - 28 - this.height : data.y;
@@ -315,10 +318,10 @@
                 }
                 item.sprite.position.x = 29+item.position[0]*32;
                 item.sprite.position.y = 5+nBh+cBh+item.position[1]*32;
-                this.container.addChild(item.sprite);
+                this.itemContainer.addChild(item.sprite);
 
                 if (item.stackText){
-                    this.container.addChild(item.stackText);
+                    this.itemContainer.addChild(item.stackText);
                     var xSize = item.flipped ? item.size[1] : item.size[0];
                     var ySize = item.flipped ? item.size[0] : item.size[1];
                     item.stackText.position.x = item.sprite.position.x + xSize*32;
@@ -331,14 +334,14 @@
             }
         };
         bagWindow.removeItem = function(item){
-            Game.bagWindow.container.removeChild(item.sprite);
+            Game.bagWindow.itemContainer.removeChild(item.sprite);
             if (item.sprite.tooltip.sprite.parent){
                 item.sprite.tooltip.sprite.parent.removeChild(item.sprite.tooltip.sprite);
             }
             item.sprite.interactive = false;
             item.sprite.buttonMode = false;
             if (item.stackText){
-                this.container.removeChild(item.stackText);
+                this.itemContainer.removeChild(item.stackText);
             }
             var xSize = item.flipped ? item.size[1] : item.size[0];
             var ySize = item.flipped ? item.size[0] : item.size[1];
@@ -360,14 +363,14 @@
             if (item.bag[Enums.BAG] == this.currentBag){
                 item.sprite.position.x = 29+item.position[0]*32;
                 item.sprite.position.y = 5+nBh+cBh+item.position[1]*32;
-                this.container.addChild(item.sprite);
+                this.itemContainer.addChild(item.sprite);
                 if (item.flipped){
                     item.sprite.rotation = -1.5708;
                     item.sprite.position.y += item.sprite.width;
                 }
             }
             if (item.stackText){
-                this.container.addChild(item.stackText);
+                this.itemContainer.addChild(item.stackText);
                 item.stackText.position.x = 29+item.position[0]*32 + xSize*32;
                 item.stackText.position.y = 5+nBh+cBh+item.position[1]*32 + ySize*32;
             }
@@ -398,19 +401,28 @@
                 var sprite = e.currentTarget;
                 var item = sprite.item;
                 if (Game.cursorItem){
-                    //try to swap items?
+                    //TODO try to swap items?
                     return;
                 }
                 if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_SHIFT)){
                     //create chat link
-                    console.log('eh')
+                    console.log('eh');
                 }else if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_CTRL)){
                     //bring up split menu
-                    console.log('eh2')
+                    console.log('eh2');
                 }else{
                     Game.bagWindow.removeItem(item);
                     Game.setCursorItem(item);
                 }
+
+
+                var xSize = item.flipped ? item.size[1] : item.size[0];
+                var ySize = item.flipped ? item.size[0] : item.size[1];
+
+                var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+                c.filters = [];
+                c.scale.x = 1;
+                c.scale.y = 1;
 
             }
             item.sprite.on('pointerup',onClick);

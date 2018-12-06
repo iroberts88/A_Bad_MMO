@@ -5,7 +5,7 @@
         this.texture = null;
         this.sprite = null;
         this.style1 = {
-            font: '16px Verdana', 
+            font: '14px Verdana', 
             fill: 'white', 
             align: 'left',
             wordWrap: true,
@@ -74,9 +74,6 @@
                             if (text.charAt(c) == '>' || text.charAt(c) == '}'){
                                 start = c+1;
                                 sI = c;
-                                if (data.unit && text.charAt(c) == '>'){
-                                    t = Utils.parseStringCode(t,data.unit);
-                                }
                                 var nextWord = new PIXI.Text(t,this.style1);
                                 break;
                             }
@@ -113,8 +110,6 @@
                     }else if (nextWord.text.charAt(0) == '{'){
                         nextWord.style.fill = 0x42f450;
                         nextWord.text = nextWord.text.slice(1,nextWord.text.length-1) + '';
-                    }else if (this.numbers[nextWord.text.charAt(0)]){
-                        nextWord.style.fill = 0xfcd174;
                     }
                     nextWord.anchor.x = 0.5;
                     nextWord.anchor.y = 0.5;
@@ -209,50 +204,132 @@
         //item = the item to work on
 
         var ttArray = [{text: item.name}];
-        if (typeof item.weight != 'undefined'){ttArray.push({text: '{Weight: }' + item.weight});}
-        //if (typeof item.value != 'undefined'){ttArray.push({text: '{Value: }' + item.value});}
-        /*if (typeof item.description != 'undefined'){ttArray.push({text: item.description,color: '#ffd9b3'});}
-        if (typeof item.eqData.damage != 'undefined'){ttArray.push({text: '{Damage: }' + item.eqData.damage});}
-        if (typeof item.eqData.rangeMin != 'undefined'){ttArray.push({text: '{Range: }' + item.eqData.rangeMin + '-' + item.eqData.rangeMax});}
-        var t = "Recharges <";
-        if (typeof item.eqData.recharge != 'undefined'){t += item.eqData.recharge + '%> shield capacity per turn'}
-        if (typeof item.eqData.delay != 'undefined'){
-            if (item.eqData.delay == 1){
-                t += '.'
-            }else{
-                t += ' after not taking damage for <' + (item.eqData.delay-1) + '> turns.';
+        ttArray.push({text: '<Weight>: ' + item.weight});
+        //item lore/magic/2h/soulbind etc
+        var string = '';
+        if (item.lore){
+            if (item.lore){
+                string += '<Lore>';
             }
-            ttArray.push({text: t});
+        }
+        if (item.magic){
+            if (string != ''){string += ' - ';}
+            string += '<Magic>';
+        }
+        if (item.twoHanded){
+            if (string != ''){string += ' - ';}
+            string += '<2-Hands>';
+        }
+        if (string != ''){
+            ttArray.push({text: string});
+        }
+        //item races and classes
+        if (item.slots){
+            var string = ''
+            for (var i = 0; i < item.slots.length;i++){
+                string += item.slots[i] + ' '
+            }
+            ttArray.push({text: string,color: 0xe7a5ff});
+
+            if (item.eqData.ac){
+                ttArray.push({text: '<AC: > ' + item.eqData.ac});
+            }
+            
+            var races = '';
+            for (var i = 0 ; i < item.eqData.races.length;i++){
+                races += item.eqData.races[i] + ' ';
+            }
+            ttArray.push({text: '<Races:> ' + races});
+
+            var classes = '';
+            for (var i = 0 ; i < item.eqData.classes.length;i++){
+                classes += item.eqData.classes[i] + ' ';
+            }
+            ttArray.push({text: '<Classes:> ' + classes});
+            
+            if (item.eqData.range){
+                ttArray.push({text: '<Range: > ' + item.eqData.range});
+            }
+
+            if (item.eqData.bludgeon){
+                ttArray.push({text: '<Bludgeon: > ' + item.eqData.bludgeon[0] + '/' + item.eqData.bludgeon[1] + ' ~ ' + item.eqData.bludgeon[2] + '%'});
+            }
+
+            if (item.eqData.slash){
+                ttArray.push({text: '<Slash: > ' + item.eqData.slash[0] + '/' + item.eqData.slash[1] + ' ~ ' + item.eqData.slash[2] + '%'});
+            }
+
+            if (item.eqData.pierce){
+                ttArray.push({text: '<Pierce: > ' + item.eqData.pierce[0] + '/' + item.eqData.pierce[1] + ' ~ ' + item.eqData.pierce[2] + '%'});
+            }
+
+            if (item.bagSize){
+                ttArray.push({text: '<Bag Size: > ' + item.bagSize[0] + 'x' + item.bagSize[1]});
+            }
+
+            for (var i in item.stats){
+                ttArray.push({text: i + ': ' + item.stats[i],color:Graphics.pallette.color1});
+            }
+
+        }
+        if (item.flavorText){
+            ttArray.push({text: '{' + item.flavorText + '}'});
         }
 
-        if (typeof item.classes != 'undefined'){
-            var cText = '';
-            if (item.classes == 'ALL'){
-                cText = 'ALL';
-            }else{
-                for (var j = 0; j < item.classes.length;j++){
-                    if (j == item.classes.length-1){
-                        cText = cText + '<' + item.classes[j] + '>';
-                    }else{
-                        cText = cText + '<' + item.classes[j] + '> / ';
-                    }
-                }
-            }
-            ttArray.push({text: '{Classes: }' + cText});
-        }
-        if (typeof item.onUseText != 'undefined'){
-            ttArray.push({text: '{On use: }' + item.onUseText});
-        }
-        if (typeof item.onEquipText != 'undefined'){
-            for (var i = 0; i < item.onEquipText.length;i++){
-                ttArray.push({text: item.onEquipText[i]});
-            }
-        }*/
         element.tooltip.set({
             owner: element,
             ttArray: ttArray,
             alpha: 0.5
         });
+
+
+        var overFunc = function(e){
+            if (!e.currentTarget.tooltipAdded){
+                Graphics.uiContainer.addChild(e.currentTarget.tooltip.sprite);
+                Game.currentToolTip = e.currentTarget.tooltip.sprite;
+                e.currentTarget.tooltipAdded = true;
+            }
+            e.currentTarget.tooltip.sprite.position.x =  e.currentTarget.tooltip.position.x;
+            e.currentTarget.tooltip.sprite.position.y =  e.currentTarget.tooltip.position.y;
+
+            //get bag
+            var item = e.currentTarget.item;
+            var bag = item.bag;
+
+            var xSize = item.flipped ? item.size[1] : item.size[0];
+            var ySize = item.flipped ? item.size[0] : item.size[1];
+
+            var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+            c.filters = [Game.bagWindow.outlineFilter3];
+            c.scale.x = (xSize*32)/c.width;
+            c.scale.y = (ySize*32)/c.height;
+            Game.bagWindow.container.removeChild(c);
+            Game.bagWindow.container.addChild(c);
+        }
+        var outFunc = function(e){
+            if (e.currentTarget.tooltipAdded){
+                Graphics.uiContainer.removeChild(e.currentTarget.tooltip.sprite);
+                Game.currentToolTip = null;
+                e.currentTarget.tooltipAdded = false;
+            }
+            //get bag
+            var item = e.currentTarget.item;
+            var bag = item.bag;
+
+            var xSize = item.flipped ? item.size[1] : item.size[0];
+            var ySize = item.flipped ? item.size[0] : item.size[1];
+
+            var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+            c.filters = [];
+            c.scale.x = 1;
+            c.scale.y = 1;
+        }
+
+        element.on('pointerover',overFunc);
+        element.on('touchmove',overFunc);
+        element.on('touchend', outFunc);
+        element.on('touchendoutside', outFunc);
+        element.on('pointerout', outFunc);
     };
 
     Tooltip.prototype.setAbilityTooltip = function(element,ability,unit){

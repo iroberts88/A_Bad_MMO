@@ -2,10 +2,10 @@ var fs = require('fs'),
 	Jimp = require('jimp');
 
 var interval,
-	columns = 16,
-	rows = 16,
-	s = 16,
-	x = 0,
+	columns = 12,
+	rows = 8,
+	s = 32,
+	x = -3,
 	y = 0,
 	next = true,
 	end = false;
@@ -16,24 +16,27 @@ function init(){
 
 function tick(){
 	if (next && !end){
-		x += 1;
+		x += 3;
 		if (x == columns){
 			x = 0;
-			y += 1;
+			y += 4;
 		}
 		if (y == rows){
 			end = true;
+			clearInterval(interval);
+			console.log('done');
+			return;
 		}
 		cutImage();
 		next = false;
 	}
 }
 function cutImage(){
-	Jimp.read('void.png', function (err,image){
+	Jimp.read('Treasure Icons 2.png', function (err,image){
 		if (err){throw err}
 		console.log('cutting ' + x + 'x' + y);
 		image.crop(x*s,y*s,s,s);
-		var file = 'v_' + x + 'x' + y + '.' + image.getExtension();
+		var file = 'i_' + x + 'x' + y + '.' + image.getExtension();
 		image.write(file);
 		next = true;
 		if (end){

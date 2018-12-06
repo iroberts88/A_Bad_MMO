@@ -64,7 +64,7 @@ Behaviour.prototype.astar = function(map,start,end){
                 curr = curr.parent;
             }
             var arr = ret.reverse();
-            arr.unshift(map.BaseMap[start[0]][start[1]])
+            arr.unshift(map.BaseMap[start[0]][start[1]]);
             return arr;
         }
 

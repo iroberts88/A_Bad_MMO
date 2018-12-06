@@ -56,7 +56,8 @@
             MOD_CTRL: 8,
             MOD_ALT: 9,
             CHARACTERWINDOW: 10,
-            BAGWINDOW: 11
+            BAGWINDOW: 11,
+            ESCAPE: 12,
         },
         keysPressed: [],
         keyBindings: [],
@@ -105,6 +106,7 @@
             this.keyBindings[16] = Acorn.Input.Key.MOD_SHIFT; //shift mod
             this.keyBindings[17] = Acorn.Input.Key.MOD_CTRL; //ctrl mod
             this.keyBindings[18] = Acorn.Input.Key.MOD_ALT; //alt mod
+            this.keyBindings[27] = Acorn.Input.Key.ESCAPE; //cancel all..
 
             this.requiresShiftMod[Acorn.Input.DEVCOMMAND] = true;
         },

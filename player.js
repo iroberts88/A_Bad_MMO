@@ -97,7 +97,6 @@ Player.prototype.setupSocket = function() {
     // On playerUpdate event
     var that = this;
 
-
     this.socket.on(this.engine.enums.PLAYERUPDATE, function (data) {
         try{
             if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
@@ -229,6 +228,11 @@ Player.prototype.setupSocket = function() {
                     if (!that.engine.checkData(data,that.engine.enums.FLIPPED)){return;}
                     if (!that.engine.checkData(data,that.engine.enums.ID)){return;}
                     that.activeChar.inventory.moveItem(data);
+                    break;
+                case that.engine.enums.EQUIPITEM:
+                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,that.engine.enums.ITEM)){return;}
+                    that.activeChar.inventory.equipItem(data[that.engine.enums.SLOT],data[that.engine.enums.ITEM]);
                     break;
             }
         }catch(e){

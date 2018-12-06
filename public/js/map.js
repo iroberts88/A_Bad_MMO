@@ -1,6 +1,7 @@
 
 var P = SAT.Polygon,
     C = SAT.Circle,
+    B = SAT.Box,
     V = SAT.Vector;
 
 (function(window) {
@@ -8,6 +9,7 @@ var P = SAT.Polygon,
     var GameMap = function(){
         this.sectors = {};
         this.currentVisibleSectors = []; //TODO actually change visible sectors
+        this.tileHitBox = new B(new V(0,0),mainObj.TILE_SIZE,mainObj.TILE_SIZE).toPolygon();
     };
 
     GameMap.prototype.init = function(data){
@@ -105,20 +107,44 @@ var P = SAT.Polygon,
         var xDist = unit.moveVector.x*unit.speed*dt;
         var yDist = unit.moveVector.y*unit.speed*dt;
         var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
-        for (var i = 0; i <= hyp;i++){
-            unit.hb.pos.x += xDist/hyp;
-            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+        var response = new SAT.Response();
+        for (var i = 0; i <= Math.ceil(hyp);i++){
+            if (!xDist){break;}
+            unit.hb.pos.x += (xDist/hyp)*(hyp/Math.ceil(hyp));
+            console.log(Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE));
+            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y)/mainObj.TILE_SIZE)];
             if (typeof tile == 'undefined'){
                 unit.hb.pos.x -= xDist/hyp;
-            }else if (!tile.open){
-                unit.hb.pos.x -= xDist/hyp;
+            }else if (tile.open){
+                continue;
+            }else{
+                this.tileHitBox.pos.x = tile.sprite.position.x;
+                this.tileHitBox.pos.y = tile.sprite.position.y;
+                if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                    unit.hb.pos.x += response.overlapV.x;
+                    console.log(response);
+                    response.clear();
+                    break;
+                }
             }
-            unit.hb.pos.y += yDist/hyp;
-            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*unit.moveVector.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*unit.moveVector.y)/mainObj.TILE_SIZE)];
+        }
+        for (var i = 0; i <= Math.ceil(hyp);i++){
+            if (!yDist){break;}
+            unit.hb.pos.y += (yDist/hyp)*(hyp/Math.ceil(hyp));
+            var tile = Game.map[Math.floor((unit.hb.pos.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)))/mainObj.TILE_SIZE)];
             if (typeof tile == 'undefined'){
                 unit.hb.pos.y -= yDist/hyp;
-            }else if (!tile.open){
-                unit.hb.pos.y -= yDist/hyp;
+            }else if (tile.open){
+                continue;
+            }else{
+                this.tileHitBox.pos.x = tile.sprite.position.x;
+                this.tileHitBox.pos.y = tile.sprite.position.y;
+                if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                    unit.hb.pos.y += response.overlapV.y;
+                    console.log(response);
+                    response.clear();
+                    break;
+                }
             }
         }
     };
