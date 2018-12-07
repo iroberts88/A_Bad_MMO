@@ -279,7 +279,7 @@
         element.tooltip.set({
             owner: element,
             ttArray: ttArray,
-            alpha: 0.5
+            alpha: 1
         });
 
 
@@ -291,11 +291,10 @@
             }
             e.currentTarget.tooltip.sprite.position.x =  e.currentTarget.tooltip.position.x;
             e.currentTarget.tooltip.sprite.position.y =  e.currentTarget.tooltip.position.y;
-
             //get bag
             var item = e.currentTarget.item;
             var bag = item.bag;
-
+            if (typeof item.position == 'string'){return;}
             var xSize = item.flipped ? item.size[1] : item.size[0];
             var ySize = item.flipped ? item.size[0] : item.size[1];
 
@@ -315,6 +314,7 @@
             //get bag
             var item = e.currentTarget.item;
             var bag = item.bag;
+            if (typeof item.position == 'string'){return;}
 
             var xSize = item.flipped ? item.size[1] : item.size[0];
             var ySize = item.flipped ? item.size[0] : item.size[1];

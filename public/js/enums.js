@@ -110,6 +110,7 @@
         MESSAGE: 'message',
         MESSAGETYPE: 'messageType',
         MELEEPOWER: 'meleePower',
+        MOD: 'mod',
         MOVE: 'move',
         MOVEITEM: 'moveItem',
         MOVEVECTOR: 'moveVector',
@@ -146,13 +147,13 @@
         REMOVEPC: 'removePC',
         REMOVENPC: 'removeNPC',
         RESOURCE: 'resource',
-        ROGUE: 'rogue',
 
         SAY: 'say',
         SECONDARY: 'secondary',
         SECTORARRAY: 'sectorArr',
         SETITEMQUANTITY: 'setItemQuantity',
         SETLOGINERRORTEXT: 'setLoginErrorText',
+        SETUNITSTAT: 'setUnitStat',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',
@@ -166,6 +167,7 @@
         SPELLPOWER: 'spellPower',
         SPEED: 'speed',
         STACK: 'stack',
+        STAT: 'stat',
         STATS: 'stats',
         STAMINA: 'stamina',
         STRENGTH: 'strength',
@@ -178,6 +180,8 @@
         TRINKET2: 'trinket2',
         TWOHANDED: 'twoHanded',
 
+        UNIT: 'unit',
+        
         VALUE: 'value',
 
         WAIST: 'waist',
@@ -193,8 +197,6 @@
         Y: 'y',
 
         ZONE: 'zone'
-
-
-  };
+    };
     window.Enums = Enums;
 })(window);

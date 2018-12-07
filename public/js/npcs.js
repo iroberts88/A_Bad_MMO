@@ -17,6 +17,7 @@
             var char = Unit();
             char._init(data);
             this.npcs[char.id] = char;
+            Game.allUnits[char.id] = char;
             Graphics.unitContainer.addChild(char.sprite);
             Graphics.unitContainer2.addChild(char.sprite2);
             Graphics.unitContainer2.addChild(char.spriteMask);
@@ -32,7 +33,8 @@
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].sprite2);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].spriteMask);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);
-            delete this.pcs[data[Enums.ID]]
+            delete this.pcs[data[Enums.ID]];
+            delete Game.allUnits[data[Enums.ID]];
         },
 
         getNPC: function(id){

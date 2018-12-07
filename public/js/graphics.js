@@ -214,7 +214,7 @@
                     element.style.transform = ' translate(-50%,-50%)';
                 }catch(e){
                     console.log("error resizing html elements");
-                    console.log(e);
+                    //console.log(e);
                 }
             }
         },

@@ -182,7 +182,8 @@
         "secondary"
     ], 
     "classes" : {
-        "fighter" : true
+        "fighter" : true, 
+        "thief" : true
     }, 
     "races" : {
         "all" : true
@@ -197,7 +198,8 @@
         "strength" : 20.0, 
         "agility" : 15.0, 
         "dexterity" : 10.0, 
-        "perception" : 20.0
+        "perception" : 20.0, 
+        "intelligence" : -10.0
     }, 
     "value" : 300000.0, 
     "weight" : 2.5, 
@@ -268,7 +270,7 @@
         "x" : 1.0, 
         "y" : 1.0
     }, 
-    "resource" : "e_finger1", 
+    "resource" : "e_finger2", 
     "slots" : [
         "finger"
     ], 
@@ -357,8 +359,8 @@
 }
 { 
     "_id" : ObjectId("5c004508bb153e423cc23bf9"), 
-    "itemid" : "e_cloth_sleeves", 
-    "name" : "Cloth Sleeves", 
+    "itemid" : "e_cloth_armwraps", 
+    "name" : "Cloth Armwraps", 
     "info" : "", 
     "lore" : false, 
     "magic" : false, 
@@ -464,7 +466,7 @@
     "soulbound" : false, 
     "scale" : {
         "x" : 2.0, 
-        "y" : 2.0
+        "y" : 1.0
     }, 
     "resource" : "e_waist2", 
     "slots" : [
@@ -660,8 +662,8 @@
 }
 { 
     "_id" : ObjectId("5c014ae7bb153e423cc23c09"), 
-    "itemid" : "e_cloth_shoulders", 
-    "name" : "Cloth Shoulderpads", 
+    "itemid" : "e_cloth_amice", 
+    "name" : "Cloth Amice", 
     "info" : "", 
     "lore" : false, 
     "magic" : false, 
@@ -689,5 +691,104 @@
     "ac" : NumberInt(2), 
     "value" : 8.0, 
     "weight" : 1.8, 
+    "flavorText" : ""
+}
+{ 
+    "_id" : ObjectId("5c093e07853b442ddccf98e1"), 
+    "itemid" : "e_cloth_cape", 
+    "name" : "Cloth Cape", 
+    "info" : "", 
+    "lore" : false, 
+    "magic" : false, 
+    "soulbound" : false, 
+    "scale" : {
+        "x" : 2.0, 
+        "y" : 2.0
+    }, 
+    "resource" : "e_back1", 
+    "slots" : [
+        "back"
+    ], 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "all" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "ac" : NumberInt(2), 
+    "value" : NumberInt(32), 
+    "weight" : 2.0, 
+    "flavorText" : ""
+}
+{ 
+    "_id" : ObjectId("5c093eee853b442ddccf98e2"), 
+    "itemid" : "e_gold_necklace", 
+    "name" : "Gold Necklace", 
+    "info" : "", 
+    "lore" : false, 
+    "magic" : false, 
+    "soulbound" : false, 
+    "scale" : {
+        "x" : 1.0, 
+        "y" : 1.0
+    }, 
+    "resource" : "e_neck1", 
+    "slots" : [
+        "neck"
+    ], 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "all" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "ac" : 0.0, 
+    "value" : 400.0, 
+    "weight" : 0.5, 
+    "flavorText" : ""
+}
+{ 
+    "_id" : ObjectId("5c093fa5853b442ddccf98e3"), 
+    "itemid" : "e_shield", 
+    "name" : "Wooden Shield", 
+    "info" : "", 
+    "magic" : false, 
+    "soulbound" : false, 
+    "lore" : false, 
+    "scale" : {
+        "x" : 2.0, 
+        "y" : 2.0
+    }, 
+    "resource" : "e_wooden_shield", 
+    "slots" : [
+        "secondary"
+    ], 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "fighter" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "ac" : 9.0, 
+    "value" : 45.0, 
+    "weight" : 6.0, 
     "flavorText" : ""
 }

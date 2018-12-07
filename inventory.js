@@ -1,7 +1,8 @@
 // Inventory
 var utils = require('./utils.js').Utils,
     Utils = new utils(),
-    Attribute = require('./attribute.js').Attribute;
+    Attribute = require('./attribute.js').Attribute,
+    Actions = require('./actions.js').Actions;
 
 var Inventory = function () {
     
@@ -42,11 +43,11 @@ var Inventory = function () {
         'bag3': null,
         'bag4': null
     };
-    this.grid0 = new Grid(12,12,this,0);
-    this.grid1 = new Grid(12,12,this,1);
-    this.grid2 = new Grid(12,12,this,2);
-    this.grid3 = new Grid(12,12,this,3);
-    this.grid4 = new Grid(12,12,this,4);
+    this.grid0 = new Grid(20,20,this,0);
+    this.grid1 = null;//new Grid(12,12,this,1);
+    this.grid2 = null;//new Grid(12,12,this,2);
+    this.grid3 = null;//new Grid(12,12,this,3);
+    this.grid4 = null;//new Grid(12,12,this,4);
 
     this.flip = false;
     this.owner = null;
@@ -122,13 +123,7 @@ Inventory.prototype.moveItem = function(data){
     if (open){
         console.log("It fits!");
         //remove from old position
-        var oldX = item.flipped ? item.item.ySize : item.item.xSize;
-        var oldY = item.flipped ? item.item.xSize : item.item.ySize;
-        for (var i = 0; i < oldX;i++){
-            for (var j = 0; j < oldY;j++){
-                item.grid.arr[item.position[0]+i][item.position[1]+j] = null;
-            }
-        }
+        item.clearFromGrid();
         //add to new position
         for (var i = 0; i < x;i++){
             for (var j = 0; j < y;j++){
@@ -147,6 +142,7 @@ Inventory.prototype.moveItem = function(data){
 }
 
 Inventory.prototype.equipItem = function(slot,item){
+    //equip an item into an empty slot
     var itemToMove = this.items[item];
     //TODO make sure its equipable
     if (!itemToMove.isEquipable(slot)){
@@ -154,10 +150,35 @@ Inventory.prototype.equipItem = function(slot,item){
         return;
     }
     if (this.slots[slot] == null){
+        itemToMove.clearFromGrid();
         this.slots[slot] = itemToMove;
+        itemToMove.postion = slot;
+        //alter stats
+        for (var i in itemToMove.item.stats){
+            var data = {}
+            data.stat = this.engine.statEnums[i];
+            data.value = itemToMove.item.stats[i];
+            data.unit = this.owner;
+            Actions.executeAction('alterStat',data);
+        }
+        if (itemToMove.item.ac){
+            var data = {}
+            data.stat = this.engine.statEnums['ac'];
+            data.value = itemToMove.item.ac;
+            data.unit = this.owner;
+            Actions.executeAction('alterStat',data);
+        }
+        if (itemToMove.item.bagSize){
+            //equip a new bag!!!!
+        }
+        //add any on equip properties
         console.log('equipped!!');
-    }else{
-        //swap item?
+
+        //send down client command to successfully equip the item
+        var clientData = {};
+        clientData[this.engine.enums.ITEM] = item;
+        clientData[this.engine.enums.SLOT] = slot;
+        this.engine.queuePlayer(this.owner.owner,this.engine.enums.EQUIPITEM,clientData);
     }
 }
 
@@ -400,6 +421,16 @@ PlayerItem.prototype.checkSlot = function(itemSlot,slot){
     }
     return false;
 }
+PlayerItem.prototype.clearFromGrid= function(){
+    //remove from old position
+    var oldX = this.flipped ? this.item.ySize : this.item.xSize;
+    var oldY = this.flipped ? this.item.xSize : this.item.ySize;
+    for (var i = 0; i < oldX;i++){
+        for (var j = 0; j < oldY;j++){
+            this.grid.arr[this.position[0]+i][this.position[1]+j] = null;
+        }
+    }
+}
 PlayerItem.prototype.isEquipable = function(s){
     if (!this.item.slots){
         console.log('not equippable...')
@@ -434,6 +465,21 @@ PlayerItem.prototype.isEquipable = function(s){
     if (!cBool || !rBool){
         console.log('incorrect race/class....')
         return false;
+    }
+    //test 2handed
+    if (s == this.engine.enums.SECONDARY){
+        if (this.owner.inventory.slots['main']){
+            if (this.owner.inventory.slots['main'].item.twoHanded){
+                console.log('usingbothhands....')
+                return false;
+            }
+        }
+    }
+    if (s == this.engine.enums.MAIN && this.owner.inventory.slots['secondary']){
+        if (this.item.twoHanded){
+            console.log('iteminsecondary....')
+            return false;
+        }
     }
     return true;
 };
@@ -511,7 +557,7 @@ Item.prototype.init = function(data){
     this.range = Utils.udCheck(data['range'],null,data['range']);
     this.onEquip = Utils.udCheck(data['onEquip'],null,data['onEquip']);
     this.onEquipText = Utils.udCheck(data['onEquipText'],null,data['onEquipText']);
-    this.stats = Utils.udCheck(data['stats'],null,data['stats']);
+    this.stats = Utils.udCheck(data['stats'],{},data['stats']);
     this.ac = Utils.udCheck(data['ac'],null,data['ac']);
     this.bagSize = Utils.udCheck(data['bagSize'],null,data['bagSize']);
 

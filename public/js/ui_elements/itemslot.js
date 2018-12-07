@@ -20,7 +20,8 @@
 
                 this.mainCon.addChild(this.gfx);
                 this.mainCon.addChild(this.con);
-                this.itemInfo = null;
+
+                this.item = null;
 
                 this.parent = data.parent;
 
@@ -66,7 +67,7 @@
                     }
                 }
 
-                this.mainCon.on('pointerdown',onClick);
+                this.mainCon.on('pointerup',onClick);
             },
 
             update: function(dt){

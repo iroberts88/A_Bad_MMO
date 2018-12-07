@@ -64,8 +64,8 @@ function User() {
                 data.slot= 1;
                 data.name = ng.generateName('male');
                 data.race = 'human';
-                data.class = 'mage';
-                data.classid = 'mage';
+                data.class = 'fighter';
+                data.classid = 'fighter';
                 newChar.init(data);
                 this.characters[1] = newChar;
                 this.userData = {

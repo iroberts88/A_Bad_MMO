@@ -37,6 +37,13 @@
                 checkReady();
             });
 
+
+            Acorn.Net.on(Enums.ADDCHARACTER, function (data) {
+                console.log(data);
+                Player.addCharacter(data);
+                Acorn.changeState('mainmenu');
+            });
+
             Acorn.Net.on(Enums.CHECKNAME, function (data) {
                 if (data[Enums.BOOL]){
                     NewChar.nameAvailable = true;
@@ -50,10 +57,38 @@
                 alert(data[Enums.CREATECHARERROR]);
             });
 
-            Acorn.Net.on(Enums.ADDCHARACTER, function (data) {
+            Acorn.Net.on(Enums.EQUIPITEM, function (data) {
                 console.log(data);
-                Player.addCharacter(data);
-                Acorn.changeState('mainmenu');
+                //add an item to an EMPTY slot and remove the item from bags/currsor
+                var slot = Game.characterWindow.itemSlots[data[Enums.SLOT]];
+                if (Game.cursorItem.id == data[Enums.ITEM]){
+                    var item = Game.cursorItem;
+                }else{
+                    var item = Game.bagWindow.items[data[Enums.ITEM]];
+                }
+
+                if (!slot.item){
+                    slot.item = item;
+                }
+                Game.cursorItem = null;
+                item.position = data[Enums.SLOT];
+                var sprite = slot.item.sprite;
+                sprite.scale.x = 1;
+                sprite.scale.y = 1;
+                var h = sprite.width;
+                if (sprite.height > h){
+                    h = sprite.height;
+                }
+                sprite.scale.x = slot.width/h;
+                sprite.scale.y = slot.height/h;
+                sprite.position.x = slot.mainCon.position.x + slot.width/2;
+                sprite.position.y = slot.mainCon.position.y + slot.height/2;
+                sprite.anchor.x = 0.5;
+                sprite.anchor.y = 0.5;
+                sprite.rotation = 0;
+                sprite.interactive = true;
+                sprite.buttonMode = true;
+                Game.characterWindow.container.addChild(sprite);
             });
             
             Acorn.Net.on(Enums.GETINVENTORY, function (data) {
@@ -125,14 +160,33 @@
                 }
             });
 
+            Acorn.Net.on(Enums.POSUPDATE, function (data) {
+                if (data[Enums.ID] != Player.currentCharacter.id){
+                    PCS.updatePCPos(data);
+                }
+            });
+
             Acorn.Net.on(Enums.MESSAGE, function (data) {
                 Game.addMessage(data);
             });
 
-            Acorn.Net.on('changeMap', function (data) {
-                console.log('newMap!!');
+            Acorn.Net.on(Enums.SETUNITSTAT, function (data) {
+                if (data[Enums.UNIT] == Player.currentCharacter.id){
+                    Player.currentCharacter.setStat(data[Enums.STAT],data[Enums.VALUE]);
+                    if (typeof Game.characterWindow.statDisplays[data[Enums.STAT]] != 'undefined'){
+                        Game.characterWindow.statDisplays[data[Enums.STAT]].text = data[Enums.VALUE];
+                        var fill = 0xFFFFFF;
+                        if (data[Enums.MOD] > 0){
+                            fill = 0x80f442;
+                        }else if (data[Enums.MOD] < 0){
+                            fill = 0xf75a4f;
+                        }
+                        Game.characterWindow.statDisplays[data[Enums.STAT]].style.fill = fill;
+                    }
+                }else{
+                    Game.allUnits[data[Enums.UNIT]].setStat(data[Enums.STAT],data[Enums.VALUE]);
+                }
                 console.log(data);
-                Game.newMapData = data;
             });
 
             Acorn.Net.on('mapData', function (data) {

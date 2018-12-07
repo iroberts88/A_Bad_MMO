@@ -9,8 +9,7 @@
 
         ready: false,
 
-        pcs: {},
-        npcs: {},
+        allUnits: {},
 
         screenChange: false,
         screenTicker: 0,

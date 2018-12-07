@@ -21,6 +21,7 @@ var Attribute = function(){
         
 Attribute.prototype.init = function(data){
 	this.owner = data.owner; //the unit that owns this stat
+    this.engine = data.owner.engine;
 	this.id = data.id;
 	this.value = data.value; //this stat's actual value
 	this.base = data.value; //this stat's base value before buff/item mods etc.
@@ -33,6 +34,8 @@ Attribute.prototype.init = function(data){
 	this.setValue = 0;
     //this is a stat that can be updated on the client (hidden or not?)
     this.updateClient = Utils.udCheck(data.clientUpdate,true,data.clientUpdate);
+    //this is a stat that is updated to all players
+    this.updateAll = Utils.udCheck(data.updateAll,false,data.updateAll);
 	//formula for setting the attribute
 	if (Utils._udCheck(data.formula)){
 		this.formula = function(){return Math.round((this.base+this.nMod)*this.pMod);};
@@ -65,13 +68,16 @@ Attribute.prototype.set = function(updateClient){
     		}
     	}
 	}
-    this.next()
+    this.next(updateClient)
+    var clientData = {};
+    clientData[this.engine.enums.UNIT] = this.owner.id;
+    clientData[this.engine.enums.STAT] = this.id;
+    clientData[this.engine.enums.VALUE] = this.value;
+    clientData[this.engine.enums.MOD] = this.value-this.base;
     if (updateClient && this.updateClient && this.owner.owner){
-        this.owner.owner.engine.queuePlayer(this.owner.owner,'setUnitStat',{
-            'unit': this.owner.id,
-            'stat': this.id,
-            'amt': this.value
-        });
+        this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
+    }else if (updateClient && this.updateAll){
+        this.engine.queueData(this.engine.enums.SETUNITSTAT,clientData);
     }
     return;
 }

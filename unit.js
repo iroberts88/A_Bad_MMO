@@ -83,6 +83,8 @@ function Unit() {
 
         pToUpdate: [], //the array of players to keep updated of this units position
 
+        statIndex: {},
+
         _init: function(data){
             //REQUIRED DATA VARIABLES
             this.engine = data.engine;
@@ -115,7 +117,7 @@ function Unit() {
             this.jumpTime.init({
                 id: this.engine.enums.JUMPTIME,
                 owner: this,
-                value: 1.25,
+                value: 1.0,
                 min: 0.25,
                 max: 3
             });
@@ -147,7 +149,10 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.STRENGTH],100,data[this.engine.enums.STRENGTH]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.meleePower.set(u);
+                }
             });
             this.stamina = new Attribute();
             this.stamina.init({
@@ -155,7 +160,10 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.STAMINA],100,data[this.engine.enums.STAMINA]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.maxHealth.set(u);
+                }
             });
             this.dexterity = new Attribute();
             this.dexterity.init({
@@ -163,7 +171,10 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.DEXTERITY],100,data[this.engine.enums.DEXTERITY]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.rangedPower.set(u);
+                }
             });
             this.agility = new Attribute();
             this.agility.init({
@@ -171,7 +182,10 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.AGILITY],100,data[this.engine.enums.AGILITY]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.speed.set(u);
+                }
             });
             this.wisdom = new Attribute();
             this.wisdom.init({
@@ -179,15 +193,21 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.WISDOM],100,data[this.engine.enums.WISDOM]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.healingPower.set(u);
+                }
             });
             this.intelligence = new Attribute();
             this.intelligence.init({
-                id: this.engine.enums.INTELIIGENCE,
+                id: this.engine.enums.INTELLIGENCE,
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.INTELIIGENCE],100,data[this.engine.enums.INTELIIGENCE]),
                 min: 1,
-                max: 999
+                max: 999,
+                next: function(u){
+                    this.owner.spellPower.set(u);
+                }
             });
             this.perception = new Attribute();
             this.perception.init({
@@ -222,11 +242,12 @@ function Unit() {
                 min: 0,
                 max: 99999,
                 formula: function(){
-                    //todo players will be based on inventory!
                     if (this.owner.isEnemy){
+                        //todo enemy AC formula?
                         return 10;
                     }else{
-                        return 30;
+                        this.base = 14 + this.owner.level;
+                        return Math.round((this.base+this.nMod)*this.pMod);
                     }
                 }
             });
@@ -417,6 +438,7 @@ function Unit() {
             for (var i in this){
                 if (this[i] instanceof Attribute){
                     this[i].set();
+                    this.statIndex[this[i].id] = this[i];
                 }
             }
             this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);

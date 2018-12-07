@@ -111,7 +111,7 @@ slotEnums[Enums.BAG4] = 'bag';
                 this.bag = bag;
             },
             isEquipable: function(s){
-                return true;
+                //return true;
                 if (!this.slots){
                     Game.mainChat.addMessage('That item cannot be equipped', 0xFFFF00);
                     return false;
@@ -145,6 +145,20 @@ slotEnums[Enums.BAG4] = 'bag';
                 if (!cBool || !rBool){
                     Game.mainChat.addMessage('Your race/class can\'t equip that item', 0xFFFF00);
                     return false;
+                }
+                if (s == Enums.SECONDARY){
+                    if (Game.characterWindow.itemSlots[Enums.MAIN].item){
+                        if (Game.characterWindow.itemSlots[Enums.MAIN].item.twoHanded){
+                            Game.mainChat.addMessage('You are already using both hands!', 0xFFFF00);
+                            return false;
+                        }
+                    }
+                }
+                if (s == Enums.MAIN && Game.characterWindow.itemSlots[Enums.SECONDARY].item){
+                    if (this.item.twoHanded){
+                        console.log('iteminsecondary....')
+                        return false;
+                    }
                 }
                 return true;
             },

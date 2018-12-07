@@ -163,6 +163,7 @@ var GameEngine = function() {
         MESSAGE: 'message',
         MESSAGETYPE: 'messageType',
         MELEEPOWER: 'meleePower',
+        MOD: 'mod', //is a stat modded or base
         MOVE: 'move',
         MOVEITEM: 'moveItem',
         MOVEVECTOR: 'moveVector',
@@ -205,6 +206,7 @@ var GameEngine = function() {
         SECTORARRAY: 'sectorArr',
         SETITEMQUANTITY: 'setItemQuantity',
         SETLOGINERRORTEXT: 'setLoginErrorText',
+        SETUNITSTAT: 'setUnitStat',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',
@@ -218,6 +220,7 @@ var GameEngine = function() {
         SPELLPOWER: 'spellPower',
         SPEED: 'speed',
         STACK: 'stack',
+        STAT: 'stat',
         STATS: 'stats',
         STAMINA: 'stamina',
         STRENGTH: 'strength',
@@ -230,6 +233,8 @@ var GameEngine = function() {
         TRINKET2: 'trinket2',
         TWOHANDED: 'twoHanded',
 
+        UNIT: 'unit',
+        
         VALUE: 'value',
 
         WAIST: 'waist',
