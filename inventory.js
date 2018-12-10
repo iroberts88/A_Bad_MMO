@@ -96,9 +96,25 @@ Inventory.prototype.moveItem = function(data){
     var bag = this.getBag(data[this.engine.enums.BAG]);
     if (!bag){return;}
     var pos = data[this.engine.enums.POSITION];
+    if (!Array.isArray(pos)){
+        console.log('ERROR - incorrect data pos');
+        return;
+    }else if(pos.length < 2){
+        console.log('ERROR - incorrect data pos2');
+        return;
+    }
+    if ()
     var flip = data[this.engine.enums.FLIPPED];
+    if (typeof flip != 'boolean'){
+        console.log('ERROR - incorrect data');
+        return;
+    }
     var id = data[this.engine.enums.ID];
-    var item = this.items[id];
+    var item = this.getItem(id);
+    if (!item){
+        console.log('ERROR - no item found');
+        return;
+    }
     var x = flip ? item.item.ySize : item.item.xSize;
     var y = flip ? item.item.xSize : item.item.ySize;
     //check that position is available
@@ -142,6 +158,51 @@ Inventory.prototype.moveItem = function(data){
 }
 
 Inventory.prototype.equipItem = function(slot,item){
+    //equip an item into an empty slot
+    var itemToMove = this.getItem(item);
+    if (!itemToMove){
+        console.log('ERROR - no item found');
+        return;
+    }
+    //TODO make sure its equipable
+    if (!itemToMove.isEquipable(slot)){
+        console.log('failed!');
+        return;
+    }
+    if (this.slots[slot] == null){
+        itemToMove.clearFromGrid();
+        this.slots[slot] = itemToMove;
+        itemToMove.postion = slot;
+        //alter stats
+        for (var i in itemToMove.item.stats){
+            var data = {}
+            data.stat = this.engine.statEnums[i];
+            data.value = itemToMove.item.stats[i];
+            data.unit = this.owner;
+            Actions.executeAction('alterStat',data);
+        }
+        if (itemToMove.item.ac){
+            var data = {}
+            data.stat = this.engine.statEnums['ac'];
+            data.value = itemToMove.item.ac;
+            data.unit = this.owner;
+            Actions.executeAction('alterStat',data);
+        }
+        if (itemToMove.item.bagSize){
+            //equip a new bag!!!!
+        }
+        //add any on equip properties
+        console.log('equipped!!');
+
+        //send down client command to successfully equip the item
+        var clientData = {};
+        clientData[this.engine.enums.ITEM] = item;
+        clientData[this.engine.enums.SLOT] = slot;
+        this.engine.queuePlayer(this.owner.owner,this.engine.enums.EQUIPITEM,clientData);
+    }
+}
+
+Inventory.prototype.unEquipItem = function(slot,item){
     //equip an item into an empty slot
     var itemToMove = this.items[item];
     //TODO make sure its equipable
@@ -349,6 +410,13 @@ Inventory.prototype.getBag = function(num){
             break;
     }
     return null;
+}
+Inventory.prototype.getItem = function(id){
+    if (typeof this.items[id] == 'undefined'){
+        return null;
+    }else{
+        return this.items[id];
+    }
 }
 Inventory.prototype.getClientData = function(){
     var data = {};

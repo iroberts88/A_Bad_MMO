@@ -271,7 +271,10 @@
                     var xSize = Game.cursorItemFlipped ? item.size[1] : item.size[0];
                     var ySize = Game.cursorItemFlipped ? item.size[0] : item.size[1];
                     if (Game.bagWindow.willFit(bag,[e.currentTarget.xPos,e.currentTarget.yPos],xSize,ySize)){
-
+                        if (typeof item.position == 'string'){
+                            //the item is equipped - unequip it!
+                            
+                        }
                         //add the item with new flip/position
                         Game.cursorItem.setPosition([e.currentTarget.xPos,e.currentTarget.yPos]);
                         Game.cursorItem.setFlipped(Game.cursorItemFlipped);
@@ -400,11 +403,16 @@
             var onClick = function(e){
                 var sprite = e.currentTarget;
                 var item = sprite.item;
+
                 if (Game.cursorItem){
                     //TODO try to swap items?
                     return;
                 }
-                if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_SHIFT)){
+                if (typeof item.position == 'string'){
+                    //the item is equipped
+                    Game.setCursorItem(item);
+                    return;
+                }else if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_SHIFT)){
                     //create chat link
                     console.log('eh');
                 }else if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_CTRL)){
@@ -414,11 +422,6 @@
                     Game.bagWindow.removeItem(item);
                     Game.setCursorItem(item);
                 }
-
-
-                var xSize = item.flipped ? item.size[1] : item.size[0];
-                var ySize = item.flipped ? item.size[0] : item.size[1];
-
                 var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
                 c.filters = [];
                 c.scale.x = 1;

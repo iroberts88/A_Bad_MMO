@@ -282,6 +282,15 @@
                 Graphics.uiContainer.addChild(item.stackText);
             }
             this.cursorItemFlipped = item.flipped;
+            var sprite = item.sprite;
+            sprite.scale.x = 1;
+            sprite.scale.y = 1;
+            sprite.scale.x = (item.size[0]*32)/sprite.width;
+            sprite.scale.y = (item.size[1]*32)/sprite.height;
+            sprite.anchor.x = 0.0;
+            sprite.anchor.y = 0.0;
+            sprite.interactive = false;
+            sprite.buttonMode = false;
         },
 
         checkClientCommand: function(txt){
