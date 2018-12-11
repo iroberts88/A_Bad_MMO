@@ -61,34 +61,20 @@
                 console.log(data);
                 //add an item to an EMPTY slot and remove the item from bags/currsor
                 var slot = Game.characterWindow.itemSlots[data[Enums.SLOT]];
-                if (Game.cursorItem.id == data[Enums.ITEM]){
-                    var item = Game.cursorItem;
-                }else{
+                if (!Game.cursorItem){
                     var item = Game.bagWindow.items[data[Enums.ITEM]];
+                }else if(Game.cursorItem.id == data[Enums.ITEM]){
+                    var item = Game.cursorItem;
                 }
 
                 if (!slot.item){
                     slot.item = item;
                 }
                 Game.cursorItem = null;
+                var pos = [item.position[0],item.position[1]];
+                Game.bagWindow.removeItem(item);
                 item.position = data[Enums.SLOT];
-                var sprite = slot.item.sprite;
-                sprite.scale.x = 1;
-                sprite.scale.y = 1;
-                var h = sprite.width;
-                if (sprite.height > h){
-                    h = sprite.height;
-                }
-                sprite.scale.x = slot.width/h;
-                sprite.scale.y = slot.height/h;
-                sprite.position.x = slot.mainCon.position.x + slot.width/2;
-                sprite.position.y = slot.mainCon.position.y + slot.height/2;
-                sprite.anchor.x = 0.5;
-                sprite.anchor.y = 0.5;
-                sprite.rotation = 0;
-                sprite.interactive = true;
-                sprite.buttonMode = true;
-                Game.characterWindow.container.addChild(sprite);
+                item.setOnSlot();
             });
             
             Acorn.Net.on(Enums.GETINVENTORY, function (data) {
@@ -299,7 +285,7 @@
                             Game.cursorItemFlipped = true;
                             Game.cursorItem.sprite.rotation = -1.5708;
                         }
-                    }else{
+                    }else if (!Game.hoverItem){
                         Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
                         Player.sendMove();
                     }
@@ -307,7 +293,7 @@
             });
             Acorn.Input.onMouseUp(function(e) {
                 Acorn.Input.mouseDown = false;
-                if (e.button == 2 && Game.ready && Game.cursorItem == null){
+                if (e.button == 2 && Game.ready && Game.cursorItem == null && Game.hoverItem == null){
                     Game.rightClick(e.clientX/Graphics.actualRatio[0] - Graphics.world.position.x,e.clientY/Graphics.actualRatio[1] - Graphics.world.position.y);
                     Player.sendMove();
                 }

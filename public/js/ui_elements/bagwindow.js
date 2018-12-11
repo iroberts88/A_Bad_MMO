@@ -15,6 +15,11 @@
 
             this.items = {};//data.sData[Enums.ITEMS];
 
+            //dimensions for drawing grid
+            this.cBh = 48; //coin bar height
+            this.nBh = 25; //namebar height
+            this.tileSize = 32 //grid tile size
+
             this.copper = data.sData[Enums.COPPER];
             this.silver = data.sData[Enums.SILVER];
             this.gold = data.sData[Enums.GOLD];
@@ -50,16 +55,25 @@
             this.mainContainer.removeChild(this.resizeRect);
             this.resizeRect = null;
 
-            var s = 32;
             var g1 = new PIXI.Graphics();
             g1.lineStyle(2,0xFFFFFF,0.5);
             g1.beginFill(0x000000,1);
-            g1.drawRect(0,0,s,s,);
+            g1.drawRect(0,0,this.tileSize,this.tileSize);
             g1.endFill();
 
-            this.gridTexture = PIXI.RenderTexture.create(s,s);
+            this.gridTexture = PIXI.RenderTexture.create(this.tileSize,this.tileSize);
             var renderer = new PIXI.CanvasRenderer();
             Graphics.app.renderer.render(g1,this.gridTexture);
+
+            var g2 = new PIXI.Graphics();
+            g2.lineStyle(2,0x000000,1);
+            g2.beginFill(0x000000,1);
+            g2.drawRect(0,0,this.tileSize,this.tileSize);
+            g2.endFill();
+
+            this.blankGridTexture = PIXI.RenderTexture.create(this.tileSize,this.tileSize);
+            var renderer = new PIXI.CanvasRenderer();
+            Graphics.app.renderer.render(g2,this.blankGridTexture);
 
             this.outlineFilter = new PIXI.filters.OutlineFilter(2,0xFF0000);
             this.outlineFilter2 = new PIXI.filters.OutlineFilter(2,0x00FF00);
@@ -150,13 +164,10 @@
             }
             this.gfx.clear();
             this.container.removeChildren();
-            var cBh = 48;
-            var nBh = 25;
-            var s = 32
             //set width/height ect based on bag size
-            this.width = Math.max(324,this['bag'+num].x*s+34);
-            this.height = Math.max(cBh+nBh+58*5,this['bag'+num].y*s+10+cBh+nBh);
-            this.nameBarSize = [this.width,nBh];
+            this.width = Math.max(324,this['bag'+num].x*this.tileSize+34);
+            this.height = Math.max(this.cBh+this.nBh+58*5,this['bag'+num].y*this.tileSize+10+this.cBh+this.nBh);
+            this.nameBarSize = [this.width,this.nBh];
             this.moveRect.hitArea = new PIXI.Rectangle(this.nameBarSize[1],0,this.nameBarSize[0]-this.nameBarSize[1],this.nameBarSize[1]);
 
             this.nameText = new PIXI.Text(this.name,AcornSetup.style1);
@@ -167,75 +178,35 @@
             this.nameText.anchor.y = 0.5;
             this.container.addChild(this.nameText);
 
-            this.gfx.lineStyle(2,0x000000,0);
-            this.gfx.beginFill(0x000000,0.15);
-            this.gfx.drawRect(0,0,this.width,this.height);
-            this.gfx.endFill();
-            this.gfx.beginFill(this.color,1);
-            this.gfx.drawRect(0,0,this.width,this.nameBarSize[1]);
-            this.gfx.endFill();
+            this.draw();
+
             //draw tabs/money display
             this.container.addChild(this.cpDisp);
             this.cpDisp.position.x = 324/5;
-            this.cpDisp.position.y = nBh + cBh/2;
+            this.cpDisp.position.y = this.nBh + this.cBh/2;
             this.container.addChild(this.spDisp);
             this.spDisp.position.x = 2*324/5;
-            this.spDisp.position.y = nBh + cBh/2;
+            this.spDisp.position.y = this.nBh + this.cBh/2;
             this.container.addChild(this.gpDisp);
             this.gpDisp.position.x = 3*324/5;
-            this.gpDisp.position.y = nBh + cBh/2;
+            this.gpDisp.position.y = this.nBh + this.cBh/2;
             this.container.addChild(this.ppDisp);
             this.ppDisp.position.x = 4*324/5;
-            this.ppDisp.position.y = nBh + cBh/2;
+            this.ppDisp.position.y = this.nBh + this.cBh/2;
 
 
-            this.bag0Select.position.y = cBh+nBh;
-            this.bag1Select.position.y = cBh+nBh+58;
-            this.bag2Select.position.y = cBh+nBh+58*2;
-            this.bag3Select.position.y = cBh+nBh+58*3;
-            this.bag4Select.position.y = cBh+nBh+58*4;
+            this.bag0Select.position.y = this.cBh+this.nBh;
+            this.bag1Select.position.y = this.cBh+this.nBh+58;
+            this.bag2Select.position.y = this.cBh+this.nBh+58*2;
+            this.bag3Select.position.y = this.cBh+this.nBh+58*3;
+            this.bag4Select.position.y = this.cBh+this.nBh+58*4;
             this.container.addChild(this.bag0Select);
             this.container.addChild(this.bag1Select);
             this.container.addChild(this.bag2Select);
             this.container.addChild(this.bag3Select);
             this.container.addChild(this.bag4Select);
 
-            var c = 0x000000;
-            if (this.currentBag == 0){c = Graphics.pallette.color3}
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(c,0.3);
-            this.gfx.drawRoundedRect(0,cBh+nBh,48,48,6);
-            this.gfx.endFill();
-            c = 0x000000;
-            if (this.currentBag == 1){c = Graphics.pallette.color3}
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(c,0.3);
-            this.gfx.drawRoundedRect(0,cBh+nBh+58,48,48,6);
-            this.gfx.endFill();
-            c = 0x000000;
-            if (this.currentBag == 2){c = Graphics.pallette.color3}
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(c,0.3);
-            this.gfx.drawRoundedRect(0,cBh+nBh+58*2,48,48,6);
-            this.gfx.endFill();
-            c = 0x000000;
-            if (this.currentBag == 3){c = Graphics.pallette.color3}
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(c,0.3);
-            this.gfx.drawRoundedRect(0,cBh+nBh+58*3,48,48,6);
-            this.gfx.endFill();
-            c = 0x000000;
-            if (this.currentBag == 4){c = Graphics.pallette.color3}
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(c,0.3);
-            this.gfx.drawRoundedRect(0,cBh+nBh+58*4,48,48,6);
-            this.gfx.endFill();
-            //draw grid!
-            this.gfx.lineStyle(1,0xFFFFFF,1);
-            this.gfx.beginFill(0x000000,1);
-            this.gfx.drawRect(24,cBh+nBh,this.width-24,this.height-(cBh+nBh));
-            this.gfx.endFill();
-            this.gridtextures = {};
+           
             var filtersOn = function (e) {
                 if (Game.cursorItem){
                     var bag = Game.bagWindow.getBag(Game.bagWindow.currentBag);
@@ -273,7 +244,7 @@
                     if (Game.bagWindow.willFit(bag,[e.currentTarget.xPos,e.currentTarget.yPos],xSize,ySize)){
                         if (typeof item.position == 'string'){
                             //the item is equipped - unequip it!
-                            
+                            Game.characterWindow.itemSlots[item.position].item = null;
                         }
                         //add the item with new flip/position
                         Game.cursorItem.setPosition([e.currentTarget.xPos,e.currentTarget.yPos]);
@@ -297,12 +268,14 @@
                     }
                 }
             }
+
+            this.gridtextures = {};
             for (var i = 0; i < this['bag'+num][Enums.X];i++){
                 this.gridTextures[i] = {};
                 for (var j = 0; j < this['bag'+num][Enums.Y];j++){
                     this.gridTextures[i][j] = new PIXI.Sprite(this.gridTexture);
-                    this.gridTextures[i][j].position.x = 29+i*s;
-                    this.gridTextures[i][j].position.y = 5+nBh+cBh+j*s;
+                    this.gridTextures[i][j].position.x = 29+i*this.tileSize;
+                    this.gridTextures[i][j].position.y = 5+this.nBh+this.cBh+j*this.tileSize;
                     this.gridTextures[i][j].xPos = i;
                     this.gridTextures[i][j].yPos = j;
                     this.gridTextures[i][j].interactive = true;
@@ -320,7 +293,7 @@
                     continue;
                 }
                 item.sprite.position.x = 29+item.position[0]*32;
-                item.sprite.position.y = 5+nBh+cBh+item.position[1]*32;
+                item.sprite.position.y = 5+this.nBh+this.cBh+item.position[1]*32;
                 this.itemContainer.addChild(item.sprite);
 
                 if (item.stackText){
@@ -336,6 +309,86 @@
                 }
             }
         };
+        bagWindow.draw = function(){
+
+            this.gfx.lineStyle(2,0x000000,0);
+            this.gfx.beginFill(0x000000,0.15);
+            this.gfx.drawRect(0,0,this.width,this.height);
+            this.gfx.endFill();
+            this.gfx.beginFill(this.color,1);
+            this.gfx.drawRect(0,0,this.width,this.nameBarSize[1]);
+            this.gfx.endFill();
+
+            var c = 0x000000;
+            if (this.currentBag == 0){c = Graphics.pallette.color3}
+            this.gfx.lineStyle(1,0xFFFFFF,1);
+            this.gfx.beginFill(c,0.3);
+            this.gfx.drawRoundedRect(0,this.cBh+this.nBh,48,48,6);
+            this.gfx.endFill();
+            if (this.bag1){
+                c = 0x000000;
+                if (this.currentBag == 1){c = Graphics.pallette.color3}
+                this.gfx.lineStyle(1,0xFFFFFF,1);
+                this.gfx.beginFill(c,0.3);
+                this.gfx.drawRoundedRect(0,this.cBh+this.nBh+58,48,48,6);
+                this.gfx.endFill();
+                this.bag1Select.interactive = true;
+                this.bag1Select.buttonMode = true;
+            }else{
+                this.bag1Select.interactive = false;
+                this.bag1Select.buttonMode = false;
+            }
+
+
+            if (this.bag2){
+                c = 0x000000;
+                if (this.currentBag == 2){c = Graphics.pallette.color3}
+                this.gfx.lineStyle(1,0xFFFFFF,1);
+                this.gfx.beginFill(c,0.3);
+                this.gfx.drawRoundedRect(0,this.cBh+this.nBh+58*2,48,48,6);
+                this.gfx.endFill();
+                this.bag2Select.interactive = true;
+                this.bag2Select.buttonMode = true;
+            }else{
+                this.bag2Select.interactive = false;
+                this.bag2Select.buttonMode = false;
+            }
+
+
+            if (this.bag3){
+                c = 0x000000;
+                if (this.currentBag == 3){c = Graphics.pallette.color3}
+                this.gfx.lineStyle(1,0xFFFFFF,1);
+                this.gfx.beginFill(c,0.3);
+                this.gfx.drawRoundedRect(0,this.cBh+this.nBh+58*3,48,48,6);
+                this.gfx.endFill();
+                this.bag3Select.interactive = true;
+                this.bag3Select.buttonMode = true;
+            }else{
+                this.bag3Select.interactive = false;
+                this.bag3Select.buttonMode = false;
+            }
+
+            if (this.bag4){
+                c = 0x000000;
+                if (this.currentBag == 4){c = Graphics.pallette.color3}
+                this.gfx.lineStyle(1,0xFFFFFF,1);
+                this.gfx.beginFill(c,0.3);
+                this.gfx.drawRoundedRect(0,this.cBh+this.nBh+58*4,48,48,6);
+                this.gfx.endFill();
+                this.bag4Select.interactive = true;
+                this.bag4Select.buttonMode = true;
+            }else{
+                this.bag4Select.interactive = false;
+                this.bag4Select.buttonMode = false;
+            }
+
+            //draw grid!
+            this.gfx.lineStyle(1,0xFFFFFF,1);
+            this.gfx.beginFill(0x000000,1);
+            this.gfx.drawRect(24,this.cBh+this.nBh,this.width-24,this.height-(this.cBh+this.nBh));
+            this.gfx.endFill();
+        }
         bagWindow.removeItem = function(item){
             Game.bagWindow.itemContainer.removeChild(item.sprite);
             if (item.sprite.tooltip.sprite.parent){
@@ -360,12 +413,9 @@
 
             var xSize = item.flipped ? item.size[1] : item.size[0];
             var ySize = item.flipped ? item.size[0] : item.size[1];
-            var cBh = 48;
-            var nBh = 25;
-            var s = 32;
             if (item.bag[Enums.BAG] == this.currentBag){
                 item.sprite.position.x = 29+item.position[0]*32;
-                item.sprite.position.y = 5+nBh+cBh+item.position[1]*32;
+                item.sprite.position.y = 5+this.nBh+this.cBh+item.position[1]*32;
                 this.itemContainer.addChild(item.sprite);
                 if (item.flipped){
                     item.sprite.rotation = -1.5708;
@@ -375,7 +425,7 @@
             if (item.stackText){
                 this.itemContainer.addChild(item.stackText);
                 item.stackText.position.x = 29+item.position[0]*32 + xSize*32;
-                item.stackText.position.y = 5+nBh+cBh+item.position[1]*32 + ySize*32;
+                item.stackText.position.y = 5+this.nBh+this.cBh+item.position[1]*32 + ySize*32;
             }
             this.items[item.id] = item;
             for (var i = 0; i < xSize;i++){
@@ -403,15 +453,28 @@
             var onClick = function(e){
                 var sprite = e.currentTarget;
                 var item = sprite.item;
-
                 if (Game.cursorItem){
                     //TODO try to swap items?
                     return;
                 }
-                if (typeof item.position == 'string'){
+                console.log(e.data);
+                console.log(e.data.button)
+                if(e.data.button == 2){
+                    for (var i in Game.characterWindow.itemSlots){
+                        if (item.isEquipable(Game.characterWindow.itemSlots[i].id,false)){
+                            if (Game.characterWindow.itemSlots[i].item == null){
+                                var data = {};
+                                data[Enums.COMMAND] = Enums.EQUIPITEM;
+                                data[Enums.SLOT] = i;
+                                data[Enums.ITEM] = item.id;
+                                Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+                                break;
+                            }
+                        }
+                    }
+                }else if (typeof item.position == 'string'){
                     //the item is equipped
                     Game.setCursorItem(item);
-                    return;
                 }else if (Acorn.Input.isPressed(Acorn.Input.Key.MOD_SHIFT)){
                     //create chat link
                     console.log('eh');
@@ -423,6 +486,7 @@
                     Game.setCursorItem(item);
                 }
                 var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+                c.texture = Game.bagWindow.gridTexture;
                 c.filters = [];
                 c.scale.x = 1;
                 c.scale.y = 1;

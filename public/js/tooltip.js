@@ -197,6 +197,9 @@
         data.owner.on('pointerout', outFunc);
         data.owner.interactive = true;
         data.owner.buttonMode = true;
+
+        this.owner = data.owner;
+        this.sprite.owner = data.owner;
     }
 
     Tooltip.prototype.getItemTooltip = function(item,element){
@@ -299,11 +302,14 @@
             var ySize = item.flipped ? item.size[0] : item.size[1];
 
             var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+            c.texture = Game.bagWindow.blankGridTexture;
             c.filters = [Game.bagWindow.outlineFilter3];
             c.scale.x = (xSize*32)/c.width;
             c.scale.y = (ySize*32)/c.height;
             Game.bagWindow.container.removeChild(c);
             Game.bagWindow.container.addChild(c);
+
+            Game.hoverItem = e.currentTarget.item;
         }
         var outFunc = function(e){
             if (e.currentTarget.tooltipAdded){
@@ -320,9 +326,13 @@
             var ySize = item.flipped ? item.size[0] : item.size[1];
 
             var c = Game.bagWindow.gridTextures[item.position[0]][item.position[1]];
+            c.texture = Game.bagWindow.gridTexture;
             c.filters = [];
             c.scale.x = 1;
             c.scale.y = 1;
+            if (Game.hoverItem == e.currentTarget.item){
+                Game.hoverItem = null;
+            }
         }
 
         element.on('pointerover',overFunc);

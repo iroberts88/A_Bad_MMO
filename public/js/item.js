@@ -107,13 +107,33 @@ slotEnums[Enums.BAG4] = 'bag';
             setPosition: function(p){
                 this.position = p;
             },
+            setOnSlot: function(){
+                var slot = Game.characterWindow.itemSlots[this.position];
+                var sprite = slot.item.sprite;
+                sprite.scale.x = 1;
+                sprite.scale.y = 1;
+                var h = sprite.width;
+                if (sprite.height > h){
+                    h = sprite.height;
+                }
+                sprite.scale.x = slot.width/h;
+                sprite.scale.y = slot.height/h;
+                sprite.position.x = slot.mainCon.position.x + slot.width/2;
+                sprite.position.y = slot.mainCon.position.y + slot.height/2;
+                sprite.anchor.x = 0.5;
+                sprite.anchor.y = 0.5;
+                sprite.rotation = 0;
+                sprite.interactive = true;
+                sprite.buttonMode = true;
+                slot.mainCon.parent.addChild(sprite);
+            },
             setBag: function(bag){
                 this.bag = bag;
             },
-            isEquipable: function(s){
+            isEquipable: function(s,msg = true){
                 //return true;
                 if (!this.slots){
-                    Game.mainChat.addMessage('That item cannot be equipped!', 0xFFFF00);
+                    if (msg){Game.mainChat.addMessage('That item cannot be equipped!', 0xFFFF00)}
                     return false;
                 }
                 var slotBool = false;
@@ -124,7 +144,7 @@ slotEnums[Enums.BAG4] = 'bag';
                     }
                 }
                 if (!slotBool){
-                    Game.mainChat.addMessage('You cannot put that item there!', 0xFFFF00);
+                    if (msg){Game.mainChat.addMessage('You cannot put that item there!', 0xFFFF00)}
                     return false;
                 }
                 var cBool = false;
@@ -143,20 +163,20 @@ slotEnums[Enums.BAG4] = 'bag';
                     }
                 }
                 if (!cBool || !rBool){
-                    Game.mainChat.addMessage('Your race/class cannot equip that item!', 0xFFFF00);
+                    if (msg){Game.mainChat.addMessage('Your race/class cannot equip that item!', 0xFFFF00)}
                     return false;
                 }
                 if (s == Enums.SECONDARY){
                     if (Game.characterWindow.itemSlots[Enums.MAIN].item){
                         if (Game.characterWindow.itemSlots[Enums.MAIN].item.twoHanded){
-                            Game.mainChat.addMessage('You are already using both hands!', 0xFFFF00);
+                            if (msg){Game.mainChat.addMessage('You are already using both hands!', 0xFFFF00)}
                             return false;
                         }
                     }
                 }
                 if (s == Enums.MAIN && Game.characterWindow.itemSlots[Enums.SECONDARY].item){
                     if (this.twoHanded){
-                        Game.mainChat.addMessage('That item requires both hands!', 0xFFFF00);
+                        if (msg){Game.mainChat.addMessage('That item requires both hands!', 0xFFFF00)}
                         return false;
                     }
                 }

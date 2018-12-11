@@ -103,7 +103,6 @@ Inventory.prototype.moveItem = function(data){
         console.log('ERROR - incorrect data pos2');
         return;
     }
-    if ()
     var flip = data[this.engine.enums.FLIPPED];
     if (typeof flip != 'boolean'){
         console.log('ERROR - incorrect data');
@@ -139,7 +138,13 @@ Inventory.prototype.moveItem = function(data){
     if (open){
         console.log("It fits!");
         //remove from old position
-        item.clearFromGrid();
+        if (typeof item.position == 'string'){
+            //unequip!
+            console.log(item.position + ' !!!')
+            this.unEquipItem(item.position);
+        }else{
+            item.clearFromGrid();
+        }
         //add to new position
         for (var i = 0; i < x;i++){
             for (var j = 0; j < y;j++){
@@ -169,10 +174,14 @@ Inventory.prototype.equipItem = function(slot,item){
         console.log('failed!');
         return;
     }
+    if (typeof itemToMove.position == 'string'){
+        console.log('ERROR - item is already equipped');
+        return false;
+    }
     if (this.slots[slot] == null){
         itemToMove.clearFromGrid();
         this.slots[slot] = itemToMove;
-        itemToMove.postion = slot;
+        itemToMove.position = slot;
         //alter stats
         for (var i in itemToMove.item.stats){
             var data = {}
@@ -202,45 +211,36 @@ Inventory.prototype.equipItem = function(slot,item){
     }
 }
 
-Inventory.prototype.unEquipItem = function(slot,item){
-    //equip an item into an empty slot
-    var itemToMove = this.items[item];
-    //TODO make sure its equipable
-    if (!itemToMove.isEquipable(slot)){
-        console.log('failed!');
+Inventory.prototype.unEquipItem = function(slot){
+    //un-equip an item!!!
+    if (this.slots[slot] == null){
+        console.log("ERROR - Nothing equipped in " + slot);
         return;
     }
-    if (this.slots[slot] == null){
-        itemToMove.clearFromGrid();
-        this.slots[slot] = itemToMove;
-        itemToMove.postion = slot;
-        //alter stats
-        for (var i in itemToMove.item.stats){
-            var data = {}
-            data.stat = this.engine.statEnums[i];
-            data.value = itemToMove.item.stats[i];
-            data.unit = this.owner;
-            Actions.executeAction('alterStat',data);
-        }
-        if (itemToMove.item.ac){
-            var data = {}
-            data.stat = this.engine.statEnums['ac'];
-            data.value = itemToMove.item.ac;
-            data.unit = this.owner;
-            Actions.executeAction('alterStat',data);
-        }
-        if (itemToMove.item.bagSize){
-            //equip a new bag!!!!
-        }
-        //add any on equip properties
-        console.log('equipped!!');
-
-        //send down client command to successfully equip the item
-        var clientData = {};
-        clientData[this.engine.enums.ITEM] = item;
-        clientData[this.engine.enums.SLOT] = slot;
-        this.engine.queuePlayer(this.owner.owner,this.engine.enums.EQUIPITEM,clientData);
+    var itemToMove = this.slots[slot];
+    //alter stats
+    for (var i in itemToMove.item.stats){
+        var data = {}
+        data.stat = this.engine.statEnums[i];
+        data.value = itemToMove.item.stats[i];
+        data.unit = this.owner;
+        data.reverse = true;
+        Actions.executeAction('alterStat',data);
     }
+    if (itemToMove.item.ac){
+        var data = {}
+        data.stat = this.engine.statEnums['ac'];
+        data.value = itemToMove.item.ac;
+        data.unit = this.owner;
+        data.reverse = true;
+        Actions.executeAction('alterStat',data);
+    }
+    if (itemToMove.item.bagSize){
+        //equip a new bag!!!!
+    }
+    //add any on equip properties
+    console.log('un equipped!!');
+    this.slots[slot] = null;
 }
 
 Inventory.prototype.addItemById = function(id,amt){

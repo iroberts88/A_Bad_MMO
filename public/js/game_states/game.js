@@ -23,6 +23,9 @@
         previousPos: null,
         previousFlip: null,
 
+        currentToolTip: null,
+        hoverItem: null,
+
         init: function() {
             Graphics.app._options.backgroundColor = 0x000000;
             this.uiUpdateList = [];
@@ -169,6 +172,15 @@
             if (Acorn.Input.isPressed(Acorn.Input.Key.ESCAPE)){
                 if (this.cursorItem){
                     //re-add cursor item
+                    if (typeof Game.cursorItem.position == 'string'){
+                        Game.cursorItem.setOnSlot();
+                    }else{
+                        Game.cursorItem.setFlipped(Game.cursorItemFlipped);
+                        Game.cursorItem.sprite.interactive = true;
+                        Game.cursorItem.sprite.buttonMode = true;
+                        Game.bagWindow.addItem(Game.cursorItem);
+                    }
+                    Game.cursorItem = null;
                 }
                 Acorn.Input.setValue(Acorn.Input.Key.ESCAPE,false)
             }
@@ -291,6 +303,12 @@
             sprite.anchor.y = 0.0;
             sprite.interactive = false;
             sprite.buttonMode = false;
+
+            if (Game.currentToolTip){
+                Graphics.uiContainer.removeChild(Game.currentToolTip);
+                Game.currentToolTip.owner.tooltipAdded = false;
+                Game.currentToolTip = null;
+            }
         },
 
         checkClientCommand: function(txt){

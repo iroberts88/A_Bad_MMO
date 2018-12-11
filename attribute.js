@@ -73,7 +73,7 @@ Attribute.prototype.set = function(updateClient){
     clientData[this.engine.enums.UNIT] = this.owner.id;
     clientData[this.engine.enums.STAT] = this.id;
     clientData[this.engine.enums.VALUE] = this.value;
-    clientData[this.engine.enums.MOD] = this.value-this.base;
+    clientData[this.engine.enums.MOD] = Math.round(this.value)-Math.round(this.base);
     if (updateClient && this.updateClient && this.owner.owner){
         this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
     }else if (updateClient && this.updateAll){

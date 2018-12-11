@@ -53,7 +53,12 @@
                     //var tar = e.currentTarget;
 
                     if (Game.cursorItem){
-                        //TODO check if item is equipable
+                        if (Game.cursorItem.position == e.currentTarget.itemSlot.id){
+                            //put it back in the equipped slot
+                            Game.cursorItem.setOnSlot();
+                            Game.cursorItem = null;
+                            return;
+                        }
                         if (!Game.cursorItem.isEquipable(e.currentTarget.itemSlot.id)){
                             return;
                         }

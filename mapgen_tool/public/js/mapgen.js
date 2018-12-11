@@ -661,6 +661,8 @@
 
             var ypos = 100;
             var xpos = 100;
+            var size = 24;
+            var buffer = 0;
             var mapanims = {'deep_water': '0x12'};
             for(var i = 0; i < Graphics.sets[set].length;i++) {
                 var res = Graphics.sets[set][i];
@@ -716,14 +718,14 @@
                     }
                     s.scale.x = 1.5;
                     s.scale.y = 1.5;
-                    s.position.x = 100 + 30* parseInt(tilex);
-                    s.position.y = 100 + 30* parseInt(tiley);
+                    s.position.x = 100 + size* parseInt(tilex);
+                    s.position.y = 100 + size* parseInt(tiley);
                     s.resource = res;
                     Graphics.uiContainer2.addChild(s);
-                    xpos += 20;
+                    xpos += buffer;
                     if (xpos > Graphics.width-116){
                         xpos = 100;
-                        ypos += 20;
+                        ypos += buffer;
                     }
                 }catch(e){
                     console.log(e);
