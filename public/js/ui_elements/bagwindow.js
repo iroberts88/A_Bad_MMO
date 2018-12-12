@@ -154,18 +154,19 @@
             if (num == 0){
                 this.name = "Inventory - Main Bag";
             }else if (num == 1){
-                this.name = "Inventory - Bag 1";
+                this.name = "Inventory - Bag 1 (" + Game.characterWindow.itemSlots[Enums.BAG1].item.name + ')';
             }else if (num == 2){
-                this.name = "Inventory - Bag 2";
+                this.name = "Inventory - Bag 2 (" + Game.characterWindow.itemSlots[Enums.BAG2].item.name + ')';
             }else if (num == 3){
-                this.name = "Inventory - Bag 3";
+                this.name = "Inventory - Bag 3 (" + Game.characterWindow.itemSlots[Enums.BAG3].item.name + ')';
             }else if (num == 4){
-                this.name = "Inventory - Bag 4";
+                this.name = "Inventory - Bag 4 (" + Game.characterWindow.itemSlots[Enums.BAG4].item.name + ')';
             }
             this.gfx.clear();
             this.container.removeChildren();
+            this.itemContainer.removeChildren();
             //set width/height ect based on bag size
-            this.width = Math.max(324,this['bag'+num].x*this.tileSize+34);
+            this.width = Math.max(450,this['bag'+num].x*this.tileSize+34);
             this.height = Math.max(this.cBh+this.nBh+58*5,this['bag'+num].y*this.tileSize+10+this.cBh+this.nBh);
             this.nameBarSize = [this.width,this.nBh];
             this.moveRect.hitArea = new PIXI.Rectangle(this.nameBarSize[1],0,this.nameBarSize[0]-this.nameBarSize[1],this.nameBarSize[1]);
@@ -177,6 +178,13 @@
             this.nameText.position.y = this.nameBarSize[1]/2;
             this.nameText.anchor.y = 0.5;
             this.container.addChild(this.nameText);
+
+            this.weightText = new PIXI.Text(Player.currentCharacter.currentWeight + ' / ' + Player.currentCharacter.carryWeight,AcornSetup.style1);
+            this.weightText.anchor.x = 0.5;
+            this.weightText.anchor.y = 0.5;
+            this.weightText.position.x = 375;
+            this.weightText.position.y = this.nBh + this.cBh/2;
+            this.container.addChild(this.weightText);
 
             this.draw();
 
@@ -205,6 +213,7 @@
             this.container.addChild(this.bag2Select);
             this.container.addChild(this.bag3Select);
             this.container.addChild(this.bag4Select);
+
 
            
             var filtersOn = function (e) {
@@ -242,9 +251,49 @@
                     var xSize = Game.cursorItemFlipped ? item.size[1] : item.size[0];
                     var ySize = Game.cursorItemFlipped ? item.size[0] : item.size[1];
                     if (Game.bagWindow.willFit(bag,[e.currentTarget.xPos,e.currentTarget.yPos],xSize,ySize)){
-                        if (typeof item.position == 'string'){
-                            //the item is equipped - unequip it!
-                            Game.characterWindow.itemSlots[item.position].item = null;
+                        var bWithinb = false;
+                        var empty = true;
+                        switch(Game.cursorItem.position){
+                            case Enums.BAG1:
+                                if (Game.bagWindow.currentBag == 1){
+                                    bWithinb = true;
+                                }
+                                if (!Game.bagWindow.checkEmpty(1)){
+                                    empty = false;
+                                }
+                                break;
+                            case Enums.BAG2:
+                                if (Game.bagWindow.currentBag == 1){
+                                    bWithinb = true;
+                                }
+                                if (!Game.bagWindow.checkEmpty(1)){
+                                    empty = false;
+                                }
+                                break;
+                            case Enums.BAG3:
+                                if (Game.bagWindow.currentBag == 1){
+                                    bWithinb = true;
+                                }
+                                if (!Game.bagWindow.checkEmpty(1)){
+                                    empty = false;
+                                }
+                                break;
+                            case Enums.BAG4:
+                                if (Game.bagWindow.currentBag == 1){
+                                    bWithinb = true;
+                                }
+                                if (!Game.bagWindow.checkEmpty(1)){
+                                    empty = false;
+                                }
+                                break;
+                        }
+                        if (bWithinb){
+                            Game.mainChat.addMessage('You cannot put a bag within itself!', 0xFFFF00);
+                            return false;
+                        }
+                        if (!empty){
+                            Game.mainChat.addMessage('You must empty that bag before you can unequip it!', 0xFFFF00);
+                            return false;
                         }
                         //add the item with new flip/position
                         Game.cursorItem.setPosition([e.currentTarget.xPos,e.currentTarget.yPos]);
@@ -310,7 +359,7 @@
             }
         };
         bagWindow.draw = function(){
-
+            this.gfx.clear();
             this.gfx.lineStyle(2,0x000000,0);
             this.gfx.beginFill(0x000000,0.15);
             this.gfx.drawRect(0,0,this.width,this.height);
@@ -388,6 +437,21 @@
             this.gfx.beginFill(0x000000,1);
             this.gfx.drawRect(24,this.cBh+this.nBh,this.width-24,this.height-(this.cBh+this.nBh));
             this.gfx.endFill();
+
+            //draw weight box;
+            this.weightText.text = Player.currentCharacter.currentWeight + ' / ' + Player.currentCharacter.carryWeight;
+            this.gfx.lineStyle(1,0xFFFFFF,0);
+            this.gfx.beginFill(0x4fd0ff,0.5);
+            var percent = Math.min(Player.currentCharacter.currentWeight/Player.currentCharacter.carryWeight,1);
+            if (Player.currentCharacter.currentWeight/Player.currentCharacter.carryWeight > 1){
+                this.weightText.style.fill = 'red';
+            }else{
+                this.weightText.style.fill = 'white';
+            }
+            this.gfx.drawRect(this.weightText.position.x-60,this.weightText.position.y-20,120*percent,40);
+            this.gfx.endFill();
+            this.gfx.lineStyle(1,0xFFFFFF,1);
+            this.gfx.drawRect(this.weightText.position.x-60,this.weightText.position.y-20,120,40);
         }
         bagWindow.removeItem = function(item){
             Game.bagWindow.itemContainer.removeChild(item.sprite);
@@ -421,11 +485,12 @@
                     item.sprite.rotation = -1.5708;
                     item.sprite.position.y += item.sprite.width;
                 }
-            }
-            if (item.stackText){
-                this.itemContainer.addChild(item.stackText);
-                item.stackText.position.x = 29+item.position[0]*32 + xSize*32;
-                item.stackText.position.y = 5+this.nBh+this.cBh+item.position[1]*32 + ySize*32;
+
+                if (item.stackText){
+                    this.itemContainer.addChild(item.stackText);
+                    item.stackText.position.x = 29+item.position[0]*32 + xSize*32;
+                    item.stackText.position.y = 5+this.nBh+this.cBh+item.position[1]*32 + ySize*32;
+                }
             }
             this.items[item.id] = item;
             for (var i = 0; i < xSize;i++){
@@ -506,6 +571,12 @@
             }
             Graphics.uiContainer.addChild(this.mainContainer);
         };
+        bagWindow.deActivate = function(){
+            this.active = false
+            if (this.mainContainer.parent){
+                this.mainContainer.parent.removeChild(this.mainContainer);
+            }
+        };
 
         bagWindow.getBag = function(num){
             switch(parseInt(num)){
@@ -526,12 +597,17 @@
                     break;
             }
             return null;
-        }
-        bagWindow.deActivate = function(){
-            this.active = false
-            if (this.mainContainer.parent){
-                this.mainContainer.parent.removeChild(this.mainContainer);
+        };
+        bagWindow.checkEmpty = function(n){
+            var bag = this.getBag(n);
+            for (var i in bag.grid){
+                for (var j in bag.grid[i]){
+                    if (bag.grid[i][j]){
+                        return false;
+                    }
+                }
             }
+            return true;
         };
         return bagWindow;
     };

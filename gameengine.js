@@ -234,6 +234,7 @@ var GameEngine = function() {
         TWOHANDED: 'twoHanded',
 
         UNIT: 'unit',
+        UNEQUIPITEM: 'unequipItem',
         
         VALUE: 'value',
 

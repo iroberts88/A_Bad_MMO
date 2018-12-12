@@ -75,6 +75,40 @@
                 Game.bagWindow.removeItem(item);
                 item.position = data[Enums.SLOT];
                 item.setOnSlot();
+                if (typeof data[Enums.BAG1] != 'undefined'){
+                    Game.bagWindow.bag1 = data[Enums.BAG1];
+                }
+                if (typeof data[Enums.BAG2] != 'undefined'){
+                    Game.bagWindow.bag2 = data[Enums.BAG2];
+                }
+                if (typeof data[Enums.BAG3] != 'undefined'){
+                    Game.bagWindow.bag3 = data[Enums.BAG3];
+                }
+                if (typeof data[Enums.BAG4] != 'undefined'){
+                    Game.bagWindow.bag4 = data[Enums.BAG4];
+                }
+                Game.bagWindow.draw();
+            });
+
+            Acorn.Net.on(Enums.UNEQUIPITEM, function (data) {
+                console.log(data);
+                //add an item to an EMPTY slot and remove the item from bags/currsor
+                var slot = Game.characterWindow.itemSlots[data[Enums.SLOT]];
+                slot.item = null;
+                if (typeof data[Enums.BAG1] != 'undefined'){
+                    Game.bagWindow.bag1 = data[Enums.BAG1];
+                }
+                if (typeof data[Enums.BAG2] != 'undefined'){
+                    Game.bagWindow.bag2 = data[Enums.BAG2];
+                }
+                if (typeof data[Enums.BAG3] != 'undefined'){
+                    Game.bagWindow.bag3 = data[Enums.BAG3];
+                }
+                if (typeof data[Enums.BAG4] != 'undefined'){
+                    Game.bagWindow.bag4 = data[Enums.BAG4];
+                }
+                Game.bagWindow.gfx.clear();
+                Game.bagWindow.draw();
             });
             
             Acorn.Net.on(Enums.GETINVENTORY, function (data) {
@@ -157,6 +191,7 @@
             });
 
             Acorn.Net.on(Enums.SETUNITSTAT, function (data) {
+                if (!Player.currentCharacter){return;}
                 if (data[Enums.UNIT] == Player.currentCharacter.id){
                     Player.currentCharacter.setStat(data[Enums.STAT],data[Enums.VALUE]);
                     if (typeof Game.characterWindow.statDisplays[data[Enums.STAT]] != 'undefined'){

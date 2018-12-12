@@ -43,7 +43,7 @@ var Inventory = function () {
         'bag3': null,
         'bag4': null
     };
-    this.grid0 = new Grid(20,20,this,0);
+    this.grid0 = new Grid(4,8,this,0);
     this.grid1 = null;//new Grid(12,12,this,1);
     this.grid2 = null;//new Grid(12,12,this,2);
     this.grid3 = null;//new Grid(12,12,this,3);
@@ -64,11 +64,15 @@ Inventory.prototype.init = function(data){
         value: 0,
         min: 0,
         max: Infinity,
+        formula: function(){
+            var cf = 10;
+            return Math.round(((this.base+this.nMod)*this.pMod)*cf)/cf;
+        },
         next: function(){
             this.owner.speed.set(true);
         }
     });
-
+    this.currentWeight.set();
     this.carryWeight = new Attribute();
     this.carryWeight.init({
         id: this.engine.enums.CARRYWEIGHT,
@@ -84,11 +88,13 @@ Inventory.prototype.init = function(data){
             this.owner.speed.set(true);
         }
     });
+    this.carryWeight.set();
 }
-Inventory.prototype.changeWeight = function(){
+Inventory.prototype.changeWeight = function(amt){
     //change the current weight
     var cf = 10;
-    this.currentWeight = ((this.currentWeight*cf + (amt*cf)*mult) / cf);
+    this.currentWeight.base += (Math.round(amt*cf) / cf);
+    this.currentWeight.set(true);
 }
 Inventory.prototype.moveItem = function(data){
     //move an item from one slot to another..
@@ -140,8 +146,33 @@ Inventory.prototype.moveItem = function(data){
         //remove from old position
         if (typeof item.position == 'string'){
             //unequip!
-            console.log(item.position + ' !!!')
-            this.unEquipItem(item.position);
+            switch (item.position){
+                case this.engine.enums.BAG1:
+                    if (bag.bag == 1){
+                        console.log('bag within bag error!');
+                        return false;
+                    }
+                case this.engine.enums.BAG2:
+                    if (bag.bag == 2){
+                        console.log('bag within bag error!');
+                        return false;
+                    }
+                case this.engine.enums.BAG3:
+                    if (bag.bag == 3){
+                        console.log('bag within bag error!');
+                        return false;
+                    }
+                case this.engine.enums.BAG4:
+                    if (bag.bag == 4){
+                        console.log('bag within bag error!');
+                        return false;
+                    }
+                    break;
+            }
+             if (!this.unEquipItem(item.position)){
+                console.log('Un-equip unsuccessful!');
+                return false;
+             }
         }else{
             item.clearFromGrid();
         }
@@ -158,12 +189,13 @@ Inventory.prototype.moveItem = function(data){
             x: pos[0],
             y: pos[1]
         }
-        bag.print();
+        bag.print();//send down client command to successfully equip the item
     }
 }
 
 Inventory.prototype.equipItem = function(slot,item){
     //equip an item into an empty slot
+    var clientData = {};
     var itemToMove = this.getItem(item);
     if (!itemToMove){
         console.log('ERROR - no item found');
@@ -199,12 +231,29 @@ Inventory.prototype.equipItem = function(slot,item){
         }
         if (itemToMove.item.bagSize){
             //equip a new bag!!!!
+            switch(slot){
+                case this.engine.enums.BAG1:
+                    this.grid1 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,1);
+                    clientData[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+                    break;
+                case this.engine.enums.BAG2:
+                    this.grid2 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,2);
+                    clientData[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+                    break;
+                case this.engine.enums.BAG3:
+                    this.grid3 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,3);
+                    clientData[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+                    break;
+                case this.engine.enums.BAG4:
+                    this.grid4 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,4);
+                    clientData[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+                    break;
+            }
         }
         //add any on equip properties
         console.log('equipped!!');
 
         //send down client command to successfully equip the item
-        var clientData = {};
         clientData[this.engine.enums.ITEM] = item;
         clientData[this.engine.enums.SLOT] = slot;
         this.engine.queuePlayer(this.owner.owner,this.engine.enums.EQUIPITEM,clientData);
@@ -215,9 +264,30 @@ Inventory.prototype.unEquipItem = function(slot){
     //un-equip an item!!!
     if (this.slots[slot] == null){
         console.log("ERROR - Nothing equipped in " + slot);
-        return;
+        return false;
     }
+    var clientData = {};
     var itemToMove = this.slots[slot];
+    var bagCheck = true;
+    //if replacing a bag, make sure it's empty!
+    switch(slot){
+        case this.engine.enums.BAG1:
+            bagCheck = this.grid1.isEmpty();
+            break;
+        case this.engine.enums.BAG2:
+            bagCheck = this.grid2.isEmpty();
+            break;
+        case this.engine.enums.BAG3:
+            bagCheck = this.grid3.isEmpty();
+            break;
+        case this.engine.enums.BAG4:
+            bagCheck = this.grid4.isEmpty();
+            break;
+    }
+    if (!bagCheck){
+        console.log("ERROR - Bag not empty!");
+        return false;
+    }
     //alter stats
     for (var i in itemToMove.item.stats){
         var data = {}
@@ -237,10 +307,33 @@ Inventory.prototype.unEquipItem = function(slot){
     }
     if (itemToMove.item.bagSize){
         //equip a new bag!!!!
+        switch(slot){
+            case this.engine.enums.BAG1:
+                this.grid1 = null;
+                clientData[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+                break;
+            case this.engine.enums.BAG2:
+                this.grid2 = null;
+                clientData[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+                break;
+            case this.engine.enums.BAG3:
+                this.grid3 = null;
+                clientData[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+                break;
+            case this.engine.enums.BAG4:
+                this.grid4 = null;
+                clientData[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+                break;
+        }
     }
     //add any on equip properties
     console.log('un equipped!!');
+    //send down client command to successfully unequip the item
+    clientData[this.engine.enums.ITEM] = itemToMove.id;
+    clientData[this.engine.enums.SLOT] = slot;
+    this.engine.queuePlayer(this.owner.owner,this.engine.enums.UNEQUIPITEM,clientData);
     this.slots[slot] = null;
+    return true;
 }
 
 Inventory.prototype.addItemById = function(id,amt){
@@ -371,6 +464,7 @@ Inventory.prototype._addItem = function(data){
     this.items[itemid].flipped = this.flip;
     this.items[itemid].position = [data.x,data.y];
     this.items[itemid].grid = this.getBag(data.grid.bag);
+    this.changeWeight(this.items[itemid].item.weight);
     data.grid.print();
     var d = {};
     d[this.engine.enums.ITEM] = data.pitem.getClientData();
@@ -740,6 +834,16 @@ Grid.prototype.getClientData = function(){
         }
     }
     return data;
+}
+Grid.prototype.isEmpty = function(){
+    for (var i = 0 ; i < this.x;i++){
+        for (var j = 0; j < this.y;j++){
+            if (this.arr[i][j]){
+                return false;
+            }
+        }
+    }
+    return true;
 }
 Grid.prototype.print = function(){
     for (var i = 0; i < this.y;i++){

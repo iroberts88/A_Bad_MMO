@@ -26,6 +26,8 @@
         currentToolTip: null,
         hoverItem: null,
 
+        bagWindow: null,
+
         init: function() {
             Graphics.app._options.backgroundColor = 0x000000;
             this.uiUpdateList = [];

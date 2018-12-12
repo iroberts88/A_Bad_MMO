@@ -792,3 +792,57 @@
     "weight" : 6.0, 
     "flavorText" : ""
 }
+{ 
+    "_id" : ObjectId("5c117a7e8dafca3594568b8d"), 
+    "itemid" : "i_darkmatter", 
+    "name" : "Dark Matter", 
+    "info" : "", 
+    "magic" : true, 
+    "scale" : {
+        "x" : 1.0, 
+        "y" : 1.0
+    }, 
+    "resource" : "i_darkmatter", 
+    "onUse" : {
+
+    }, 
+    "value" : 20000000.0, 
+    "weight" : 5.0, 
+    "flavorText" : ""
+}
+{ 
+    "_id" : ObjectId("5c117c698dafca3594568b8e"), 
+    "itemid" : "pack", 
+    "name" : "Ian's Backpack of Holding Shit", 
+    "info" : "", 
+    "lore" : false, 
+    "magic" : true, 
+    "soulbound" : false, 
+    "scale" : {
+        "x" : 2.0, 
+        "y" : 2.0
+    }, 
+    "resource" : "i_pack1", 
+    "slots" : [
+        "bag"
+    ], 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "all" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "bagSize" : [
+        25.0, 
+        25.0
+    ], 
+    "value" : NumberInt(5000000), 
+    "weight" : 0.1, 
+    "flavorText" : "Holds all of the shit"
+}

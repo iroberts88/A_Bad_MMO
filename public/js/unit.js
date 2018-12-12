@@ -226,6 +226,15 @@ var P = SAT.Polygon,
                         break; 
                     case  Enums.CURRENTWEIGHT:
                         this.currentWeight = val;
+                        if (Game.bagWindow){
+                            Game.bagWindow.draw();
+                        }
+                        break;
+                    case  Enums.CARRYWEIGHT:
+                        this.carryWeight = val;
+                        if (Game.bagWindow){
+                            Game.bagWindow.draw();
+                        }
                         break;
                     case  Enums.INTELLIGENCE:
                         this.intelligence = val;

@@ -130,7 +130,9 @@ function Unit() {
                 min: 0,
                 max: 250,
                 formula: function(){
-                    this.base = 75+(this.owner.agility.value*(this.owner.level/1200));
+                    var inv = this.owner.inventory;
+                    var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
+                    this.base = (75+(this.owner.agility.value*(this.owner.level/1200)))/(weightMod*weightMod);
                     return Math.round((this.base+this.nMod)*this.pMod);
                 }
             });
@@ -497,6 +499,7 @@ function Unit() {
             data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
             data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
             data[this.engine.enums.CURRENTWEIGHT] = this.inventory.currentWeight.value;
+            data[this.engine.enums.CARRYWEIGHT] = this.inventory.carryWeight.value;
 
             return data;
         },
