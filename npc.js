@@ -24,7 +24,6 @@ NPC = function(){
         this.dAcquireTarget = data.acquireTarget;
 
         this.resource = data.resource;
-
         this.spawn = data.spawn;
         this.hb.pos.x = this.spawn.tile.x*this.spawn.zone.TILE_SIZE+this.spawn.zone.TILE_SIZE/2;
         this.hb.pos.y = this.spawn.tile.y*this.spawn.zone.TILE_SIZE+this.spawn.zone.TILE_SIZE/2;

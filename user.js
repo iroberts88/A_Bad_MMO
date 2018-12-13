@@ -62,6 +62,7 @@ function User() {
                     engine: this.owner.engine
                 };
                 data.slot= 1;
+                data.scale = 2;
                 data.name = ng.generateName('male');
                 data.race = 'human';
                 data.class = 'fighter';

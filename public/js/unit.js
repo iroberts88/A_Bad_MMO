@@ -30,24 +30,32 @@ var P = SAT.Polygon,
             mapCollide: true,
             cRadius: 8,
             aTicker: null,
-
+            enemy: false,
             diagM: 0.708,
 
 
             _init: function(data){
+                this.enemy = false;
                 this.id = data[Enums.ID];
                 this.name = data[Enums.NAME];
                 this.currentHealth = data[Enums.CURRENTHEALTH];
                 this.maxHealth = data[Enums.MAXHEALTH];
                 this.level = data[Enums.LEVEL];
-
+                this.scale = data[Enums.SCALE];
                 this.speed = data[Enums.SPEED];
                 if (typeof data[Enums.RESOURCE] != 'undefined'){
                     this.spriteid = data[Enums.RESOURCE];
                 }
+                if (this.spriteid.substring(0,5) == 'enemy'){
+                    this.enemy = true;
+                }
                 this.moveVector = new SAT.Vector(data[Enums.MOVEVECTOR][0],data[Enums.MOVEVECTOR][1]);
 
-                this.sprite = Graphics.getSprite(this.spriteid + '_d1');
+                if (this.enemy){
+                    this.sprite = Graphics.getSprite(this.spriteid);
+                }else{
+                    this.sprite = Graphics.getSprite(this.spriteid + '_d1');
+                }
                 this.sprite.anchor.x = 0.5;
                 this.sprite.anchor.y = 0.6;
                 this.sprite.scale.x = this.scale;
@@ -55,7 +63,11 @@ var P = SAT.Polygon,
                 this.sprite.position.x = data[Enums.POSITION][0];
                 this.sprite.position.y = data[Enums.POSITION][1];
                 
-                this.sprite2 = Graphics.getSprite(this.spriteid + '_d1');
+                if (this.enemy){
+                    this.sprite2 = Graphics.getSprite(this.spriteid);
+                }else{
+                    this.sprite2 = Graphics.getSprite(this.spriteid + '_d1');
+                }
                 this.sprite2.anchor.x = 0.5;
                 this.sprite2.anchor.y = 0.6;
                 this.sprite2.scale.x = this.scale;
@@ -123,8 +135,10 @@ var P = SAT.Polygon,
                 }else if (this.moveVector.y >= this.diagM){
                     this.dir = 'd';
                 }
-                this.sprite.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
-                this.sprite2.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
+                if (!this.enemy){
+                    this.sprite.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
+                    this.sprite2.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
+                }
             },
             _updateStats: function(data){
                 for (var i in data){

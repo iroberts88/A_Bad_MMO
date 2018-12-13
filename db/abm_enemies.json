@@ -11,8 +11,8 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : NumberInt(2), 
-    "resource" : "ghost"
+    "scale" : 0.5, 
+    "resource" : "enemy_spirit"
 }
 { 
     "_id" : ObjectId("5bd32f5ff1c020323031e346"), 
@@ -27,8 +27,8 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : NumberInt(2), 
-    "resource" : "zombie"
+    "scale" : 0.5, 
+    "resource" : "enemy_zombie"
 }
 { 
     "_id" : ObjectId("5bd32f5ff1c020323031e347"), 
@@ -43,6 +43,6 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : NumberInt(2), 
-    "resource" : "skeleton"
+    "scale" : 0.5, 
+    "resource" : "enemyskeleton"
 }

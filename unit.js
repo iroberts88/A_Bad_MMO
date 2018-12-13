@@ -92,6 +92,7 @@ function Unit() {
             this.name = data.name;
             this.owner = data.owner;
 
+            this.scale = data.scale;
             this.cRadius = 16;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
@@ -462,6 +463,7 @@ function Unit() {
             data[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
             data[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
             data[this.engine.enums.SPEED] = this.speed.value;
+            data[this.engine.enums.SCALE] = this.scale;
 
             if (less && typeof less != 'undefined'){return data;}
             data[this.engine.enums.STRENGTH] = this.strength.value;

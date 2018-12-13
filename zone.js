@@ -580,6 +580,7 @@ Spawn.prototype.tick = function(deltaTime){
         var e = this.engine.enemies[enemyToSpawn];
         var data = {};
         data.spawn = this;
+        data.scale = e['scale'];
         data.engine = this.engine;
         data.classid = 'enemy';
         data.name = e['name'];

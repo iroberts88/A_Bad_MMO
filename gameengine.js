@@ -202,6 +202,7 @@ var GameEngine = function() {
         RESOURCE: 'resource',
 
         SAY: 'say',
+        SCALE: 'scale',
         SECONDARY: 'secondary',
         SECTORARRAY: 'sectorArr',
         SETITEMQUANTITY: 'setItemQuantity',

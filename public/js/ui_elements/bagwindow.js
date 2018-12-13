@@ -263,26 +263,26 @@
                                 }
                                 break;
                             case Enums.BAG2:
-                                if (Game.bagWindow.currentBag == 1){
+                                if (Game.bagWindow.currentBag == 2){
                                     bWithinb = true;
                                 }
-                                if (!Game.bagWindow.checkEmpty(1)){
+                                if (!Game.bagWindow.checkEmpty(2)){
                                     empty = false;
                                 }
                                 break;
                             case Enums.BAG3:
-                                if (Game.bagWindow.currentBag == 1){
+                                if (Game.bagWindow.currentBag == 3){
                                     bWithinb = true;
                                 }
-                                if (!Game.bagWindow.checkEmpty(1)){
+                                if (!Game.bagWindow.checkEmpty(3)){
                                     empty = false;
                                 }
                                 break;
                             case Enums.BAG4:
-                                if (Game.bagWindow.currentBag == 1){
+                                if (Game.bagWindow.currentBag == 4){
                                     bWithinb = true;
                                 }
-                                if (!Game.bagWindow.checkEmpty(1)){
+                                if (!Game.bagWindow.checkEmpty(4)){
                                     empty = false;
                                 }
                                 break;
