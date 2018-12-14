@@ -32,6 +32,8 @@
                 this.minHeight = typeof data.minHeight == 'undefined' ? this.height : data.minHeight;
                 this.minWidth = typeof data.minWidth == 'undefined' ? this.width : data.minWidth;
 
+                this.escapeCloses = typeof data.escapeCloses == 'undefined' ? false : data.escapeCloses;
+
                 this.width = Math.min(this.maxWidth,Math.max(this.minWidth,this.width));
                 this.height = Math.min(this.maxHeight,Math.max(this.minHeight,this.height));
 
@@ -168,6 +170,10 @@
                     this.mainContainer.parent.removeChild(this.mainContainer);
                 }
                 Graphics.uiContainer.addChild(this.mainContainer);
+
+                if (this.escapeCloses){
+                    Game.activeUIWindows.push(this);
+                }
             },
 
             _deActivate: function(){
@@ -175,11 +181,20 @@
                 if (this.mainContainer.parent){
                     this.mainContainer.parent.removeChild(this.mainContainer);
                 }
+                if (this.escapeCloses){
+                    for (var i = Game.activeUIWindows.length-1; i >= 0; i--){
+                        if (Game.activeUIWindows[i] == this){
+                            Game.activeUIWindows.splice(i,1);
+                            return;
+                        }
+                    }
+                }
             },
 
             toggle: function(){
                 if (this.active){
                     this._deActivate();
+                    document.body.style.cursor = "default";
                 }else{
                     this._activate();
                 }

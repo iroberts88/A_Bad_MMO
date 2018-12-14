@@ -28,6 +28,8 @@
 
         bagWindow: null,
 
+        activeUIWindows: [],
+
         init: function() {
             Graphics.app._options.backgroundColor = 0x000000;
             this.uiUpdateList = [];
@@ -75,9 +77,9 @@
                 maxHeight: 650,
                 minHeight: 475,
                 minWidth: 650,
-                nameBarSize: [600,25]
+                nameBarSize: [600,25],
+                escapeCloses: true
             });
-            this.characterWindow.activate();
 
             this.bagWindow = null;
             this.uiUpdateList.push(this.playerStatus);
@@ -98,10 +100,10 @@
                 maxHeight: 1000,
                 minHeight: 300,
                 minWidth: 324,
-                nameBarSize: [0,0]
+                nameBarSize: [0,0],
+                escapeCloses: true
             });
             this.bagWindow.setBag(0);
-            this.bagWindow.activate();
         },
 
         update: function(deltaTime){
@@ -183,6 +185,8 @@
                         Game.bagWindow.addItem(Game.cursorItem);
                     }
                     Game.cursorItem = null;
+                }else if (this.activeUIWindows.length){
+                    this.activeUIWindows[this.activeUIWindows.length-1].toggle();
                 }
                 Acorn.Input.setValue(Acorn.Input.Key.ESCAPE,false)
             }
