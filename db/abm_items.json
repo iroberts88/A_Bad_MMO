@@ -76,6 +76,39 @@
     "flavorText" : ""
 }
 { 
+    "itemid" : "w_arrow", 
+    "name" : "Arrow", 
+    "info" : "", 
+    "magic" : false, 
+    "soulbound" : false, 
+    "lore" : false, 
+    "scale" : {
+        "x" : 1.0, 
+        "y" : 1.0
+    }, 
+    "resource" : "e_arrow",
+    "slots" : [
+        "ammo"
+    ], 
+    "2h" : false, 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "all" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "value" : 1, 
+    "weight" : 0.1, 
+    "flavorText" : "",
+    "stack" : 200.0
+}
+{ 
     "_id" : ObjectId("5bdb0f9eb16cbc2db05eba76"), 
     "itemid" : "bone_shards", 
     "name" : "Bone Shards", 
