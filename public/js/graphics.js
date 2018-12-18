@@ -121,7 +121,6 @@
 
             //this.world.scale.x = 0.25;
             //this.world.scale.y = 0.25;
-
         },
 
         drawBG: function(color1,color2){

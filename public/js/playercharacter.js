@@ -37,6 +37,7 @@
             console.log("initializing!")
             this._init(data);
             
+            this.targetCircle.tint = 0x00FF00;
             this.class = data[Enums.CLASS];
             this.race = data[Enums.RACE];
             this.slot = data[Enums.SLOT];

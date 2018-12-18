@@ -20,13 +20,14 @@ function Unit() {
         stamina: null, //maximum health
         dexterity: null, // ranged power, weapon skill increase chance, ranged crit damage
         agility: null, //attack speed, run speed,  jump, dodge, casting concentrations
-        wisdom: null, // healing power
-        intelligence: null, //spell power, skill increase chance
+        wisdom: null, // healing power, mana regen
+        intelligence: null, //spell power, skill increase chance, maximum mana
         perception: null, //hit chance, crit chance, dodge, stealth detection
         charisma: null, //buy/sell prices, healing recieved
         luck: null, //slightly effects all actions
 
         maxHealth: null,
+        healthPercent: null,
         maxMana: null,
         maxEnergy: null,
         currentHealth: null,
@@ -81,9 +82,11 @@ function Unit() {
         moveVector: null,
         cRadius: null,
 
-        pToUpdate: [], //the array of players to keep updated of this units position
+        pToUpdate: [], //the array of players to keep updated of this units position and information
 
         statIndex: {},
+
+        currentTarget: null,
 
         _init: function(data){
             //REQUIRED DATA VARIABLES
@@ -96,6 +99,8 @@ function Unit() {
             this.cRadius = 16;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
+
+            this.faceVector = new V(0,0);
 
             this.setStatFormulas(data.classid);
 
@@ -445,6 +450,7 @@ function Unit() {
                 }
             }
             this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
+            this.healthPercent = this.currentHealth/this.maxHealth.value;
         },
        
         _update: function(deltaTime){
@@ -452,6 +458,42 @@ function Unit() {
                 this.currentZone.collideUnit(this,deltaTime);
                 if (this.currentSector != this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y)){
                     this.currentZone.changeSector(this,this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y));
+                }
+            }
+        },
+
+        setTarget: function(unit){
+            this.currentTarget = unit;
+            for (var i in this.pToUpdate){
+                var data = {};
+                data[this.engine.enums.UNIT] = this.id;
+                data[this.engine.enums.TARGET] = unit.id;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.SETTARGET,data);
+            }
+        },
+
+        clearTarget: function(unit){
+            this.currentTarget = null;
+            for (var i in this.pToUpdate){
+                var data = {};
+                data[this.engine.enums.UNIT] = this.id;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.CLEARTARGET,data);
+            }
+        },
+
+        getPToUpdate: function(){
+            var zone = this.currentZone;
+            var sector = this.currentSector;
+            this.pToUpdate = {};
+            for (var i = -1;i < 2;i++){
+                for (var j = -1;j < 2;j++){
+                    if (typeof zone.sectors[(sector.x+i) + 'x' + (sector.y+j)] == 'undefined'){
+                        continue;
+                    }
+                    for (var pl in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].players){
+                        var player = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].players[pl];
+                        this.pToUpdate[player.id] = player;
+                    }
                 }
             }
         },
@@ -464,8 +506,18 @@ function Unit() {
             data[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
             data[this.engine.enums.SPEED] = this.speed.value;
             data[this.engine.enums.SCALE] = this.scale;
+            data[this.engine.enums.HEALTHPERCENT] = this.healthPercent;
+            data[this.engine.enums.MAXMANA] = this.maxMana.value;
+            data[this.engine.enums.CURRENTMANA] = this.currentMana;
+            data[this.engine.enums.CURRENTENERGY] = this.currentEnergy;
+            data[this.engine.enums.MAXENERGY] = this.maxEnergy.value;
+            data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
+            data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
+            data[this.engine.enums.LEVEL] = this.level;
 
             if (less && typeof less != 'undefined'){return data;}
+            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth;
+            data[this.engine.enums.MAXHEALTH] = this.maxHealth.value;
             data[this.engine.enums.STRENGTH] = this.strength.value;
             data[this.engine.enums.STAMINA] = this.stamina.value;
             data[this.engine.enums.INTELLIGENCE] = this.intelligence.value;
@@ -480,14 +532,7 @@ function Unit() {
             data[this.engine.enums.HEALINGPOWER] = this.healingPower.value;
             data[this.engine.enums.RANGEDPOWER] = this.rangedPower.value;
             data[this.engine.enums.SPELLPOWER] = this.spellPower.value;
-            data[this.engine.enums.MAXHEALTH] = this.maxHealth.value;
-            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth;
-            data[this.engine.enums.MAXMANA] = this.maxMana.value;
-            data[this.engine.enums.CURRENTMANA] = this.currentMana;
-            data[this.engine.enums.CURRENTENERGY] = this.currentEnergy;
-            data[this.engine.enums.MAXENERGY] = this.maxEnergy.value;
             data[this.engine.enums.CURRENTEXP] = this.currentExp;
-            data[this.engine.enums.LEVEL] = this.level;
             data[this.engine.enums.FROSTRES] = this.frostRes.value;
             data[this.engine.enums.FIRERES] = this.fireRes.value;
             data[this.engine.enums.WINDRES] = this.windRes.value;
@@ -498,8 +543,6 @@ function Unit() {
             data[this.engine.enums.SHADOWRES] = this.shadowRes.value;
             data[this.engine.enums.ARCANERES] = this.arcaneRes.value;
             data[this.engine.enums.DISEASERES] = this.diseaseRes.value;
-            data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
-            data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
             data[this.engine.enums.CURRENTWEIGHT] = this.inventory.currentWeight.value;
             data[this.engine.enums.CARRYWEIGHT] = this.inventory.carryWeight.value;
 

@@ -28,6 +28,7 @@
         BOOL: 'bool',
 
         CARRYWEIGHT: 'carryWeight',
+        CLEARTARGET: 'clrtr',
         CHARACTERS: 'characters',
         CHARISMA: 'charisma',
         CHECKNAME: 'checkName',
@@ -78,6 +79,7 @@
         HANDS: 'hands',
         HEAD: 'head',
         HEALINGPOWER: 'healingPower',
+        HEALTHPERCENT: 'healthPercent',
         HOLYRES: 'holyres',
         HUMAN: 'human',
 
@@ -154,7 +156,10 @@
         SECTORARRAY: 'sectorArr',
         SETITEMQUANTITY: 'setItemQuantity',
         SETLOGINERRORTEXT: 'setLoginErrorText',
+        SETMELEEATTACK: 'setmatk',
+        SETRANGEDATTACK: 'setrngatk',
         SETUNITSTAT: 'setUnitStat',
+        SETTARGET: 'setTarget',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',
@@ -173,6 +178,7 @@
         STAMINA: 'stamina',
         STRENGTH: 'strength',
 
+        TARGET: 'targetdsad',
         TEXT: 'text',
         THIEF: 'thief',
         TILES: 'tifdsafd',

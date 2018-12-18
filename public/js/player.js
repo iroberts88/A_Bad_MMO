@@ -4,6 +4,7 @@
     	userData: null,
     	characters: null,
         currentCharacter: null,
+        currentTarget: null,
         mapLoc: null,
         clickMove: false,
         clickPos: null,
@@ -77,6 +78,41 @@
             data[Enums.POSITION] = [this.currentCharacter.sprite.position.x,this.currentCharacter.sprite.position.y];
             data[Enums.MOVEVECTOR] = [this.currentCharacter.moveVector.x,this.currentCharacter.moveVector.y];
             Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+        },
+
+        setTarget: function(unit,updateServer = true){
+            Game.targetStatus.unit = unit;
+            Game.targetStatus.name = 'Target: ' + unit.name;
+            if (!this.currentTarget){
+                Game.targetStatus.activate();
+            }
+            this.currentTarget = unit;
+            if (this.currentTarget.target){
+                Game.targetTargetStatus.unit = unit.target;
+                Game.targetTargetStatus.name = 'Target: ' + unit.target.name;
+                Game.targetTargetStatus.activate();
+            }
+            Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+            Game.targetTargetStatus.resize(Game.targetTargetStatus.width,Game.targetTargetStatus.height);
+            //send SETTARGET command
+            if (updateServer){
+                var data = {};
+                data[Enums.COMMAND] = Enums.SETTARGET;
+                data[Enums.UNIT] = unit.id;
+                Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+            }
+        },
+
+        clearTarget: function(updateServer = true){
+            this.currentTarget = null;
+            Game.targetStatus.deActivate();
+            Game.targetTargetStatus.deActivate();
+
+            if (updateServer){
+                var data = {};
+                data[Enums.COMMAND] = Enums.CLEARTARGET;
+                Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+            }
         }
     }
     window.Player = Player;

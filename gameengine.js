@@ -81,6 +81,7 @@ var GameEngine = function() {
         BOOL: 'bool',
 
         CARRYWEIGHT: 'carryWeight',
+        CLEARTARGET: 'clrtr',
         CHARACTERS: 'characters',
         CHARISMA: 'charisma',
         CHECKNAME: 'checkName',
@@ -131,6 +132,7 @@ var GameEngine = function() {
         HANDS: 'hands',
         HEAD: 'head',
         HEALINGPOWER: 'healingPower',
+        HEALTHPERCENT: 'healthPercent',
         HOLYRES: 'holyres',
         HUMAN: 'human',
 
@@ -163,7 +165,7 @@ var GameEngine = function() {
         MESSAGE: 'message',
         MESSAGETYPE: 'messageType',
         MELEEPOWER: 'meleePower',
-        MOD: 'mod', //is a stat modded or base
+        MOD: 'mod',
         MOVE: 'move',
         MOVEITEM: 'moveItem',
         MOVEVECTOR: 'moveVector',
@@ -207,7 +209,10 @@ var GameEngine = function() {
         SECTORARRAY: 'sectorArr',
         SETITEMQUANTITY: 'setItemQuantity',
         SETLOGINERRORTEXT: 'setLoginErrorText',
+        SETMELEEATTACK: 'setmatk',
+        SETRANGEDATTACK: 'setrngatk',
         SETUNITSTAT: 'setUnitStat',
+        SETTARGET: 'setTarget',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',
@@ -226,6 +231,7 @@ var GameEngine = function() {
         STAMINA: 'stamina',
         STRENGTH: 'strength',
 
+        TARGET: 'targetdsad',
         TEXT: 'text',
         THIEF: 'thief',
         TILES: 'tifdsafd',
@@ -253,6 +259,7 @@ var GameEngine = function() {
 
         ZONE: 'zone'
     };
+    
     this.slotEnums = {
         'ear': this.enums.EAR,
         'head': this.enums.HEAD,

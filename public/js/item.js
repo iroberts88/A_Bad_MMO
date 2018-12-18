@@ -126,6 +126,11 @@ slotEnums[Enums.BAG4] = 'bag';
                 sprite.interactive = true;
                 sprite.buttonMode = true;
                 slot.mainCon.parent.addChild(sprite);
+                if (this.stackText){
+                    this.stackText.position.x = slot.mainCon.position.x + slot.width;
+                    this.stackText.position.y = slot.mainCon.position.y + slot.height;
+                    slot.mainCon.parent.addChild(this.stackText);
+                }
             },
             setBag: function(bag){
                 this.bag = bag;

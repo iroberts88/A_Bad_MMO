@@ -8,8 +8,8 @@
         },
 
         update: function(dt){
-            for (var i in this.pcs){
-                this.npcs[i].update(dt);
+            for (var i in this.npcs){
+                this.npcs[i]._update(dt);
             }
         },
 
@@ -18,28 +18,34 @@
             char._init(data);
             this.npcs[char.id] = char;
             Game.allUnits[char.id] = char;
+            Graphics.unitContainer.addChild(char.targetCircle);
             Graphics.unitContainer.addChild(char.sprite);
             Graphics.unitContainer2.addChild(char.sprite2);
             Graphics.unitContainer2.addChild(char.spriteMask);
             Graphics.unitContainer2.addChild(char.nameTag);
+            Graphics.unitContainer2.addChild(char.hitBox);
         },
 
         removeNPC: function(data){
             if (typeof this.npcs[data[Enums.ID]] == 'undefined'){
-                console.log('PC deosnt exist')
+                console.log('NPC deosnt exist')
                 return;
+            }
+            if (Player.currentTarget == this.npcs[data[Enums.ID]]){
+                Player.clearTarget();
             }
             Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].sprite);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].sprite2);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].spriteMask);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);
+            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].hitBox);
             delete this.pcs[data[Enums.ID]];
             delete Game.allUnits[data[Enums.ID]];
         },
 
         getNPC: function(id){
             if (typeof this.npcs[id] == 'undefined'){
-                console.log('PC doesnt exist')
+                console.log('NPC doesnt exist')
                 return false;
             }
             return this.pcs[id];

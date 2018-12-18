@@ -18,10 +18,12 @@
             char.init(data);
             this.pcs[char.id] = char;
             Game.allUnits[char.id] = char;
+            Graphics.unitContainer.addChild(char.targetCircle);
             Graphics.unitContainer.addChild(char.sprite);
             Graphics.unitContainer2.addChild(char.sprite2);
             Graphics.unitContainer2.addChild(char.spriteMask);
             Graphics.unitContainer2.addChild(char.nameTag);
+            Graphics.unitContainer2.addChild(char.hitBox);
         },
 
         removePC: function(data){
@@ -29,10 +31,15 @@
                 console.log('PC deosnt exist')
                 return;
             }
+            if (Player.currentTarget == this.pcs[data[Enums.ID]]){
+                Player.clearTarget();
+            }
             Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].sprite);
+            Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].targetCircle);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].sprite2);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].spriteMask);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);
+            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].hitBox);
             delete this.pcs[data[Enums.ID]];
             delete Game.allUnits[data[Enums.ID]];
         },

@@ -11,6 +11,7 @@ var P = SAT.Polygon,
             name: null,
             currentHealth: null,
             maxHealth: null,
+            healthPercent: null,
             currentEnergy: null,
             maxEnergy: null,
             level: null,
@@ -33,13 +34,23 @@ var P = SAT.Polygon,
             enemy: false,
             diagM: 0.708,
 
+            target: null, //the unit this unit currently has targeted
+
+            nameFlash: {
+                t: 0,
+                del: 0.06,
+                c: 1,
+                c1: 0xFFFFFF,
+                c2: 0x91d1ff
+            },
 
             _init: function(data){
                 this.enemy = false;
                 this.id = data[Enums.ID];
                 this.name = data[Enums.NAME];
-                this.currentHealth = data[Enums.CURRENTHEALTH];
-                this.maxHealth = data[Enums.MAXHEALTH];
+                this.currentHealth = typeof data[Enums.CURRENTHEALTH] == 'undefined' ? null : data[Enums.CURRENTHEALTH];
+                this.maxHealth = typeof data[Enums.MAXHEALTH] == 'undefined' ? null : data[Enums.MAXHEALTH];
+                this.healthPercent = data[Enums.HEALTHPERCENT];
                 this.level = data[Enums.LEVEL];
                 this.scale = data[Enums.SCALE];
                 this.speed = data[Enums.SPEED];
@@ -50,6 +61,7 @@ var P = SAT.Polygon,
                     this.enemy = true;
                 }
                 this.moveVector = new SAT.Vector(data[Enums.MOVEVECTOR][0],data[Enums.MOVEVECTOR][1]);
+                this.faceVector = new SAT.Vector(1,0);
 
                 if (this.enemy){
                     this.sprite = Graphics.getSprite(this.spriteid);
@@ -94,7 +106,29 @@ var P = SAT.Polygon,
                 this.nameTag.anchor.y = 1;
                 this.nameTag.position.y = this.sprite.position.y - this.sprite.height*0.75;
 
+                var smSize = this.sprite.width;
+                this.targetCircle = Graphics.getSprite('target_circle');
+                this.targetCircle.anchor.x = 0.5;
+                this.targetCircle.anchor.y = 0.5;
+                this.targetCircle.position.x = this.sprite.position.x;
+                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/4;
+                this.targetCircle.scale.x = Math.max(.5,smSize/56);
+                this.targetCircle.scale.y = Math.max(.5,smSize/56);
                 this.hb = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
+
+                this.hitBox = Graphics.getSprite('empty');
+                this.hitBox.position.x = this.sprite.position.x;
+                this.hitBox.position.y = this.sprite.position.y;
+                this.hitBox.hitArea = new PIXI.Rectangle(Math.max(50,this.sprite.width)/2*-1,Math.max(50,this.sprite.height)/2*-1,Math.max(50,this.sprite.width),Math.max(50,this.sprite.height));
+                this.hitBox.interactive = true;
+                this.hitBox.buttonMode = true;
+                this.hitBox.unit = this;
+                var onClick = function(e){
+                    console.log("set " + e.currentTarget.unit.name + ' as target!!!');
+                    Player.setTarget(e.currentTarget.unit);
+                }
+                this.hitBox.on('pointerdown',onClick);
+
                 this._updateStats(data);
             },
 
@@ -109,16 +143,39 @@ var P = SAT.Polygon,
                         this.spritenum += 1;
                         if (this.spritenum == 3){this.spritenum = 1;}
                     }
+                    this.faceVector.x = this.moveVector.x;
+                    this.faceVector.y = this.moveVector.y;
+                    this.targetCircle.rotation = Math.atan2(this.moveVector.y,this.moveVector.x) - (1.5708/2);
                 }
                 this.sprite.position.x = this.hb.pos.x;
                 this.sprite.position.y = this.hb.pos.y;
+                this.targetCircle.position.x = this.sprite.position.x;
+                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/4;
                 this.sprite2.position.x = this.hb.pos.x;
                 this.sprite2.position.y = this.hb.pos.y;
+                this.hitBox.position.x = this.hb.pos.x;
+                this.hitBox.position.y = this.hb.pos.y;
                 this.spriteMask.position.x = this.sprite2.position.x - this.sprite2.width/2;
                 this.spriteMask.position.y = this.sprite2.position.y - this.sprite2.width*0.6;
                 this.nameTag.position.x = this.sprite.position.x;
                 this.nameTag.position.y = this.sprite.position.y - this.sprite.height*0.75;
                 this.currentTile = Game.map[Math.floor(this.hb.pos.x/mainObj.TILE_SIZE)][Math.floor(this.hb.pos.y/mainObj.TILE_SIZE)];
+
+                if (Player.currentTarget == this){
+                    this.nameFlash.t += dt;
+                    if (this.nameFlash.t >= this.nameFlash.del){
+                        this.nameFlash.t -= this.nameFlash.del
+                        if (this.nameFlash.c == 1){
+                            this.nameFlash.c = 2;
+                            this.nameTag.style.fill = this.nameFlash.c2;
+                        }else{
+                            this.nameFlash.c = 1;
+                            this.nameTag.style.fill = this.nameFlash.c1;
+                        }
+                    }
+                }else{
+                    this.nameTag.style.fill = this.nameFlash.c2;
+                }
             },
 
             getDir: function(){
@@ -138,6 +195,21 @@ var P = SAT.Polygon,
                 if (!this.enemy){
                     this.sprite.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
                     this.sprite2.texture = Graphics.getResource(this.spriteid + '_' + this.dir + this.spritenum);
+                }
+            },
+            setTarget: function(unit){
+                this.target = unit;
+                if (Player.currentTarget == this){
+                    Game.targetTargetStatus.unit = unit;
+                    Game.targetTargetStatus.name = 'Target: ' + unit.name;
+                    Game.targetTargetStatus.activate();
+                    Game.targetTargetStatus.resize(Game.targetTargetStatus.width,Game.targetTargetStatus.height);
+                }
+            },
+            clearTarget: function(){
+                this.target = null;
+                if (Player.currentTarget == this){
+                    Game.targetTargetStatus.deActivate();
                 }
             },
             _updateStats: function(data){

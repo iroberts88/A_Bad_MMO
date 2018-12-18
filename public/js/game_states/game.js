@@ -14,8 +14,6 @@
         screenChange: false,
         screenTicker: 0,
 
-        mainChat: null,
-
         uiUpdateList: null,
 
         cursorItem: null,
@@ -26,9 +24,15 @@
         currentToolTip: null,
         hoverItem: null,
 
-        bagWindow: null,
-
         activeUIWindows: [],
+
+        //UI elements
+        mainChat: null,
+        bagWindow: null,
+        playerStatus: null,
+        targetStatus: null,
+        targetTargetStatus: null,
+        characterWindow: null,
 
         init: function() {
             Graphics.app._options.backgroundColor = 0x000000;
@@ -64,6 +68,39 @@
                 nameBarSize: [400,18]
             });
             this.playerStatus.activate();
+            
+            this.targetStatus = UnitStatusBar();
+            this.targetStatus.init({
+                id: 'targetStatus',
+                unit: Player.currentCharacter,
+                preName: 'Target: ',
+                name: '',
+                width: 160,
+                height: 80,
+                x: 300,
+                y: 10,
+                maxWidth: 400,
+                maxHeight: 200,
+                minHeight: 80,
+                minWidth: 100,
+                nameBarSize: [160,18]
+            });
+            this.targetTargetStatus = UnitStatusBar();
+            this.targetTargetStatus.init({
+                id: 'targetStatus',
+                unit: Player.currentCharacter,
+                preName: 'Target\'s Target: ',
+                name: '',
+                width: 100,
+                height: 60,
+                x: 475,
+                y: 10,
+                maxWidth: 400,
+                maxHeight: 200,
+                minHeight: 60,
+                minWidth: 100,
+                nameBarSize: [160,14]
+            });
 
             this.characterWindow = CharWindow();
             this.characterWindow.init({
@@ -83,7 +120,62 @@
 
             this.bagWindow = null;
             this.uiUpdateList.push(this.playerStatus);
+            this.uiUpdateList.push(this.targetStatus);
+            this.uiUpdateList.push(this.targetTargetStatus);
             this.setUILock(true);
+
+
+            //set key callbacks
+            Acorn.Input.onDown(Acorn.Input.Key.COMMAND, function(){
+                Game.mainChat.textBox.text = '';
+                Game.mainChat.textBox.activate();
+                Acorn.Input.setValue(Acorn.Input.Key.COMMAND,false);
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.DEVCOMMAND, function(){
+                Game.mainChat.textBox.text = '';
+                Game.mainChat.textBox.activate();
+                Acorn.Input.setValue(Acorn.Input.Key.DEVCOMMAND,false)
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.ENTER, function(){
+                Game.mainChat.textBox.activate();
+                Acorn.Input.setValue(Acorn.Input.Key.ENTER,false);
+            });
+
+            Acorn.Input.onDown(Acorn.Input.Key.CHARACTERWINDOW, function(){
+                Game.characterWindow.toggle();
+                Acorn.Input.setValue(Acorn.Input.Key.CHARACTERWINDOW,false);
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.BAGWINDOW, function(){
+                Game.bagWindow.toggle();
+                Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false);
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.MELEEATTACK, function(){
+                console.log("turn on melee attack!")
+                Acorn.Input.setValue(Acorn.Input.Key.MELEEATTACK,false);
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.RANGEDATTACK, function(){
+                console.log("turn on ranged attack!")
+                Acorn.Input.setValue(Acorn.Input.Key.RANGEDTTACK,false);
+            });
+            Acorn.Input.onDown(Acorn.Input.Key.ESCAPE, function(){
+                if (Game.cursorItem){
+                    //re-add cursor item
+                    if (typeof Game.cursorItem.position == 'string'){
+                        Game.cursorItem.setOnSlot();
+                    }else{
+                        Game.cursorItem.setFlipped(Game.cursorItemFlipped);
+                        Game.cursorItem.sprite.interactive = true;
+                        Game.cursorItem.sprite.buttonMode = true;
+                        Game.bagWindow.addItem(Game.cursorItem);
+                    }
+                    Game.cursorItem = null;
+                }else if (Game.activeUIWindows.length){
+                    Game.activeUIWindows[Game.activeUIWindows.length-1].toggle();
+                }else if (Player.currentTarget){
+                    Player.clearTarget();
+                }
+                Acorn.Input.setValue(Acorn.Input.Key.ESCAPE,false);
+            });
         },
 
         initBagWindow: function(data){
@@ -125,6 +217,8 @@
             Graphics.world.position.y = Math.round((Graphics.height/2) - Player.currentCharacter.sprite.position.y*Graphics.world.scale.y);
             //update all player characters
             PCS.update(deltaTime);
+            //update all non-player characters
+            NPCS.update(deltaTime);
             //update ui list
             for (var i = 0; i < this.uiUpdateList.length;i++){
                 this.uiUpdateList[i].update(deltaTime);
@@ -146,50 +240,6 @@
                     }
                 }
             }
-            //check Keys
-            if (Acorn.Input.isPressed(Acorn.Input.Key.COMMAND)){
-                this.mainChat.textBox.text = '';
-                this.mainChat.textBox.activate();
-                this.mainChat.textBox.addToText('/');
-                Acorn.Input.setValue(Acorn.Input.Key.COMMAND,false)
-            }
-            if (Acorn.Input.isPressed(Acorn.Input.Key.DEVCOMMAND)){
-                this.mainChat.textBox.text = '';
-                this.mainChat.textBox.activate();
-                this.mainChat.textBox.addToText(':');
-                Acorn.Input.setValue(Acorn.Input.Key.DEVCOMMAND,false)
-            }
-            if (Acorn.Input.isPressed(Acorn.Input.Key.ENTER)){
-                this.mainChat.textBox.activate();
-                Acorn.Input.setValue(Acorn.Input.Key.ENTER,false)
-            }
-
-
-            if (Acorn.Input.isPressed(Acorn.Input.Key.CHARACTERWINDOW)){
-                this.characterWindow.toggle();
-                Acorn.Input.setValue(Acorn.Input.Key.CHARACTERWINDOW,false)
-            }
-            if (Acorn.Input.isPressed(Acorn.Input.Key.BAGWINDOW)){
-                this.bagWindow.toggle();
-                Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false)
-            }
-            if (Acorn.Input.isPressed(Acorn.Input.Key.ESCAPE)){
-                if (this.cursorItem){
-                    //re-add cursor item
-                    if (typeof Game.cursorItem.position == 'string'){
-                        Game.cursorItem.setOnSlot();
-                    }else{
-                        Game.cursorItem.setFlipped(Game.cursorItemFlipped);
-                        Game.cursorItem.sprite.interactive = true;
-                        Game.cursorItem.sprite.buttonMode = true;
-                        Game.bagWindow.addItem(Game.cursorItem);
-                    }
-                    Game.cursorItem = null;
-                }else if (this.activeUIWindows.length){
-                    this.activeUIWindows[this.activeUIWindows.length-1].toggle();
-                }
-                Acorn.Input.setValue(Acorn.Input.Key.ESCAPE,false)
-            }
         },
 
         updateScreenChange: function(deltaTime){
@@ -208,6 +258,8 @@
         setUILock: function(b){
             this.mainChat.setLock(b);
             this.playerStatus.setLock(b);
+            this.targetStatus.setLock(b);
+            this.targetTargetStatus.setLock(b);
         },
 
         setNewMap: function(name){

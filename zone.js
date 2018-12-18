@@ -301,11 +301,11 @@ Zone.prototype.changeSector = function(p,sector){
     //get the new list of players to update for each player in the old sectors
     if (!isNPC){
         for (var i = 0; i < p.pToUpdate.length;i++){
-            p.pToUpdate[i].pToUpdate = this.getPlayers(p.pToUpdate[i].currentSector);
+            p.pToUpdate[i].getPToUpdate();
         }
     }
     //set the new pToUpdate
-    p.pToUpdate = this.getPlayers(p.currentSector);
+    p.getPToUpdate();
 }
 
 Zone.prototype.getSector = function(x,y){
@@ -398,12 +398,12 @@ Zone.prototype.addPlayer = function(p){
     var players = this.getPlayers(sector);
     for (var i = 0; i < players.length;i++){
         this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDPC,p.getLessClientData());
-        players[i].pToUpdate.push(p);
+        players[i].pToUpdate[p.id] = p;
     }
     this.sendMapDataTo(p);
     sector.addPlayer(p);
     this.playerCount += 1;
-    p.pToUpdate = this.getPlayers(p.currentSector);
+    p.getPToUpdate();
     return this.playerCount;
 }
 
@@ -414,7 +414,9 @@ Zone.prototype.removePlayer = function(p){
     for (var i = 0; i < players.length;i++){
         var data = {};
         data[this.engine.enums.ID] = p.id;
-        players[i].pToUpdate = players;
+        if (players[i].pToUpdate[p.id]){
+            delete players[i].pToUpdate[p.id];
+        }
         this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVEPC,data);
     }
     delete this.players[p.id];
@@ -432,7 +434,7 @@ Zone.prototype.addNPC = function(n){
     }
     sector.addNPC(n);
     this.playerCount += 1;
-    n.pToUpdate = this.getPlayers(n.currentSector);
+    n.getPToUpdate();
     return null;
 }
 
@@ -449,6 +451,17 @@ Zone.prototype.removeNPC = function(n){
     return null;
 }
 
+Zone.prototype.getUnit = function(id){
+    //get the unit with the given ID
+    if (typeof this.players[id] != 'undefined'){
+        return this.players[id];
+    }
+    if (typeof this.npcs[id] != 'undefined'){
+        return this.npcs[id];
+    }
+    console.log('ERROR: no unit with id ' + id);
+    return null;
+}
 Zone.prototype.sendMapDataTo = function(character) {
     var that = this;
     fs.readFile('./mapgen_tool/maps/' + that.mapid + '.json', "utf8",function read(err, fsdata) {

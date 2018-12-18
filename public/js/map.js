@@ -58,8 +58,6 @@ var P = SAT.Polygon,
     GameMap.prototype.updateVisibleSectors = function(c,n){
         var x = n.pos.x-c.pos.x;
         var y = n.pos.y-c.pos.y;
-        console.log(x);
-        console.log(y);
         if (x == -1){
             this.setVisible((n.pos.x-1) + 'x' + n.pos.y,true);
             this.setVisible((n.pos.x-1) + 'x' + (n.pos.y-1),true);

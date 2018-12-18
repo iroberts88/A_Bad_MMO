@@ -22,6 +22,7 @@
                 fill: 0xFFFFFF,
             }
             this.font = typeof data.font == 'undefined' ? defaultFont : data.font;
+            this.preName = typeof data.preName == 'undefined' ? '': data.preName;
 
 
             this.mainContainer.position.x = typeof data.x == 'undefined' ? 4 : data.x;
@@ -49,19 +50,19 @@
             this.mainContainer.addChild(this.container);
             this.mainContainer.addChild(this.resizeRect);
             this.mainContainer.addChild(this.moveRect);
-            this.nameBarSize = [this.width,18];
+            this.nameBarSize = [this.width,this.height*0.2];
 
             this.moveRect.hitArea = new PIXI.Rectangle(this.nameBarSize[1],0,this.nameBarSize[0]-this.nameBarSize[1],this.nameBarSize[1]);
             this.resizeRect.hitArea = new PIXI.Rectangle(0,0,this.nameBarSize[1],this.nameBarSize[1]);
 
             //create the PIXI container for this chat window.
-            this.nameText = new PIXI.Text(this.unit.name,AcornSetup.style1);
+            this.nameText = new PIXI.Text(this.preName + this.unit.name,AcornSetup.style1);
             this.nameText.style.fill = 0xFFFFFF;
             this.nameText.position.x = 20;
             this.nameText.anchor.x = 0.0;
             this.nameText.position.y = this.nameBarSize[1]/2;
             this.nameText.anchor.y = 0.5;
-            Graphics.fitText(this.nameText,this.width-5,this.nameBarSize[1]*2);
+            Graphics.fitText(this.nameText,this.width-20,this.nameBarSize[1]*2);
             this.mainContainer.addChild(this.nameText);
 
             this.gfx.lineStyle(2,0x000000,0);
@@ -81,7 +82,8 @@
             this.hpText.position.x = 3;
             Graphics.fitText(this.hpText,this.width-xSize-12,ySize);
             this.container.addChild(this.hpText);
-            this.hpValue = new PIXI.Text(this.unit.currentHealth + '/' + this.unit.maxHealth,this.font);
+            var text = this.unit.currentHealth ? (this.unit.currentHealth + '/' + this.unit.maxHealth) : Math.round(this.unit.healthPercent*100) + '%';
+            this.hpValue = new PIXI.Text(text,this.font);
             this.hpValue.style.strokeThickness = 2;
             this.hpValue.anchor.y = 0.5;
             this.hpValue.anchor.x = 0.5;
@@ -89,7 +91,7 @@
             this.hpValue.position.x = x + xSize/2;
             Graphics.fitText(this.hpValue,xSize/2,ySize);
             this.container.addChild(this.hpValue);
-            var p = this.unit.currentHealth/this.unit.maxHealth;
+            var p = this.unit.currentHealth ? this.unit.currentHealth/this.unit.maxHealth : this.unit.healthPercent;
             this.gfx.lineStyle(2,0x000000,0);
             this.gfx.beginFill(0xFF0000,1);
             this.gfx.drawRect(x,y-ySize/2,xSize*p,ySize);

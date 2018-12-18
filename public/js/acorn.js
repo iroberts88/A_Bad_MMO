@@ -58,13 +58,11 @@
             CHARACTERWINDOW: 10,
             BAGWINDOW: 11,
             ESCAPE: 12,
+            MELEEATTACK: 13,
+            RANGEDATTACK: 14
         },
         keysPressed: [],
         keyBindings: [],
-
-        requiresShiftMod: [],
-        requiresCtrlMod: [],
-        requiresAltMod: [],
 
         // Mouse inputs
         mouse: {
@@ -81,6 +79,9 @@
         mouseMoveCallback: null,
         touchEventCallback: null,
         scrollCallback: null,
+
+        downCallBacks: {},
+        upCallBacks: {},
 
 
         init: function() {
@@ -99,7 +100,7 @@
             this.keyBindings[68] = Acorn.Input.Key.RIGHT; //default D
             this.keyBindings[13] = Acorn.Input.Key.ENTER; //default Enter
             this.keyBindings[191] = Acorn.Input.Key.COMMAND; //default /
-            this.keyBindings[186] = Acorn.Input.Key.DEVCOMMAND; //default :
+            this.keyBindings['s186'] = Acorn.Input.Key.DEVCOMMAND; //default :
             this.keyBindings[66] = Acorn.Input.Key.BAGWINDOW; //default B
             this.keyBindings[73] = Acorn.Input.Key.BAGWINDOW; //default I
             this.keyBindings[67] = Acorn.Input.Key.CHARACTERWINDOW; //default C
@@ -107,41 +108,52 @@
             this.keyBindings[17] = Acorn.Input.Key.MOD_CTRL; //ctrl mod
             this.keyBindings[18] = Acorn.Input.Key.MOD_ALT; //alt mod
             this.keyBindings[27] = Acorn.Input.Key.ESCAPE; //cancel all..
+            this.keyBindings[69] = Acorn.Input.Key.MELEEATTACK; //melee
+            this.keyBindings['s69'] = Acorn.Input.Key.RANGEDATTACK; //ranged
 
-            this.requiresShiftMod[Acorn.Input.DEVCOMMAND] = true;
         },
         getBinding: function(keyCode) {
             return this.keyBindings[keyCode];
         },
+        onDown: function(binding,f){
+            this.downCallBacks[binding] = f;
+        },
+        onUp: function(binding,f){
+            this.upCallBacks[binding] = f;
+        },
+        clearCallbacks: function(){
+            this.downCallBacks = {};
+            this.upCallBacks = {};
+        },
         keyDown: function(keyCode) {
-            console.log(keyCode);
+            if (this.keysPressed[Acorn.Input.Key.MOD_SHIFT]){
+                keyCode = 's'+keyCode;
+            }
+            if (this.keysPressed[Acorn.Input.Key.MOD_CTRL]){
+                keyCode = 'c'+keyCode;
+            }
+            if (this.keysPressed[Acorn.Input.Key.MOD_ALT]){
+                keyCode = 'a'+keyCode;
+            }
             this.keysPressed[this.getBinding(keyCode)] = true;
+            if (this.downCallBacks[this.getBinding(keyCode)]){
+                console.log('DOWN CODE: ' + keyCode);
+                var f = this.downCallBacks[this.getBinding(keyCode)];
+                f();
+            }
         },
         keyUp: function(keyCode) {
             this.keysPressed[this.getBinding(keyCode)] = false;
+            /*if (this.upCallBacks[this.getBinding(keyCode)]){
+                console.log('UP CODE: ' + keyCode);
+                var f = this.upCallBacks[this.getBinding(keyCode)];
+                f();
+            }*/
         },
         setValue: function(binding, value) {
             this.keysPressed[binding] = value;
         },
         isPressed: function(binding) {
-            if (this.requiresShiftMod[binding]){
-                if (this.keysPressed[Acorn.Input.Key.MOD_SHIFT]){
-                    return this.keysPressed[binding];
-                }
-                return false;
-            }
-            if (this.requiresCtrlMod[binding]){
-                if (this.keysPressed[Acorn.Input.Key.MOD_CTRL]){
-                    return this.keysPressed[binding];
-                }
-                return false;
-            }
-            if (this.requiresAltMod[binding]){
-                if (this.keysPressed[Acorn.Input.Key.MOD_ALT]){
-                    return this.keysPressed[binding];
-                }
-                return false;
-            }
             return this.keysPressed[binding];
         },
 

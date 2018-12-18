@@ -214,7 +214,7 @@ Player.prototype.setupSocket = function() {
                     that.activeChar.moveVector.y = data[that.engine.enums.MOVEVECTOR][1];
                     that.activeChar.hb.pos.x = data[that.engine.enums.POSITION][0];
                     that.activeChar.hb.pos.y = data[that.engine.enums.POSITION][1];
-                    for (var i = 0; i < that.activeChar.pToUpdate.length;i++){
+                    for (var i in that.activeChar.pToUpdate){
                         var d = {};
                         d[that.engine.enums.ID] = that.activeChar.id;
                         d[that.engine.enums.POSITION] = data[that.engine.enums.POSITION];
@@ -233,6 +233,18 @@ Player.prototype.setupSocket = function() {
                     if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
                     if (!that.engine.checkData(data,that.engine.enums.ITEM)){return;}
                     that.activeChar.inventory.equipItem(data[that.engine.enums.SLOT],data[that.engine.enums.ITEM]);
+                    break;
+                case that.engine.enums.SETTARGET:
+                    if (!that.engine.checkData(data,that.engine.enums.UNIT)){return;}
+                    //get the unit
+                    var unit = that.activeChar.currentZone.getUnit(data[that.engine.enums.UNIT]);
+                    if (!unit){
+                        return;
+                    }
+                    that.activeChar.setTarget(unit);
+                    break;
+                case that.engine.enums.CLEARTARGET:
+                    that.activeChar.clearTarget();
                     break;
             }
         }catch(e){

@@ -299,6 +299,7 @@
                         data[Enums.SLOT] = NewChar.slot;
                         Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
                         Player.currentCharacter = Player.characters[NewChar.slot];
+                        Game.allUnits[Player.currentCharacter.id] =  Player.currentCharacter;
                         Acorn.changeState('game');
                     }
                 }

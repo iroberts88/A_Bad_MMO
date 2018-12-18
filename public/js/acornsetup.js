@@ -180,10 +180,24 @@
                 }
             });
 
-            Acorn.Net.on(Enums.POSUPDATE, function (data) {
-                if (data[Enums.ID] != Player.currentCharacter.id){
-                    PCS.updatePCPos(data);
+            Acorn.Net.on(Enums.SETTARGET, function (data) {
+                if (data[Enums.UNIT] == Player.currentCharacter.id){
+                    //force target change
+                    Player.setTarget(Game.allUnits[data[Enums.TARGET]],false);
                 }
+                if (typeof Game.allUnits[data[Enums.UNIT]] == 'undefined'){
+                    //the unit's target is not visible to you!
+                    //TODO deal with this.....
+                }else if (Game.allUnits[data[Enums.UNIT]]){
+                    Game.allUnits[data[Enums.UNIT]].setTarget(Game.allUnits[data[Enums.TARGET]]);
+                }
+            });
+            Acorn.Net.on(Enums.CLEARTARGET, function (data) {
+                if (data[Enums.UNIT] == Player.currentCharacter.id){
+                    //force target clear
+                    Player.clearTarget(false);
+                }
+                Game.allUnits[data[Enums.UNIT]].clearTarget();
             });
 
             Acorn.Net.on(Enums.MESSAGE, function (data) {
