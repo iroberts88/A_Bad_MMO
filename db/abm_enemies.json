@@ -11,7 +11,8 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : 0.5, 
+    "scale" : 0.75, 
+    "noMana" : false, 
     "resource" : "enemy_spirit"
 }
 { 
@@ -27,7 +28,8 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : 0.5, 
+    "scale" : 1.0, 
+    "noMana" : true, 
     "resource" : "enemy_zombie"
 }
 { 
@@ -43,6 +45,7 @@
     "combatBehaviour" : "testBehaviour", 
     "acquiretarget" : "testAcquireTarget", 
     "mapCollide" : true, 
-    "scale" : 0.5, 
-    "resource" : "enemyskeleton"
+    "scale" : 1.0, 
+    "noMana" : true, 
+    "resource" : "enemy_skeleton"
 }

@@ -1,0 +1,61 @@
+{ 
+    "_id" : ObjectId("5c1a72218dafca2198a3f4d9"), 
+    "factionid" : "player_folk", 
+    "factionname" : "Folk", 
+    "enemyfactions" : [
+        "player_gresh", 
+        "player_kin"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1a723a8dafca2198a3f4da"), 
+    "factionid" : "player_gresh", 
+    "factionname" : "Gresh", 
+    "enemyfactions" : [
+        "player_folk", 
+        "player_kin"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1a72498dafca2198a3f4db"), 
+    "factionid" : "player_kin", 
+    "factionname" : "Kin", 
+    "enemyfactions" : [
+        "player_folk", 
+        "player_gresh"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1a73368dafca2198a3f4dc"), 
+    "factionid" : "general_undead", 
+    "factionname" : "undead", 
+    "enemyfactions" : [
+        "general_humanoid"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1a73808dafca2198a3f4dd"), 
+    "factionid" : "general_humanoid", 
+    "factionname" : "humanoid", 
+    "enemyfactions" : [
+        "general_undead", 
+        "general_demonic"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1a73cb8dafca2198a3f4de"), 
+    "factionid" : "general_demonic", 
+    "factionname" : "demonic", 
+    "enemyfactions" : [
+        "general_humanoid", 
+        "general_animal"
+    ]
+}
+{ 
+    "_id" : ObjectId("5c1bb2288dafca2198a3f4e4"), 
+    "factionid" : "general_animal", 
+    "factionname" : "animal", 
+    "enemyfactions" : [
+        "general_demonic"
+    ]
+}
