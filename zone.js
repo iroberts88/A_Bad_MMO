@@ -601,6 +601,7 @@ Spawn.prototype.tick = function(deltaTime){
         data.combatBehaviour = e['combatBehaviour'];
         data.level = e['level'];
         data.resource = e['resource'];
+        data.noMana = e['noMana'];
         newEnemy.init(data);
         this.enemyAlive = true;
         this.zone.addNPC(newEnemy);

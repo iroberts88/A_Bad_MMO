@@ -32,7 +32,7 @@ function init() {
     // ----------------------------------------------------------
 
     rc.ready();
-    rc.require('dbMaps','dbClasses','dbRaces','dbUsers','dbEnemies','dbBuffs','dbSpawns','dbItems');
+    rc.require('dbMaps','dbClasses','dbRaces','dbUsers','dbEnemies','dbBuffs','dbSpawns','dbItems','dbFactions');
 
     // ---- Load Classes/races/enemies from MONGODB ----
     var MongoClient = require('mongodb').MongoClient;
@@ -88,6 +88,12 @@ function init() {
         if (err) throw err;
         ge.loadBuffs(result);
         rc.ready('dbBuffs');
+        db.close();
+      });
+      dbo.collection("abm_factions").find().toArray(function(err, result) {
+        if (err) throw err;
+        ge.loadFactions(result);
+        rc.ready('dbFactions');
         db.close();
       });
     });

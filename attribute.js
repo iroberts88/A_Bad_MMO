@@ -38,7 +38,7 @@ Attribute.prototype.init = function(data){
     this.updateAll = Utils.udCheck(data.updateAll,false,data.updateAll);
 	//formula for setting the attribute
 	if (Utils._udCheck(data.formula)){
-		this.formula = function(){return Math.round((this.base+this.nMod)*this.pMod);};
+		this.formula = function(){return Math.round(this.base*this.pMod+this.nMod);};
     }else{
     	this.formula = data.formula;
     }

@@ -66,7 +66,7 @@ Inventory.prototype.init = function(data){
         max: Infinity,
         formula: function(){
             var cf = 10;
-            return Math.round(((this.base+this.nMod)*this.pMod)*cf)/cf;
+            return Math.round(((this.base*this.pMod)+this.nMod)*cf)/cf;
         },
         next: function(){
             this.owner.speed.set(true);
@@ -82,7 +82,7 @@ Inventory.prototype.init = function(data){
         max: Infinity,
         formula: function(){
             this.base = this.owner.strength.value;
-            return Math.round((this.base+this.nMod)*this.pMod);
+            return Math.round(this.base*this.pMod+this.nMod);
         },
         next: function(){
             this.owner.speed.set(true);

@@ -50,6 +50,8 @@ var P = SAT.Polygon,
                 this.name = data[Enums.NAME];
                 this.currentHealth = typeof data[Enums.CURRENTHEALTH] == 'undefined' ? null : data[Enums.CURRENTHEALTH];
                 this.maxHealth = typeof data[Enums.MAXHEALTH] == 'undefined' ? null : data[Enums.MAXHEALTH];
+                this.currentMana = typeof data[Enums.CURRENTMANA] == 'undefined' ? null : data[Enums.CURRENTMANA];
+                this.maxMana = typeof data[Enums.MAXMANA] == 'undefined' ? null : data[Enums.MAXMANA];
                 this.healthPercent = data[Enums.HEALTHPERCENT];
                 this.level = data[Enums.LEVEL];
                 this.scale = data[Enums.SCALE];
@@ -267,6 +269,12 @@ var P = SAT.Polygon,
                         break; 
                     case  Enums.CURRENTENERGY:
                         this.currentEnergy = val;
+                        break; 
+                    case  Enums.MAXMANA:
+                        this.maxMana = val;
+                        break; 
+                    case  Enums.CURRENTMana:
+                        this.currentMana = val;
                         break; 
                     case  Enums.CURRENTEXP:
                         this.currentExp = val;

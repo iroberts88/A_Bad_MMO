@@ -31,6 +31,7 @@ var GameEngine = function() {
     this.buffs = {};
     this.spawns = {};
     this.items = {};
+    this.factions = {};
 
     //database objects
     this.mapids = [];
@@ -451,6 +452,12 @@ GameEngine.prototype.loadBuffs = function(arr){
     }
     console.log('loaded ' + arr.length + ' Buffs from file');
 }
+GameEngine.prototype.loadFactions = function(arr){
+    for (var i = 0; i < arr.length;i++){
+        self.buffs[arr[i].buffid] = arr[i];
+    }
+    console.log('loaded ' + arr.length + ' Buffs from file');
+}
 
 //Player functions
 GameEngine.prototype.addPlayer = function(p){
@@ -496,8 +503,8 @@ GameEngine.prototype.playerLogout = function(p){
     p.user = null;
 }
 
-GameEngine.prototype.checkData = function(obj,key){
-    if (Utils._udCheck(obj[key])){
+GameEngine.prototype.checkData = function(obj,key,type = ''){
+    if (if (typeof obj[key] != type)){
         console.log('INVALID DATA - ' + key)
         console.log(obj);
         return false;

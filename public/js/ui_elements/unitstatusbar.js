@@ -64,17 +64,21 @@
             this.nameText.anchor.y = 0.5;
             Graphics.fitText(this.nameText,this.width-20,this.nameBarSize[1]*2);
             this.mainContainer.addChild(this.nameText);
-
+            var h = this.height;
+            if (this.unit.maxMana == 1){
+                h = h *0.85;
+            }
             this.gfx.lineStyle(2,0x000000,0);
             this.gfx.beginFill(this.color,0.35);
-            this.gfx.drawRect(0,0,this.width,this.height);
+            this.gfx.drawRect(0,0,this.width,h);
             this.gfx.endFill();
             this.gfx.beginFill(this.color,7);
             this.gfx.drawRect(0,0,this.width,this.nameBarSize[1]);
             this.gfx.endFill();
-            var y = this.height*.38;
+
+            var y = this.height*.35;
             var x = this.width*0.2;
-            var ySize = this.height*0.25;
+            var ySize = this.height*0.2;
             var xSize = this.width*0.75;
             this.hpText = new PIXI.Text('HP',this.font);
             this.hpText.anchor.y = 0.5;
@@ -98,8 +102,35 @@
             this.gfx.endFill();
             this.gfx.lineStyle(2,0xFFFFFF,0.5);
             this.gfx.drawRect(x,y-ySize/2,xSize,ySize);
+            if (this.unit.maxMana != 1){
+                y = this.height*0.60;
+                this.manaText = new PIXI.Text('MANA',this.font);
+                this.manaText.anchor.y = 0.5;
+                this.manaText.position.y = y;
+                this.manaText.position.x = 3;
+                this.container.addChild(this.manaText);
+                Graphics.fitText(this.manaText,this.width*0.175,ySize);
+                this.manaValue = new PIXI.Text(this.unit.currentMana + '/' + this.unit.maxMana,this.font);
+                this.manaValue.style.strokeThickness = 2;
+                this.manaValue.anchor.y = 0.5;
+                this.manaValue.anchor.x = 0.5;
+                this.manaValue.position.y = y;
+                this.manaValue.position.x = x + xSize/2;
+                Graphics.fitText(this.manaValue,xSize/2,ySize);
+                this.container.addChild(this.manaValue);
+                var p = this.unit.currentMana/this.unit.maxMana;
+                this.gfx.lineStyle(2,0x000000,0);
+                this.gfx.beginFill(0x5494f9,1);
+                this.gfx.drawRect(x,y-ySize/2,xSize*p,ySize);
+                this.gfx.endFill();
+                this.gfx.lineStyle(2,0xFFFFFF,0.5);
+                this.gfx.drawRect(x,y-ySize/2,xSize,ySize);
+            }
 
-            y = this.height*0.75;
+            y = this.height*0.85;
+            if (this.unit.maxMana == 1){
+                y = this.height*0.60;
+            }
             this.endText = new PIXI.Text('EN',this.font);
             this.endText.anchor.y = 0.5;
             this.endText.position.y = y;

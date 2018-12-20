@@ -61,12 +61,14 @@ function User() {
                     owner: this.owner,
                     engine: this.owner.engine
                 };
+                var classes = ['priest','fighter','thief','mage'];
+                var cl = classes[Math.floor(Math.random()*classes.length)]
                 data.slot= 1;
                 data.scale = 2;
                 data.name = ng.generateName('male');
                 data.race = 'human';
-                data.class = 'fighter';
-                data.classid = 'fighter';
+                data.class = cl;
+                data.classid = cl;
                 newChar.init(data);
                 this.characters[1] = newChar;
                 this.userData = {

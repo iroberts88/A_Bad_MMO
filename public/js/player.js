@@ -8,6 +8,9 @@
         mapLoc: null,
         clickMove: false,
         clickPos: null,
+
+        rangedAttackOn: false,
+        meleeAttackOn: false,
         
         init: function(data){
         	this.userData = data;
@@ -113,6 +116,26 @@
                 data[Enums.COMMAND] = Enums.CLEARTARGET;
                 Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
             }
+        },
+
+        toggleRangedAttack: function(){
+            if (this.rangedAttackOn){
+                this.rangedAttackOn = false;
+            }else if (this.meleeAttackOn){
+                this.meleeAttackOn = false;
+                this.rangedAttackOn = true;
+            }
+        },
+        toggleMeleeAttack: function(){
+            if (this.meleeAttackOn){
+                this.meleeAttackOn = false;
+            }else if (this.rangedAttackOn){
+                this.rangedAttackOn = false;
+                this.meleeAttackOn = true;
+            }
+        },
+        sendPlayerUpdate(data){
+            Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
         }
     }
     window.Player = Player;

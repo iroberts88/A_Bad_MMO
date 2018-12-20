@@ -150,11 +150,20 @@
                 Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false);
             });
             Acorn.Input.onDown(Acorn.Input.Key.MELEEATTACK, function(){
-                console.log("turn on melee attack!")
+                Player.toggleMeleeAttack();
+                var data = {};
+                data[Enums.COMMAND] = Enums.SETMELEEATTACK;
+                data[Enums.BOOL] = Player.meleeAttackOn;
+                Player.sendPlayerUpdate(data);
                 Acorn.Input.setValue(Acorn.Input.Key.MELEEATTACK,false);
             });
             Acorn.Input.onDown(Acorn.Input.Key.RANGEDATTACK, function(){
-                console.log("turn on ranged attack!")
+                Player.toggleRangedAttack();
+                var data = {};
+                data[Enums.COMMAND] = Enums.SETRANGEDATTACK;
+                data[Enums.BOOL] = Player.rangedAttackOn;
+                Player.sendPlayerUpdate(data);
+                console.log("turn on ranged attack!");
                 Acorn.Input.setValue(Acorn.Input.Key.RANGEDTTACK,false);
             });
             Acorn.Input.onDown(Acorn.Input.Key.ESCAPE, function(){

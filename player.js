@@ -246,6 +246,13 @@ Player.prototype.setupSocket = function() {
                 case that.engine.enums.CLEARTARGET:
                     that.activeChar.clearTarget();
                     break;
+                case that.engine.enums.SETMELEEATTACK:
+                    if (!that.engine.checkData(data,that.engine.enums.BOOL,'boolean')){return;}
+                    break;
+                case that.engine.enums.SETRANGEDATTACK:
+                    if (!that.engine.checkData(data,that.engine.enums.BOOL,'boolean')){return;}
+
+                    break;
             }
         }catch(e){
             console.log(that.engine.debug('playerUpdateError',e,data));

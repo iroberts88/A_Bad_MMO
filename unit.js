@@ -19,7 +19,7 @@ function Unit() {
         strength: null, //carry weight, melee power, melee crit damage
         stamina: null, //maximum health
         dexterity: null, // ranged power, weapon skill increase chance, ranged crit damage
-        agility: null, //attack speed, run speed,  jump, dodge, casting concentrations
+        agility: null, // run speed, casting concentrations, AC, Dodge
         wisdom: null, // healing power, mana regen
         intelligence: null, //spell power, skill increase chance, maximum mana
         perception: null, //hit chance, crit chance, dodge, stealth detection
@@ -106,8 +106,10 @@ function Unit() {
 
             if (data.classid == 'enemy' || data.classid == 'elite'){
                 this.isEnemy = true;
+                this.noMana = data.noMana;
             }else{
                 this.isEnemy = false;
+                this.noMana = false;
             }
 
             this.jumpSpeed = new Attribute();
@@ -139,14 +141,14 @@ function Unit() {
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
                     this.base = (75+(this.owner.agility.value*(this.owner.level/1200)))/(weightMod*weightMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
 
             if (this.isEnemy){
                 this.speed.formula = function(){
                     this.base = 80+(this.owner.agility.value*this.owner.levelMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             }
 
@@ -215,6 +217,7 @@ function Unit() {
                 max: 999,
                 next: function(u){
                     this.owner.spellPower.set(u);
+                    this.owner.maxMana.set(u);
                 }
             });
             this.perception = new Attribute();
@@ -255,7 +258,8 @@ function Unit() {
                         return 10;
                     }else{
                         this.base = 14 + this.owner.level;
-                        return Math.round((this.base+this.nMod)*this.pMod);
+                        this.cap = this.owner.level*30*Math.ceil(this.owner.level/5);
+                        return Math.min(this.owner.level*30*Math.ceil(this.owner.level/2),Math.round((this.base*this.pMod+this.nMod)*(1+this.owner.agility.value*(this.owner.level/8000))));
                     }
                 }
             });
@@ -352,7 +356,7 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     this.base = (this.owner.dexterity.value*(this.owner.level/this.owner.rangedStatMod) + this.owner.level*this.owner.rangedLvlMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
             this.spellPower = new Attribute();
@@ -364,7 +368,7 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     this.base = (this.owner.intelligence.value*(this.owner.level/this.owner.spellStatMod) + this.owner.level*this.owner.spellLvlMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
             this.meleePower = new Attribute();
@@ -376,7 +380,7 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     this.base = (this.owner.strength.value*(this.owner.level/this.owner.meleeStatMod) + this.owner.level*this.owner.meleeLvlMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
             this.healingPower = new Attribute();
@@ -388,7 +392,7 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     this.base = (this.owner.wisdom.value*(this.owner.level/this.owner.healingStatMod) + this.owner.level*this.owner.healingLvlMod);
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
             //OTHER
@@ -401,7 +405,7 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     this.base =30+ (this.owner.stamina.value*(this.owner.level/this.owner.healthStatMod) + this.owner.level*this.owner.healthLvlMod*(this.owner.level/this.owner.healthStatMod));
-                    return Math.round((this.base+this.nMod)*this.pMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
             this.maxMana = new Attribute();
@@ -410,9 +414,19 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.MAXMANA],30,data[this.engine.enums.MAXMANA]),
                 min: 1,
-                max: 99999
+                max: 99999,
+                formula: function(){
+                    if (this.owner.noMana){
+                        return 0;
+                    }
+                    this.base =(this.owner.manaLvlMod*10) + this.owner.level*this.owner.manaLvlMod*(this.owner.level/this.owner.manaStatMod);
+                    //set the cost base for spells
+                    this.costBase = (100) + this.owner.level*10*(this.owner.level/10);
+                    var statMod = (this.owner.intelligence.value*2*(this.owner.level/this.owner.manaStatMod));
+                    return Math.round((this.base+statMod)*this.pMod+this.nMod);
+                }
             });
-            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
+
 
             this.maxEnergy = new Attribute();
             this.maxEnergy.init({
@@ -450,6 +464,7 @@ function Unit() {
                 }
             }
             this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
+            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
             this.healthPercent = this.currentHealth/this.maxHealth.value;
         },
        
@@ -583,12 +598,14 @@ function Unit() {
             switch (id){
                 case 'enemy':
                     this.healthLvlMod = 5;
+                    this.manaLvlMod = 5;
                     this.meleeLvlMod = 10;
                     this.rangedLvlMod = 10;
                     this.spellLvlMod = 10;
                     this.healingLvlMod = 10;
 
                     this.healthStatMod = 12;
+                    this.manaStatMod = 12;
                     this.meleeStatMod = 12;
                     this.rangedStatMod = 12;
                     this.spellStatMod = 12;
@@ -596,12 +613,14 @@ function Unit() {
                     break;
                 case 'elite':
                     this.healthLvlMod = 20;
+                    this.manaLvlMod = 20;
                     this.meleeLvlMod = 40;
                     this.rangedLvlMod = 40;
                     this.spellLvlMod = 40;
                     this.healingLvlMod = 40;
 
                     this.healthStatMod = 8;
+                    this.manaStatMod = 8;
                     this.meleeStatMod = 8;
                     this.rangedStatMod = 8;
                     this.spellStatMod = 8;
@@ -609,12 +628,14 @@ function Unit() {
                     break;
                 case 'mage':
                     this.healthLvlMod = 5;
+                    this.manaLvlMod = 15;
                     this.meleeLvlMod = 10;
                     this.rangedLvlMod = 8;
                     this.spellLvlMod = 14;
                     this.healingLvlMod = 14;
 
                     this.healthStatMod = 12;
+                    this.manaStatMod = 5;
                     this.meleeStatMod = 14;
                     this.rangedStatMod = 14;
                     this.spellStatMod = 8;
@@ -622,12 +643,14 @@ function Unit() {
                     break;
                 case 'thief':
                     this.healthLvlMod = 5;
+                    this.manaLvlMod = 5;
                     this.meleeLvlMod = 14;
                     this.rangedLvlMod = 14;
                     this.spellLvlMod = 10;
                     this.healingLvlMod = 8;
 
                     this.healthStatMod = 11;
+                    this.manaStatMod = 14;
                     this.meleeStatMod = 8;
                     this.rangedStatMod = 9;
                     this.spellStatMod = 14;
@@ -635,12 +658,14 @@ function Unit() {
                     break;
                 case 'fighter':
                     this.healthLvlMod = 7;
+                    this.manaLvlMod = 5;
                     this.meleeLvlMod = 14;
                     this.rangedLvlMod = 13;
                     this.spellLvlMod = 8;
                     this.healingLvlMod = 10;
 
                     this.healthStatMod = 10;
+                    this.manaStatMod = 15;
                     this.meleeStatMod = 8;
                     this.rangedStatMod = 10;
                     this.spellStatMod = 14;
@@ -648,12 +673,14 @@ function Unit() {
                     break;
                 case 'priest':
                     this.healthLvlMod = 5;
+                    this.manaLvlMod = 14;
                     this.meleeLvlMod = 8;
                     this.rangedLvlMod = 10;
                     this.spellLvlMod = 14;
                     this.healingLvlMod = 14;
 
                     this.healthStatMod = 12;
+                    this.manaStatMod = 14;
                     this.meleeStatMod = 14;
                     this.rangedStatMod = 14;
                     this.spellStatMod = 9;
