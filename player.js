@@ -99,36 +99,37 @@ Player.prototype.setupSocket = function() {
 
     this.socket.on(this.engine.enums.PLAYERUPDATE, function (data) {
         try{
-            if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
-            switch(data[that.engine.enums.COMMAND]){
-                case that.engine.enums.LOGOUT:
+            var enums = that.engine.enums;
+            if (!that.engine.checkData(data,enums.COMMAND)){return;}
+            switch(data[enums.COMMAND]){
+                case enums.LOGOUT:
                     that.engine.playerLogout(that);
-                    that.engine.queuePlayer(that,that.engine.enums.LOGOUT, {});
+                    that.engine.queuePlayer(that,enums.LOGOUT, {});
                     break;
-                case that.engine.enums.CHECKNAME:
+                case enums.CHECKNAME:
                     //check if valid name
-                    if (!that.engine.checkData(data,that.engine.enums.TEXT)){return;}
+                    if (!that.engine.checkData(data,enums.TEXT)){return;}
                     that.checkName = true;
                     that.checkNameTicker = 0.0;
-                    that.checkNameText = data[that.engine.enums.TEXT].toLowerCase();
+                    that.checkNameText = data[enums.TEXT].toLowerCase();
                     break;
-                case that.engine.enums.CREATECHAR:
+                case enums.CREATECHAR:
                     //CREATE CHARACTER
                     //check valid slot
-                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.RACE)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.CLASS)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.NAME)){return;}
-                    var slot = data[that.engine.enums.SLOT];
-                    var name = data[that.engine.enums.NAME] + '';
+                    if (!that.engine.checkData(data,enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,enums.RACE)){return;}
+                    if (!that.engine.checkData(data,enums.CLASS)){return;}
+                    if (!that.engine.checkData(data,enums.NAME)){return;}
+                    var slot = data[enums.SLOT];
+                    var name = data[enums.NAME] + '';
                     name = name.toLowerCase();
-                    var race = data[that.engine.enums.RACE];
-                    var cclass = data[that.engine.enums.CLASS];
+                    var race = data[enums.RACE];
+                    var cclass = data[enums.CLASS];
 
                     if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] != 'undefined'){
                         var d = {};
-                        d[that.engine.enums.CREATECHARERROR] = "Invalid slot!";
-                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        d[enums.CREATECHARERROR] = "Invalid slot!";
+                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
                         return;
                     }
                     //check valid race/class
@@ -141,22 +142,22 @@ Player.prototype.setupSocket = function() {
                     for (var i = 0; i < name.length;i++){
                         if (Utils._udCheck(that.engine.possibleNameChars[name.charAt(i)])){
                             var d = {};
-                            d[that.engine.enums.CREATECHARERROR] = "Invalid Name!";
-                            that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                            d[enums.CREATECHARERROR] = "Invalid Name!";
+                            that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
                             return;
                         }
                     }
                     if (name.length < 3 || name.length > 16){
                         var d = {};
-                        d[that.engine.enums.CREATECHARERROR] = "Name must be between 3 and 16 characters!";
-                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        d[enums.CREATECHARERROR] = "Name must be between 3 and 16 characters!";
+                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
                         return;
                     }
                     //profanity check
                     if (that.engine.filter.isProfaneLike(this.checkNameText)){
                         var d = {};
-                        d[that.engine.enums.CREATECHARERROR] = "Bad words!";
-                        that.engine.queuePlayer(that,that.engine.enums.CREATECHARERROR, d);
+                        d[enums.CREATECHARERROR] = "Bad words!";
+                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
                         return;
                     }
                     var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
@@ -184,23 +185,23 @@ Player.prototype.setupSocket = function() {
                         }
                     });
                     break;
-                case that.engine.enums.ENTERGAME:
+                case enums.ENTERGAME:
                     //check if the slot is a valid character
-                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
-                    var slot = data[that.engine.enums.SLOT];
+                    if (!that.engine.checkData(data,enums.SLOT)){return;}
+                    var slot = data[enums.SLOT];
                     if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] == 'undefined'){
                         console.log('Player Error - Invalid Slot')
                         return;
                     }
                     //Add to zone/sector
                     that.activeChar = that.user.characters[slot];
-                    that.engine.queuePlayer(that,that.engine.enums.GETINVENTORY,that.activeChar.inventory.getClientData());
+                    that.engine.queuePlayer(that,enums.GETINVENTORY,that.activeChar.inventory.getClientData());
                     that.engine.addPlayerToZone(that.activeChar,that.activeChar.zoneid);
                     break;
-                case that.engine.enums.REQUESTMAPDATA:
+                case enums.REQUESTMAPDATA:
                     /*try{
                         var zoneData = that.engine.zones[data.name].zoneData;
-                        that.engine.queuePlayer(that,that.engine.enums.MAPDATA,{
+                        that.engine.queuePlayer(that,enums.MAPDATA,{
                             zoneData: zoneData,
                             name: data.name
                         });
@@ -208,50 +209,61 @@ Player.prototype.setupSocket = function() {
                         that.engine.debug(that,{id: 'requestMapDataError', error: e.stack});
                     }*/
                     break;
-                case that.engine.enums.MOVE:
+                case enums.MOVE:
                     //TODO - this should actually keep track of movement not just set the position
-                    that.activeChar.moveVector.x = data[that.engine.enums.MOVEVECTOR][0];
-                    that.activeChar.moveVector.y = data[that.engine.enums.MOVEVECTOR][1];
-                    that.activeChar.hb.pos.x = data[that.engine.enums.POSITION][0];
-                    that.activeChar.hb.pos.y = data[that.engine.enums.POSITION][1];
+                    that.activeChar.moveVector.x = data[enums.MOVEVECTOR][0];
+                    that.activeChar.moveVector.y = data[enums.MOVEVECTOR][1];
+                    that.activeChar.hb.pos.x = data[enums.POSITION][0];
+                    that.activeChar.hb.pos.y = data[enums.POSITION][1];
                     for (var i in that.activeChar.pToUpdate){
                         var d = {};
-                        d[that.engine.enums.ID] = that.activeChar.id;
-                        d[that.engine.enums.POSITION] = data[that.engine.enums.POSITION];
-                        d[that.engine.enums.MOVEVECTOR] = data[that.engine.enums.MOVEVECTOR];
-                        that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,that.engine.enums.POSUPDATE, d);
+                        d[enums.ID] = that.activeChar.id;
+                        d[enums.POSITION] = data[enums.POSITION];
+                        d[enums.MOVEVECTOR] = data[enums.MOVEVECTOR];
+                        that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,enums.POSUPDATE, d);
                     }
                     break;
-                case that.engine.enums.MOVEITEM:
-                    if (!that.engine.checkData(data,that.engine.enums.BAG)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.POSITION)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.FLIPPED)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.ID)){return;}
+                case enums.MOVEITEM:
+                    if (!that.engine.checkData(data,enums.BAG)){return;}
+                    if (!that.engine.checkData(data,enums.POSITION,'object')){return;}
+                    if (!that.engine.checkData(data,enums.FLIPPED,'boolean')){return;}
+                    if (!that.engine.checkData(data,enums.ID,'string')){return;}
                     that.activeChar.inventory.moveItem(data);
                     break;
-                case that.engine.enums.EQUIPITEM:
-                    if (!that.engine.checkData(data,that.engine.enums.SLOT)){return;}
-                    if (!that.engine.checkData(data,that.engine.enums.ITEM)){return;}
-                    that.activeChar.inventory.equipItem(data[that.engine.enums.SLOT],data[that.engine.enums.ITEM]);
+                case enums.EQUIPITEM:
+                    if (!that.engine.checkData(data,enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,enums.ITEM)){return;}
+                    that.activeChar.inventory.equipItem(data[enums.SLOT],data[enums.ITEM]);
                     break;
-                case that.engine.enums.SETTARGET:
-                    if (!that.engine.checkData(data,that.engine.enums.UNIT)){return;}
+                case enums.SETTARGET:
+                    if (!that.engine.checkData(data,enums.UNIT)){return;}
                     //get the unit
-                    var unit = that.activeChar.currentZone.getUnit(data[that.engine.enums.UNIT]);
+                    var unit = that.activeChar.currentZone.getUnit(data[enums.UNIT]);
                     if (!unit){
                         return;
                     }
                     that.activeChar.setTarget(unit);
                     break;
-                case that.engine.enums.CLEARTARGET:
+                case enums.CLEARTARGET:
                     that.activeChar.clearTarget();
+                    that.activeChar.meleeOn = false;
+                    that.activeChar.rangedOn = false;
                     break;
-                case that.engine.enums.SETMELEEATTACK:
-                    if (!that.engine.checkData(data,that.engine.enums.BOOL,'boolean')){return;}
+                case enums.SETMELEEATTACK:
+                    console.log(data);
+                    if (!that.engine.checkData(data,enums.BOOL,'boolean')){return;}
+                    if (data[enums.BOOL]){
+                        that.activeChar.rangedOn = false;
+                    }
+                    that.activeChar.meleeOn = data[enums.BOOL];
                     break;
-                case that.engine.enums.SETRANGEDATTACK:
-                    if (!that.engine.checkData(data,that.engine.enums.BOOL,'boolean')){return;}
-
+                case enums.SETRANGEDATTACK:
+                    console.log(data);
+                    if (!that.engine.checkData(data,enums.BOOL,'boolean')){return;}
+                    if (data[enums.BOOL]){
+                        that.activeChar.meleeOn = false;
+                    }
+                    that.activeChar.rangedOn = data[enums.BOOL];
                     break;
             }
         }catch(e){

@@ -43,7 +43,7 @@ var Inventory = function () {
         'bag3': null,
         'bag4': null
     };
-    this.grid0 = new Grid(4,8,this,0);
+    this.grid0 = new Grid(20,20,this,0);//new Grid(4,8,this,0);
     this.grid1 = null;//new Grid(12,12,this,1);
     this.grid2 = null;//new Grid(12,12,this,2);
     this.grid3 = null;//new Grid(12,12,this,3);
@@ -189,7 +189,7 @@ Inventory.prototype.moveItem = function(data){
             x: pos[0],
             y: pos[1]
         }
-        bag.print();//send down client command to successfully equip the item
+        //bag.print();//send down client command to successfully equip the item
     }
 }
 
@@ -253,6 +253,19 @@ Inventory.prototype.equipItem = function(slot,item){
         //add any on equip properties
         console.log('equipped!!');
 
+        //set weapons
+        if (slot == 'main'){
+            this.owner.currentMeleeMain = itemToMove.item;
+            if (itemToMove.item.twoHanded){
+                this.owner.currentMeleeSecond = null;
+            }
+        }else if (slot == 'secondary'){
+            if (itemToMove.item.pierce || itemToMove.item.pierce || itemToMove.item.bludgeon){
+                this.owner.currentMeleeSecond = itemToMove.item;
+            }
+        }else if (slot == 'ranged'){
+            this.owner.currentRanged = itemToMove.item;
+        }
         //send down client command to successfully equip the item
         clientData[this.engine.enums.ITEM] = item;
         clientData[this.engine.enums.SLOT] = slot;
@@ -328,6 +341,14 @@ Inventory.prototype.unEquipItem = function(slot){
     }
     //add any on equip properties
     console.log('un equipped!!');
+    //set weapons
+    if (slot == 'main'){
+        this.owner.currentMeleeMain = this.owner.defaultWeapon;
+    }else if (slot == 'secondary'){
+        this.owner.currentMeleeSecond = this.owner.defaultWeapon;
+    }else if (slot == 'ranged'){
+        this.owner.currentRanged = itemToMove.item;
+    }
     //send down client command to successfully unequip the item
     clientData[this.engine.enums.ITEM] = itemToMove.id;
     clientData[this.engine.enums.SLOT] = slot;
@@ -465,7 +486,7 @@ Inventory.prototype._addItem = function(data){
     this.items[itemid].position = [data.x,data.y];
     this.items[itemid].grid = this.getBag(data.grid.bag);
     this.changeWeight(this.items[itemid].item.weight);
-    data.grid.print();
+    //data.grid.print();
     var d = {};
     d[this.engine.enums.ITEM] = data.pitem.getClientData();
     d[this.engine.enums.FLIPPED] = this.flip;
@@ -661,8 +682,8 @@ Item.prototype.init = function(data){
     this.flavorText = data['flavorText'];
     this.weight = data['weight'];
 
-    this.xSize = parseInt(data['scale']['x']);
-    this.ySize = parseInt(data['scale']['y']);
+    this.xSize = typeof data['scale'] == 'undefined' ? 1 : parseInt(data['scale']['x']);
+    this.ySize = typeof data['scale'] == 'undefined' ? 1 : parseInt(data['scale']['y']);
 
     //optional / equipment values
     this.classes = {};

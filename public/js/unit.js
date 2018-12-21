@@ -129,7 +129,15 @@ var P = SAT.Polygon,
                     console.log("set " + e.currentTarget.unit.name + ' as target!!!');
                     Player.setTarget(e.currentTarget.unit);
                 }
+                var onHover = function(e){
+                    Game.unitHovered = true;
+                }
+                var onOut = function(e){
+                    Game.unitHovered = false;
+                }
                 this.hitBox.on('pointerdown',onClick);
+                this.hitBox.on('pointerover',onHover);
+                this.hitBox.on('pointerout',onOut);
 
                 this._updateStats(data);
             },
@@ -162,7 +170,11 @@ var P = SAT.Polygon,
                 this.nameTag.position.x = this.sprite.position.x;
                 this.nameTag.position.y = this.sprite.position.y - this.sprite.height*0.75;
                 this.currentTile = Game.map[Math.floor(this.hb.pos.x/mainObj.TILE_SIZE)][Math.floor(this.hb.pos.y/mainObj.TILE_SIZE)];
-
+                if (this.target){
+                    var vec = new V(this.target.hb.pos.x-this.hb.pos.x,this.target.hb.pos.y-this.hb.pos.y).normalize();
+                    this.targetCircle.rotation = Math.atan2(vec.y,vec.x) - (1.5708/2);
+                    this.faceVector = vec;
+                }
                 if (Player.currentTarget == this){
                     this.nameFlash.t += dt;
                     if (this.nameFlash.t >= this.nameFlash.del){
@@ -181,17 +193,17 @@ var P = SAT.Polygon,
             },
 
             getDir: function(){
-                if (this.moveVector.x >= this.diagM){
+                if (this.faceVector.x >= this.diagM){
                     this.dir = 'r';
                     this.sprite.scale.x = this.scale;
                     this.sprite2.scale.x = this.scale;
-                }else if (this.moveVector.x <= -this.diagM){
+                }else if (this.faceVector.x <= -this.diagM){
                     this.dir = 'r';
                     this.sprite.scale.x = -this.scale;
                     this.sprite2.scale.x = -this.scale;
-                }else if (this.moveVector.y <= -this.diagM){
+                }else if (this.faceVector.y <= -this.diagM){
                     this.dir = 'u';
-                }else if (this.moveVector.y >= this.diagM){
+                }else if (this.faceVector.y >= this.diagM){
                     this.dir = 'd';
                 }
                 if (!this.enemy){

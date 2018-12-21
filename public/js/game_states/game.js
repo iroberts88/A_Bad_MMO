@@ -34,6 +34,8 @@
         targetTargetStatus: null,
         characterWindow: null,
 
+        unitHovered: false,
+
         init: function() {
             Graphics.app._options.backgroundColor = 0x000000;
             this.uiUpdateList = [];
@@ -124,6 +126,15 @@
             this.uiUpdateList.push(this.targetTargetStatus);
             this.setUILock(true);
 
+            Graphics.world.interactive = true;
+            var onClick = function(e){
+                if(e.data.button == 0 && !Game.unitHovered){
+                    if (Player.currentTarget){
+                        Player.clearTarget();
+                    }
+                }
+            }
+            Graphics.world.on('pointerup',onClick);
 
             //set key callbacks
             Acorn.Input.onDown(Acorn.Input.Key.COMMAND, function(){

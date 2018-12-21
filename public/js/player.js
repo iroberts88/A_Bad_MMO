@@ -90,6 +90,7 @@
                 Game.targetStatus.activate();
             }
             this.currentTarget = unit;
+            this.currentCharacter.target = unit;
             if (this.currentTarget.target){
                 Game.targetTargetStatus.unit = unit.target;
                 Game.targetTargetStatus.name = 'Target: ' + unit.target.name;
@@ -108,6 +109,7 @@
 
         clearTarget: function(updateServer = true){
             this.currentTarget = null;
+            this.currentCharacter.target = null;
             Game.targetStatus.deActivate();
             Game.targetTargetStatus.deActivate();
 
@@ -115,6 +117,12 @@
                 var data = {};
                 data[Enums.COMMAND] = Enums.CLEARTARGET;
                 Acorn.Net.socket_.emit(Enums.PLAYERUPDATE,data);
+            }
+            if (this.rangedAttackOn){
+                this.rangedAttackOn = false;
+            }
+            if (this.meleeAttackOn){
+                this.meleeAttackOn = false;
             }
         },
 
@@ -124,6 +132,8 @@
             }else if (this.meleeAttackOn){
                 this.meleeAttackOn = false;
                 this.rangedAttackOn = true;
+            }else{
+                this.rangedAttackOn = true;
             }
         },
         toggleMeleeAttack: function(){
@@ -131,6 +141,8 @@
                 this.meleeAttackOn = false;
             }else if (this.rangedAttackOn){
                 this.rangedAttackOn = false;
+                this.meleeAttackOn = true;
+            }else{
                 this.meleeAttackOn = true;
             }
         },

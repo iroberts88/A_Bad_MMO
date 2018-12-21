@@ -503,11 +503,19 @@ GameEngine.prototype.playerLogout = function(p){
     p.user = null;
 }
 
-GameEngine.prototype.checkData = function(obj,key,type = ''){
-    if (if (typeof obj[key] != type)){
-        console.log('INVALID DATA - ' + key)
+GameEngine.prototype.checkData = function(obj,key,type){
+    if (typeof obj[key] == 'undefined'){
+        console.log('INVALID DATA - ' + key + ' = undefined');
         console.log(obj);
         return false;
+    }else if (typeof type != 'undefined'){
+        if (typeof obj[key] != type){
+            console.log('INVALID DATA - ' + key + ' != ' + type);
+            console.log(obj);
+            return false;
+        }else{
+            return true;
+        }
     }else{
         return true;
     }

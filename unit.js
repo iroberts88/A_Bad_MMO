@@ -74,6 +74,15 @@ function Unit() {
         currentMeleeSecond: null,
         currentRanged: null,
 
+        weapons: [null,null],
+
+        isDualWeilding: false,
+
+        meleeOn: false,
+        rangedOn: false,
+
+        attackDelay: 0.0,
+        secondaryAttackDelay: 0.0,
         currentZone: null,
         currentSector: null,
         currentTile: null,
@@ -456,6 +465,9 @@ function Unit() {
                 owner: this
             });
 
+            //initialize equipped weapons of there are any, otherwise use default;
+            this.currentMeleeMain = this.defaultWeapon;
+            this.currentMeleeSecond = this.defaultWeapon;
 
             for (var i in this){
                 if (this[i] instanceof Attribute){
@@ -469,12 +481,14 @@ function Unit() {
         },
        
         _update: function(deltaTime){
+            //update movement
             if (!this.moveVector.x == 0 || this.moveVector.y != 0){
                 this.currentZone.collideUnit(this,deltaTime);
                 if (this.currentSector != this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y)){
                     this.currentZone.changeSector(this,this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y));
                 }
             }
+
         },
 
         setTarget: function(unit){
@@ -494,6 +508,50 @@ function Unit() {
                 data[this.engine.enums.UNIT] = this.id;
                 this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.CLEARTARGET,data);
             }
+        },
+
+        makeWeaponAttack: function(weapon,target,ranged = false){
+            var arr = null;
+            var rand = Math.random() * 100;
+            var c = 0;
+            var type = '';
+            if (weapon.pierce){
+                c += weapon.pierce[2];
+                if (rand <= c){
+                    //make a pierce attack
+                    arr = weapon.pierce;
+                }
+                var type = 'piercing';
+            }
+            if (weapon.slash && !arr){
+                c += weapon.slash[2];
+                if (rand <= c){
+                    //make a slash attack
+                    arr = weapon.slash;
+                }
+                var type = 'slashing';
+            }
+            if (weapon.bludgeon && !arr){
+                c += weapon.bludgeon[2];
+                if (rand <= c){
+                    //make a bludgeon attack
+                    arr = weapon.bludgeon;
+                }
+                var type = 'bludgeoning';
+            }
+
+            var acrandom = Math.random();
+            var attkrandom = Math.random();
+            var pwr = ranged ? this.rangedPower.value : this.meleePower.value;
+            if (target.ac.value*acrandom < pwr*attkrandom){
+                var dmgmod = (pwr*attkrandom - target.ac.value*acrandom) / 100;
+                var dmg = Math.ceil(Math.random()*arr[0] + dmgmod*arr[0]);
+                console.log(this.name + ' HIT ' + target.name + ' with ' + weapon.name + ' for ' + dmg + ' ' + type + '  damage!');
+                //reduce target hp
+            }else{
+                console.log(this.name + ' missed ' + target.name + ' with ' + weapon.name );
+            }
+            return arr[1];
         },
 
         getPToUpdate: function(){

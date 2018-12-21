@@ -67,8 +67,8 @@ function User() {
                 data.scale = 2;
                 data.name = ng.generateName('male');
                 data.race = 'human';
-                data.class = cl;
-                data.classid = cl;
+                data.class = 'fighter';
+                data.classid = 'fighter';
                 newChar.init(data);
                 this.characters[1] = newChar;
                 this.userData = {
