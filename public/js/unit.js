@@ -38,10 +38,11 @@ var P = SAT.Polygon,
 
             nameFlash: {
                 t: 0,
-                del: 0.06,
+                del: 0.02,
                 c: 1,
                 c1: 0xFFFFFF,
-                c2: 0x91d1ff
+                c2: 0x91d1ff,
+                c3: 0xFF7777
             },
 
             _init: function(data){
@@ -181,7 +182,11 @@ var P = SAT.Polygon,
                         this.nameFlash.t -= this.nameFlash.del
                         if (this.nameFlash.c == 1){
                             this.nameFlash.c = 2;
-                            this.nameTag.style.fill = this.nameFlash.c2;
+                            if (Player.rangedAttackOn || Player.meleeAttackOn){
+                                this.nameTag.style.fill = this.nameFlash.c3;
+                            }else{
+                                this.nameTag.style.fill = this.nameFlash.c2;
+                            }
                         }else{
                             this.nameFlash.c = 1;
                             this.nameTag.style.fill = this.nameFlash.c1;
@@ -251,6 +256,15 @@ var P = SAT.Polygon,
                         break; 
                     case  Enums.CURRENTHEALTH:
                         this.currentHealth = val;
+                        if (Player.currentTarget == this){
+                            Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                        }
+                        break; 
+                    case  Enums.HEALTHPERCENT:
+                        this.healthPercent = val;
+                        if (Player.currentTarget == this){
+                            Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                        }
                         break; 
                     case  Enums.MAXHEALTH:
                         this.maxHealth = val;

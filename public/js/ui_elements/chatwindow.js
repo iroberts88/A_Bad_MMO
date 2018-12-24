@@ -145,7 +145,7 @@
             this.mainContainer.addChild(this.nameText);
 
             this.gfx.lineStyle(2,0x000000,0);
-            this.gfx.beginFill(0x000000,0.15);
+            this.gfx.beginFill(0x000000,0.5);
             this.gfx.drawRect(0,0,this.width,this.height);
             this.gfx.endFill();
             this.gfx.beginFill(this.color,1);

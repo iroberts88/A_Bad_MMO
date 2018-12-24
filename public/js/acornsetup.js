@@ -153,11 +153,11 @@
                 }
             });
             Acorn.Net.on(Enums.ADDNPC, function (data) {
-                console.log(data);
+                NPCS.addNPC(data)
             });
 
             Acorn.Net.on(Enums.REMOVENPC, function (data) {
-                console.log(data);
+                NPCS.removeNPC(data);
             });
 
             Acorn.Net.on(Enums.ADDITEM, function (data) {
@@ -204,7 +204,23 @@
                 Game.addMessage(data);
             });
 
+            Acorn.Net.on(Enums.DEALTDAMAGE, function (data) {
+                //you have dealt damage to something..
+                var d = {};
+                d[Enums.MESSAGETYPE] = 'combatHit';
+                d[Enums.TEXT] = 'You HIT ' + Game.allUnits[data[Enums.UNIT]].name + ' for ' + data[Enums.VALUE] + ' ' + Enums.damageTypeEnums[data[Enums.TYPE]] + ' damage!';
+                Game.addMessage(d);
+            });
+            Acorn.Net.on(Enums.MISSED, function (data) {
+                //you have dealt damage to something..
+                var d = {};
+                d[Enums.MESSAGETYPE] = 'combatMiss';
+                d[Enums.TEXT] = 'You MISSED ' + Game.allUnits[data[Enums.UNIT]].name + '!';
+                Game.addMessage(d);
+            });
+
             Acorn.Net.on(Enums.SETUNITSTAT, function (data) {
+                console.log(data);
                 if (!Player.currentCharacter){return;}
                 if (data[Enums.UNIT] == Player.currentCharacter.id){
                     Player.currentCharacter.setStat(data[Enums.STAT],data[Enums.VALUE]);
@@ -221,7 +237,6 @@
                 }else{
                     Game.allUnits[data[Enums.UNIT]].setStat(data[Enums.STAT],data[Enums.VALUE]);
                 }
-                console.log(data);
             });
 
             Acorn.Net.on('mapData', function (data) {

@@ -150,7 +150,7 @@ function Unit() {
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
                     this.base = (75+(this.owner.agility.value*(this.owner.level/1200)))/(weightMod*weightMod);
-                    return Math.round(this.base*this.pMod+this.nMod);
+                    return 300//Math.round(this.base*this.pMod+this.nMod);
                 }
             });
 
@@ -415,6 +415,10 @@ function Unit() {
                 formula: function(){
                     this.base =30+ (this.owner.stamina.value*(this.owner.level/this.owner.healthStatMod) + this.owner.level*this.owner.healthLvlMod*(this.owner.level/this.owner.healthStatMod));
                     return Math.round(this.base*this.pMod+this.nMod);
+                },
+                next: function(){
+                    //TODO send health percent to all non-allied units
+                    //etc....
                 }
             });
             this.maxMana = new Attribute();
@@ -511,6 +515,10 @@ function Unit() {
         },
 
         makeWeaponAttack: function(weapon,target,ranged = false){
+            if (!target){
+                console.log('No Target!!!')
+                return;
+            }
             var arr = null;
             var rand = Math.random() * 100;
             var c = 0;
@@ -521,7 +529,7 @@ function Unit() {
                     //make a pierce attack
                     arr = weapon.pierce;
                 }
-                var type = 'piercing';
+                var type = this.engine.enums.PIERCE;
             }
             if (weapon.slash && !arr){
                 c += weapon.slash[2];
@@ -529,7 +537,7 @@ function Unit() {
                     //make a slash attack
                     arr = weapon.slash;
                 }
-                var type = 'slashing';
+                var type = this.engine.enums.SLASH;
             }
             if (weapon.bludgeon && !arr){
                 c += weapon.bludgeon[2];
@@ -537,7 +545,7 @@ function Unit() {
                     //make a bludgeon attack
                     arr = weapon.bludgeon;
                 }
-                var type = 'bludgeoning';
+                var type = this.engine.enums.BLUDGEON;
             }
 
             var acrandom = Math.random();
@@ -547,11 +555,68 @@ function Unit() {
                 var dmgmod = (pwr*attkrandom - target.ac.value*acrandom) / 100;
                 var dmg = Math.ceil(Math.random()*arr[0] + dmgmod*arr[0]);
                 console.log(this.name + ' HIT ' + target.name + ' with ' + weapon.name + ' for ' + dmg + ' ' + type + '  damage!');
+                //DO ANY WEAPON EFFECTS
                 //reduce target hp
+                target.damage({
+                    value: dmg,
+                    type: type,
+                    source: this
+                })
+            }else if (!this.isEnemy){
+                console.log(this.name + ' MISSED ' + target.name + '!');
+                var cData = {};
+                cData[this.engine.enums.UNIT] = target.id;
+                this.engine.queuePlayer(this.owner,this.engine.enums.MISSED,cData);
             }else{
-                console.log(this.name + ' missed ' + target.name + ' with ' + weapon.name );
+                //npc hit something
             }
             return arr[1];
+        },
+
+        damage: function(data){
+            //damage the unit!
+            // -- data.value -- the amount of health to reduce
+            // -- data.type -- the type of damage inflicted
+            // -- data.source -- the unit making the damaging attack
+
+            //DO any on Daamage effects
+            //check resistances etc.
+
+            this.currentHealth -= data.value;
+            var clientData = {};
+            clientData[this.engine.enums.UNIT] = this.id;
+            clientData[this.engine.enums.STAT] = this.engine.enums.HEALTHPERCENT;
+            clientData[this.engine.enums.VALUE] = this.currentHealth/this.maxHealth.value;
+            for (var i in this.pToUpdate){
+                //check ally player
+
+                //check enemy player
+                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
+            }
+            if (!data.source.isEnemy){
+                var cData = {};
+                cData[this.engine.enums.UNIT] = this.id;
+                cData[this.engine.enums.VALUE] = data.value;
+                cData[this.engine.enums.TYPE] = data.type;
+                this.engine.queuePlayer(data.source.owner,this.engine.enums.DEALTDAMAGE,cData);
+            }
+            if (this.currentHealth <= 0){
+                this.kill();
+            }
+        },
+
+        kill: function(){
+            this.spawn.enemyAlive = false;
+            this.spawn.ticker = 0;
+            this.spawn.currentEnemy = null;
+
+            this.currentZone.removeNPC(this);
+            for (var i in this.pToUpdate){
+                if (this.pToUpdate[i].currentTarget == this){
+                    this.pToUpdate[i].clearTarget();
+                }
+            }
+            console.log('dead');
         },
 
         getPToUpdate: function(){

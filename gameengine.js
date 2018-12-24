@@ -103,6 +103,7 @@ var GameEngine = function() {
         CURRENTMANA: 'currentMana',
         CURRENTWEIGHT: 'currentWeight',
 
+        DEALTDAMAGE: 'dealtDamage',
         DESCRIPTION: 'descriptio',
         DEXTERITY: 'dexterity',
         DISEASERES: 'diseaseRes',
@@ -166,6 +167,7 @@ var GameEngine = function() {
         MESSAGE: 'message',
         MESSAGETYPE: 'messageType',
         MELEEPOWER: 'meleePower',
+        MISSED: 'missed',
         MOD: 'mod',
         MOVE: 'move',
         MOVEITEM: 'moveItem',

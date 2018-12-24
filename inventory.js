@@ -262,6 +262,8 @@ Inventory.prototype.equipItem = function(slot,item){
         }else if (slot == 'secondary'){
             if (itemToMove.item.pierce || itemToMove.item.pierce || itemToMove.item.bludgeon){
                 this.owner.currentMeleeSecond = itemToMove.item;
+            }else{
+                this.owner.currentMeleeSecond = null;
             }
         }else if (slot == 'ranged'){
             this.owner.currentRanged = itemToMove.item;

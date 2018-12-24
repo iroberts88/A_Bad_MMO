@@ -49,6 +49,7 @@
         CURRENTMANA: 'currentMana',
         CURRENTWEIGHT: 'currentWeight',
 
+        DEALTDAMAGE: 'dealtDamage',
         DESCRIPTION: 'descriptio',
         DEXTERITY: 'dexterity',
         DISEASERES: 'diseaseRes',
@@ -112,6 +113,7 @@
         MESSAGE: 'message',
         MESSAGETYPE: 'messageType',
         MELEEPOWER: 'meleePower',
+        MISSED: 'missed',
         MOD: 'mod',
         MOVE: 'move',
         MOVEITEM: 'moveItem',
@@ -205,6 +207,11 @@
         Y: 'y',
 
         ZONE: 'zone'
+
     };
+    Enums.damageTypeEnums = {};
+    Enums.damageTypeEnums[Enums.PIERCE] = 'pierce';
+    Enums.damageTypeEnums[Enums.SLASH] = 'slash';
+    Enums.damageTypeEnums[Enums.BLUDGEON] = 'bludgeon';
     window.Enums = Enums;
 })(window);

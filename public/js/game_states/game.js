@@ -351,6 +351,15 @@
                         this.mainChat.addMessage(data[Enums.NAME] + ' says to the zone: ' + data[Enums.TEXT], 0x81ff7f);
                     }
                     break;
+                case 'uiMsg':
+                    this.mainChat.addMessage(data[Enums.TEXT], 0xFFFF00);
+                    break;
+                case 'combatHit':
+                    this.mainChat.addMessage(data[Enums.TEXT], 0xf4bc42);
+                    break;
+                case 'combatMiss':
+                    this.mainChat.addMessage(data[Enums.TEXT], 0xFFFFFF);
+                    break;
 
             }
         },
@@ -390,18 +399,23 @@
         },
 
         checkClientCommand: function(txt){
+            var d = {};
+            d[Enums.MESSAGETYPE] = 'uiMsg';
             switch(txt){
                 case '/uilock':
                     Settings.toggleUILock();
                     if (Settings.uilocked){
-                        this.mainChat.addMessage('*UI LOCKED*', 0xFFFF00);
+                        d[Enums.TEXT] = '*UI LOCKED*';
+                        this.addMessage(d);
                         document.body.style.cursor = "default";
                     }else{
-                        this.mainChat.addMessage('*UI UNLOCKED*', 0xFFFF00);
+                        d[Enums.TEXT] = '*UI UNLOCKED*';
+                        this.addMessage(d);
                     }
                     return true;
                 case '/help':
-                    this.mainChat.addMessage('TODO: ADD HELP MSG!', 0xFFFF00);
+                    d[Enums.TEXT] = 'TODO: ADD HELP MSG!';
+                    this.addMessage(d);
                     return true;
             }
             return false;

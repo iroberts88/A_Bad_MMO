@@ -273,6 +273,11 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
                 this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
+            for (var n in addList[i].npcs){
+                if(!isNPC){
+                    addList[i].npcs[n].pToUpdate[p.id] = p;
+                }
+            }
         }catch(e){
             console.log(e);
         }
@@ -293,6 +298,12 @@ Zone.prototype.changeSector = function(p,sector){
                 var d = {};
                 d[this.engine.enums.ID] = player.id;
                 this.engine.queuePlayer(p.owner,this.engine.enums.REMOVEPC,d);
+            }
+
+            for (var n in removeList[i].npcs){
+                if (typeof removeList[i].npcs[n].pToUpdate[p.id] != 'undefined'){
+                    delete removeList[i].npcs[n].pToUpdate[p.id];
+                }
             }
         }catch(e){
             console.log(e);
@@ -396,9 +407,13 @@ Zone.prototype.addPlayer = function(p){
     p.currentZone = this;
     var sector = this.getSector(p.hb.pos.x,p.hb.pos.y);
     var players = this.getPlayers(sector);
+    var npcs = this.getNPCS(sector);
     for (var i = 0; i < players.length;i++){
         this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDPC,p.getLessClientData());
         players[i].pToUpdate[p.id] = p;
+    }
+    for (var i = 0; i < npcs.length;i++){
+        npcs[i].pToUpdate[p.id] = p;
     }
     this.sendMapDataTo(p);
     sector.addPlayer(p);
@@ -411,6 +426,7 @@ Zone.prototype.removePlayer = function(p){
     var cid = p.currentSector.id;
     p.currentSector.removePlayer(p);
     var players = this.getPlayers(this.sectors[cid]);
+    var npcs = this.getNPCS(this.sectors[cid]);
     for (var i = 0; i < players.length;i++){
         var data = {};
         data[this.engine.enums.ID] = p.id;
@@ -418,6 +434,11 @@ Zone.prototype.removePlayer = function(p){
             delete players[i].pToUpdate[p.id];
         }
         this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVEPC,data);
+    }
+    for (var i = 0; i < npcs.length;i++){
+        if (npcs[i].pToUpdate[p.id]){
+            delete npcs[i].pToUpdate[p.id];
+        }
     }
     delete this.players[p.id];
     this.playerCount -= 1;
@@ -433,7 +454,6 @@ Zone.prototype.addNPC = function(n){
         this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDNPC,n.getLessClientData());
     }
     sector.addNPC(n);
-    this.playerCount += 1;
     n.getPToUpdate();
     return null;
 }
@@ -544,7 +564,7 @@ var Spawn = function(data,tile) {
     this.zone = tile.zone;
     this.engine = tile.zone.engine;
     this.t = data['t'];
-    this.def = data['def'];
+    this.def = data['def']; //default enemy spawn
     this.enemies = data['enemies'];
     this.chances = data['chances'];
 

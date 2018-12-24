@@ -34,12 +34,13 @@
             if (Player.currentTarget == this.npcs[data[Enums.ID]]){
                 Player.clearTarget();
             }
-            Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].sprite);
-            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].sprite2);
-            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].spriteMask);
-            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);
-            Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].hitBox);
-            delete this.pcs[data[Enums.ID]];
+            Graphics.unitContainer.removeChild(this.npcs[data[Enums.ID]].sprite);
+            Graphics.unitContainer.removeChild(this.npcs[data[Enums.ID]].targetCircle);
+            Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].sprite2);
+            Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].spriteMask);
+            Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].nameTag);
+            Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].hitBox);
+            delete this.npcs[data[Enums.ID]];
             delete Game.allUnits[data[Enums.ID]];
         },
 
@@ -48,7 +49,7 @@
                 console.log('NPC doesnt exist')
                 return false;
             }
-            return this.pcs[id];
+            return this.npcs[id];
         },
         updateNPCPos: function(data){
             this.npcs[data[Enums.ID]].moveVector.x = data[Enums.MOVEVECTOR][0];
