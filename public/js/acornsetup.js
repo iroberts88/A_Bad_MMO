@@ -153,10 +153,12 @@
                 }
             });
             Acorn.Net.on(Enums.ADDNPC, function (data) {
+                console.log(data);
                 NPCS.addNPC(data)
             });
 
             Acorn.Net.on(Enums.REMOVENPC, function (data) {
+                console.log(data);
                 NPCS.removeNPC(data);
             });
 
@@ -204,18 +206,38 @@
                 Game.addMessage(data);
             });
 
-            Acorn.Net.on(Enums.DEALTDAMAGE, function (data) {
+            Acorn.Net.on(Enums.DEALDAMAGE, function (data) {
                 //you have dealt damage to something..
                 var d = {};
                 d[Enums.MESSAGETYPE] = 'combatHit';
                 d[Enums.TEXT] = 'You HIT ' + Game.allUnits[data[Enums.UNIT]].name + ' for ' + data[Enums.VALUE] + ' ' + Enums.damageTypeEnums[data[Enums.TYPE]] + ' damage!';
                 Game.addMessage(d);
+                CombatText.addText({
+                    text: data[Enums.VALUE],
+                    color: 0xFFFFFF,
+                    unit: Game.allUnits[data[Enums.UNIT]]
+                });
+            });
+            Acorn.Net.on(Enums.DEALTDAMAGE, function (data) {
+                //you have recieved damage
+                var d = {};
+                d[Enums.MESSAGETYPE] = 'combatHitTaken';
+                d[Enums.TEXT] = data[Enums.UNIT] + ' hits YOU for ' + data[Enums.VALUE] + ' ' + Enums.damageTypeEnums[data[Enums.TYPE]] + ' damage!';
+                Game.addMessage(d);
+                Player.currentCharacter.setStat(Enums.CURRENTHEALTH,data[Enums.STAT]);
+                CombatText.addText({
+                    text: data[Enums.VALUE],
+                    color: 0xFF0000,
+                    unit: Player.currentCharacter
+                });
             });
             Acorn.Net.on(Enums.MISSED, function (data) {
-                //you have dealt damage to something..
+                //you have been missed
+
+                //you have missed your target
                 var d = {};
                 d[Enums.MESSAGETYPE] = 'combatMiss';
-                d[Enums.TEXT] = 'You MISSED ' + Game.allUnits[data[Enums.UNIT]].name + '!';
+                d[Enums.TEXT] = data[Enums.BOOL] ? data[Enums.UNIT] + ' tried to hit you, but missed!' :'You MISSED ' + Game.allUnits[data[Enums.UNIT]].name + '!';
                 Game.addMessage(d);
             });
 

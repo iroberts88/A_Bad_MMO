@@ -8,13 +8,21 @@ var Player = require('./player.js').Player,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     fs = require('fs'),
-    AWS = require("aws-sdk");
+    AWS = require("aws-sdk"),
+    SAT = require('./SAT.js'); //SAT POLYGON COLLISSION1
+
+var P = SAT.Polygon,
+    V = SAT.Vector,
+    C = SAT.Circle,
+    B = SAT.Box,
+    R = SAT.Response;
 
 var Zone = function(ge) {
     this.TILE_SIZE = 48;
     this.SECTOR_SIZE = this.TILE_SIZE*21;
     this.engine = ge;
 
+    this.test = 0;
     //map info
     this.mapid = null;
     this.map = {}; //contains all tiles
@@ -33,6 +41,8 @@ var Zone = function(ge) {
     this.shoutDistance = 2000;
     this.whisperDistance = 150;
     this.mapData = null;
+
+    this.tileHitBox = new B(new V(0,0),this.TILE_SIZE,this.TILE_SIZE).toPolygon();
 }
 
 Zone.prototype.init = function (data) {
@@ -49,11 +59,11 @@ Zone.prototype.init = function (data) {
         var yStart = coords.y*21;
         for (var j = 0; j < data.mapData[id].tiles.length;j++){
             for (var k = 0; k < data.mapData[id].tiles[j].length;k++){
-                var newTile = new Tile(k+xStart,j+yStart,data.mapData[id].tiles[j][k],this);
+                var newTile = new Tile(j+xStart,k+yStart,data.mapData[id].tiles[j][k],this);
                 if (Utils._udCheck(this.map[k+xStart])){
                     this.map[k+xStart] = {};
                 }
-                this.map[k+xStart][j+yStart] = newTile;
+                this.map[j+xStart][k+yStart] = newTile;
             }
         }
     }
@@ -83,7 +93,6 @@ Zone.prototype.init = function (data) {
             }
         }
     }
-
 };
 
 Zone.prototype.tick = function(deltaTime) {
@@ -187,16 +196,48 @@ Zone.prototype.collideUnit = function(unit,dt){
     var xDist = unit.moveVector.x*unit.speed.value*dt;
     var yDist = unit.moveVector.y*unit.speed.value*dt;
     var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
-    for (var i = 0; i < hyp;i++){
-        unit.hb.pos.x += xDist/hyp;
-        if (!this.getTileOpen((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
-            unit.hb.pos.x -= xDist/hyp;
+    console.log(unit.speed.value);
+    console.log(dt);
+    this.test += xDist/Math.ceil(hyp);
+    console.log(this.test);
+    var response = new R();
+    var tile;
+    for (var i = 1; i <= Math.ceil(hyp);i++){
+        if (xDist){
+            unit.hb.pos.x += xDist/Math.ceil(hyp);
+            tile = this.getTile(unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)),unit.hb.pos.y);
+            if (tile){
+                if (!tile.open){
+                    this.tileHitBox.pos.x = tile.pos.x;
+                    this.tileHitBox.pos.y = tile.pos.y;
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                        unit.hb.pos.x += response.overlapV.x;
+                        response.clear();
+                    }
+                }
+            }else{
+                unit.hb.pos.x -= xDist/Math.ceil(hyp);
+            }
         }
-        unit.hb.pos.y += yDist/hyp;
-        if (!this.getTileOpen((unit.hb.pos.x+unit.cRadius*unit.moveVector.x),(unit.hb.pos.y+unit.cRadius*unit.moveVector.y))){
-            unit.hb.pos.y -= yDist/hyp;
+        response.clear();
+        if (yDist){
+            unit.hb.pos.y += yDist/Math.ceil(hyp);
+            tile = this.getTile(unit.hb.pos.x,unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)));
+            if (tile){
+                if (!tile.open){
+                    this.tileHitBox.pos.x = tile.pos.x;
+                    this.tileHitBox.pos.y = tile.pos.y;
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                        unit.hb.pos.y += response.overlapV.y;
+                        response.clear();
+                    }
+                }
+            }else{
+                unit.hb.pos.y -= yDist/Math.ceil(hyp);
+            }
         }
     }
+    console.log(unit.hb.pos.x + ', ' + unit.hb.pos.y)
 };
 Zone.prototype.changeSector = function(p,sector){
     var isNPC = p instanceof NPC ? true : false;
@@ -265,6 +306,7 @@ Zone.prototype.changeSector = function(p,sector){
         try{
             if (addList[i] == null){continue;}
             for (var pl in addList[i].players){
+                //every player in new sector, add new PC and NPC
                 var player = addList[i].players[pl];
                 if (isNPC){
                     this.engine.queuePlayer(player.owner,this.engine.enums.ADDNPC,p.getLessClientData());
@@ -273,9 +315,10 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
                 this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
-            for (var n in addList[i].npcs){
-                if(!isNPC){
+            if(!isNPC){
+                for (var n in addList[i].npcs){
                     addList[i].npcs[n].pToUpdate[p.id] = p;
+                    this.engine.queuePlayer(p.owner,this.engine.enums.ADDNPC,addList[i].npcs[n].getLessClientData());
                 }
             }
         }catch(e){
@@ -287,7 +330,6 @@ Zone.prototype.changeSector = function(p,sector){
             if (removeList[i] == null){continue;}
             for (var pl in removeList[i].players){
                 var player = removeList[i].players[pl];
-                console.log('derp' + player.id)
                 var d = {};
                 d[this.engine.enums.ID] = p.id;
                 if (isNPC){
@@ -300,9 +342,14 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(p.owner,this.engine.enums.REMOVEPC,d);
             }
 
-            for (var n in removeList[i].npcs){
-                if (typeof removeList[i].npcs[n].pToUpdate[p.id] != 'undefined'){
-                    delete removeList[i].npcs[n].pToUpdate[p.id];
+            if (!isNPC){
+                for (var n in removeList[i].npcs){
+                    if (typeof removeList[i].npcs[n].pToUpdate[p.id] != 'undefined'){
+                        delete removeList[i].npcs[n].pToUpdate[p.id];
+                    }
+                    var d = {};
+                    d[this.engine.enums.ID] = removeList[i].npcs[n].id;
+                    this.engine.queuePlayer(p.owner,this.engine.enums.REMOVENPC,d);
                 }
             }
         }catch(e){
@@ -329,17 +376,18 @@ Zone.prototype.getSector = function(x,y){
 }
 
 Zone.prototype.getTile = function(x,y){
+    //console.log('Getting Tile:   ' +  x + ', ' + y);
     //get sector by position
-    if (typeof this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)] != 'undefined'){
-        return this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)];
+    if (typeof this.map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)] != 'undefined'){
+        return this.map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)];
     }else{
         return null;
     }
 }
 Zone.prototype.getTileOpen = function(x,y){
     //get sector by position
-    if (typeof this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)] != 'undefined'){
-        return this.map[Math.floor(x/this.TILE_SIZE)+'x'+Math.floor(y/this.TILE_SIZE)].open;
+    if (typeof this.map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)] != 'undefined'){
+        return this.map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)].open;
     }else{
         return false;
     }
@@ -377,6 +425,7 @@ Zone.prototype.getNPCS = function(sector){
             }
             for (var n in this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs){
                 var npc = this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs[n];
+                console.log(npc.id + ' - gottem!');
                 npcs.push(npc);
             }
         }
@@ -399,6 +448,7 @@ Zone.prototype.getNPCData = function(sector){
     for (var i = 0; i < npcs.length;i++){
         nArr.push(npcs[i].getLessClientData());
     }
+    console.log(nArr);
     return nArr;
 }
 
@@ -514,6 +564,12 @@ var Sector = function(id,zone) {
     var coords = this.zone.getSectorXY(this.id);
     this.x = coords.x;
     this.y = coords.y;
+    
+    this.pos = {
+        x: this.x*zone.SECTOR_SIZE,
+        y: this.y*zone.SECTOR_SIZE
+    }
+    console.log(this.pos);
 };
 
 Sector.prototype.addPlayer = function(p){
@@ -542,15 +598,18 @@ exports.Sector = Sector;
 var Tile = function(x,y,data,zone) {
     this.x = x;
     this.y = y;
+    this.pos = {
+        x: this.x*zone.TILE_SIZE,
+        y: this.y*zone.TILE_SIZE
+    }
     this.zone = zone;
-    this.triggers = Utils.udCheck(data[zone.engine.enums.TRIGGERS],[],data[zone.engine.enums.TRIGGERS]);
-    this.resource = Utils.udCheck(data[zone.engine.enums.RESOURCE],'0x0',data[zone.engine.enums.RESOURCE]);
-    this.overlayResource = Utils.udCheck(data[zone.engine.enums.OVERLAYRESOURCE],'0x0',data[zone.engine.enums.OVERLAYRESOURCE]);
-    this.open = Utils.udCheck(data[zone.engine.enums.OPEN],true,data[zone.engine.enums.OPEN]);
-    if (!Utils._udCheck(zone.engine.spawns[data[zone.engine.enums.SPAWNID]])){
-        console.log(data);
+    this.triggers = Utils.udCheck(data['triggers'],[],data['triggers']);
+    this.resource = Utils.udCheck(data['resoure'],'0x0',data['resoure']);
+    this.overlayResource = Utils.udCheck(data['overlayResoure'],'0x0',data['overlayResoure']);
+    this.open = Utils.udCheck(data['open'],false,data['open']);
+    if (!Utils._udCheck(zone.engine.spawns[data['spawnID']])){
         var id = zone.engine.getId();
-        zone.spawns[id] = new Spawn(zone.engine.spawns[data[zone.engine.enums.SPAWNID]],this);
+        zone.spawns[id] = new Spawn(zone.engine.spawns[data['spawnID']],this);
         zone.spawns[id].spawnid = id;
         this.spawn = id;
     }
@@ -603,7 +662,7 @@ Spawn.prototype.tick = function(deltaTime){
         this.ticker += deltaTime;
     }
     if (enemyToSpawn){
-        console.log(enemyToSpawn);
+        console.log('Tryng to spawn: ' + enemyToSpawn);
         if (typeof this.engine.enemies[enemyToSpawn] == 'undefined'){
             console.log(enemyToSpawn + ' does not exist');
             this.ticker = 0;
@@ -622,10 +681,10 @@ Spawn.prototype.tick = function(deltaTime){
         data.level = e['level'];
         data.resource = e['resource'];
         data.noMana = e['noMana'];
+        data.statMods = e['statMods'];
         newEnemy.init(data);
         this.enemyAlive = true;
         this.zone.addNPC(newEnemy);
-        //add enemy to current players in zone
 
         this.ticker = 0;
     }

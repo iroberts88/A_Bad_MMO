@@ -28,6 +28,7 @@ var Player = function(){
     this.checkNameText = ''
 
     this.currentChatType = 'say';
+
 };
 
 Player.prototype.init = function (data) {
@@ -210,9 +211,9 @@ Player.prototype.setupSocket = function() {
                     }*/
                     break;
                 case enums.MOVE:
-                    //TODO - this should actually keep track of movement not just set the position
                     that.activeChar.moveVector.x = data[enums.MOVEVECTOR][0];
                     that.activeChar.moveVector.y = data[enums.MOVEVECTOR][1];
+                    //TODO check if valid move!
                     that.activeChar.hb.pos.x = data[enums.POSITION][0];
                     that.activeChar.hb.pos.y = data[enums.POSITION][1];
                     for (var i in that.activeChar.pToUpdate){

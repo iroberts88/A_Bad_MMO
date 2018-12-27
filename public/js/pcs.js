@@ -18,7 +18,7 @@
             char.init(data);
             this.pcs[char.id] = char;
             Game.allUnits[char.id] = char;
-            Graphics.unitContainer.addChild(char.targetCircle);
+            Graphics.worldContainer.addChild(char.targetCircle);
             Graphics.unitContainer.addChild(char.sprite);
             Graphics.unitContainer2.addChild(char.sprite2);
             Graphics.unitContainer2.addChild(char.spriteMask);
@@ -35,7 +35,7 @@
                 Player.clearTarget();
             }
             Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].sprite);
-            Graphics.unitContainer.removeChild(this.pcs[data[Enums.ID]].targetCircle);
+            Graphics.worldContainer.removeChild(this.pcs[data[Enums.ID]].targetCircle);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].sprite2);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].spriteMask);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);

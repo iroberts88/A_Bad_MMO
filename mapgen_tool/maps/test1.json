@@ -33112,7 +33112,8 @@
           },
           {
             "resource": "1x0",
-            "open": true
+            "open": true,
+            "spawnID": "testspawn2"
           },
           {
             "resource": "1x0",

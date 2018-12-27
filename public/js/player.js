@@ -11,6 +11,9 @@
 
         rangedAttackOn: false,
         meleeAttackOn: false,
+
+        rangeMsgDelay: 1.5,
+        rangeMsgTicker: 0,
         
         init: function(data){
         	this.userData = data;
@@ -30,7 +33,11 @@
             if (currentSector != newSector){
                 Game.map.updateVisibleSectors(currentSector,newSector);
             }
-
+            if (this.rangeMsgTicker < this.rangeMsgDelay){
+                this.rangeMsgTicker += dt;
+            }else if (this.meleeAttackOn || this.rangedAttackOn){
+                //add msg depending on range!
+            }
         },
 
         addCharacter: function(data){
@@ -61,13 +68,14 @@
                     this.currentCharacter.moveVector.x += 1;
                 }
             }else if (this.clickMove){
-                if (Acorn.Input.buttons[2] != true && Math.abs(this.currentCharacter.sprite.position.x - this.clickPos[0]) <= Math.abs(this.currentCharacter.moveVector.x*this.currentCharacter.speed*dt)){
+                if (Acorn.Input.buttons[2] != true && 
+                    (Math.abs(this.currentCharacter.sprite.position.x - this.clickPos[0]) <= Math.abs(this.currentCharacter.moveVector.x*this.currentCharacter.speed*dt) ||
+                    Math.abs(this.currentCharacter.sprite.position.y - this.clickPos[1]) <= Math.abs(this.currentCharacter.moveVector.y*this.currentCharacter.speed*dt))){
                     //reached destination
                     this.currentCharacter.moveVector.x = 0;
                     this.currentCharacter.moveVector.y = 0;
                     this.clickMove = false;
-                    this.currentCharacter.sprite.position.x = this.clickPos[0];
-                    this.currentCharacter.sprite.position.y = this.clickPos[1];
+                    Player.sendMove();
                 }
             }else{
                 this.currentCharacter.moveVector.x = 0;
@@ -127,23 +135,37 @@
         },
 
         toggleRangedAttack: function(){
+            var d = {};
+            d[Enums.MESSAGETYPE] = 'combatMsg';
+            d[Enums.TEXT] = 'Ranged attack mode *ON*';
             if (this.rangedAttackOn){
                 this.rangedAttackOn = false;
+                d[Enums.TEXT] = 'Ranged attack mode *OFF*';
+                Game.addMessage(d);
             }else if (this.meleeAttackOn){
                 this.meleeAttackOn = false;
                 this.rangedAttackOn = true;
+                Game.addMessage(d);
             }else{
                 this.rangedAttackOn = true;
+                Game.addMessage(d);
             }
         },
         toggleMeleeAttack: function(){
+            var d = {};
+            d[Enums.MESSAGETYPE] = 'combatMsg';
+            d[Enums.TEXT] = 'Melee attack mode *ON*';
             if (this.meleeAttackOn){
                 this.meleeAttackOn = false;
+                d[Enums.TEXT] = 'Melee attack mode *OFF*';
+                Game.addMessage(d);
             }else if (this.rangedAttackOn){
                 this.rangedAttackOn = false;
                 this.meleeAttackOn = true;
+                Game.addMessage(d);
             }else{
                 this.meleeAttackOn = true;
+                Game.addMessage(d);
             }
         },
         sendPlayerUpdate(data){

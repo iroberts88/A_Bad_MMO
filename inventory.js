@@ -349,7 +349,7 @@ Inventory.prototype.unEquipItem = function(slot){
     }else if (slot == 'secondary'){
         this.owner.currentMeleeSecond = this.owner.defaultWeapon;
     }else if (slot == 'ranged'){
-        this.owner.currentRanged = itemToMove.item;
+        this.owner.currentRanged = null;
     }
     //send down client command to successfully unequip the item
     clientData[this.engine.enums.ITEM] = itemToMove.id;

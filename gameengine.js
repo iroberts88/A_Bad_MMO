@@ -103,6 +103,7 @@ var GameEngine = function() {
         CURRENTMANA: 'currentMana',
         CURRENTWEIGHT: 'currentWeight',
 
+        DEALDAMAGE: 'dealDamage',
         DEALTDAMAGE: 'dealtDamage',
         DESCRIPTION: 'descriptio',
         DEXTERITY: 'dexterity',
@@ -349,7 +350,8 @@ GameEngine.prototype.start = function () {
 
 GameEngine.prototype.tick = function() {
     var now = Date.now();
-    var deltaTime = (now-self.lastTime) / 1000.0;
+    var deltaTime = (now/1000-self.lastTime/1000) ;
+    self.lastTime = now;
     //update all zones with players
     for (var z in self.zones){
         self.zones[z].tick(deltaTime);
@@ -371,7 +373,6 @@ GameEngine.prototype.tick = function() {
     }
     self.emit();
     self.clearQueue();
-    self.lastTime = now;
 }
 
 GameEngine.prototype.getId = function() {

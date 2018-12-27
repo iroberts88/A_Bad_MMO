@@ -10,6 +10,7 @@ var P = SAT.Polygon,
         this.sectors = {};
         this.currentVisibleSectors = []; //TODO actually change visible sectors
         this.tileHitBox = new B(new V(0,0),mainObj.TILE_SIZE,mainObj.TILE_SIZE).toPolygon();
+        this.test = 0;
     };
 
     GameMap.prototype.init = function(data){
@@ -101,47 +102,48 @@ var P = SAT.Polygon,
             this.setVisible(n.pos.x + 'x' + (n.pos.y-2),false);
         }
     };
+
     GameMap.prototype.collideUnit = function(unit,dt){
         var xDist = unit.moveVector.x*unit.speed*dt;
         var yDist = unit.moveVector.y*unit.speed*dt;
+        console.log(unit.speed);
+        console.log(dt);
         var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
+        this.test += xDist/Math.ceil(hyp);
+        console.log(this.test);
         var response = new SAT.Response();
-        for (var i = 0; i <= Math.ceil(hyp);i++){
-            if (!xDist){break;}
-            unit.hb.pos.x += (xDist/hyp)*(hyp/Math.ceil(hyp));
-            var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y)/mainObj.TILE_SIZE)];
-            if (typeof tile == 'undefined'){
-                unit.hb.pos.x -= xDist/hyp;
-            }else if (tile.open){
-                continue;
-            }else{
-                this.tileHitBox.pos.x = tile.sprite.position.x;
-                this.tileHitBox.pos.y = tile.sprite.position.y;
-                if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
-                    unit.hb.pos.x += response.overlapV.x;
-                    response.clear();
-                    break;
+        for (var i = 1; i <= Math.ceil(hyp);i++){
+            if (xDist){
+                unit.hb.pos.x += xDist/Math.ceil(hyp);
+                var tile = Game.map[Math.floor((unit.hb.pos.x+unit.cRadius*(xDist/Math.abs(xDist)))/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y)/mainObj.TILE_SIZE)];
+                if (typeof tile == 'undefined'){
+                    unit.hb.pos.x -= xDist/Math.ceil(hyp);
+                }else if (!tile.open){
+                    this.tileHitBox.pos.x = tile.sprite.position.x;
+                    this.tileHitBox.pos.y = tile.sprite.position.y;
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                        unit.hb.pos.x += response.overlapV.x;
+                        response.clear();
+                    }
+                }
+            }
+            response.clear();
+            if (yDist){
+                unit.hb.pos.y += yDist/Math.ceil(hyp);
+                var tile = Game.map[Math.floor((unit.hb.pos.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)))/mainObj.TILE_SIZE)];
+                if (typeof tile == 'undefined'){
+                    unit.hb.pos.y -= xDist/Math.ceil(hyp);
+                }else if (!tile.open){
+                    this.tileHitBox.pos.x = tile.sprite.position.x;
+                    this.tileHitBox.pos.y = tile.sprite.position.y;
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
+                        unit.hb.pos.y += response.overlapV.y;
+                        response.clear();
+                    }
                 }
             }
         }
-        for (var i = 0; i <= Math.ceil(hyp);i++){
-            if (!yDist){break;}
-            unit.hb.pos.y += (yDist/hyp)*(hyp/Math.ceil(hyp));
-            var tile = Game.map[Math.floor((unit.hb.pos.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)))/mainObj.TILE_SIZE)];
-            if (typeof tile == 'undefined'){
-                unit.hb.pos.y -= yDist/hyp;
-            }else if (tile.open){
-                continue;
-            }else{
-                this.tileHitBox.pos.x = tile.sprite.position.x;
-                this.tileHitBox.pos.y = tile.sprite.position.y;
-                if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
-                    unit.hb.pos.y += response.overlapV.y;
-                    response.clear();
-                    break;
-                }
-            }
-        }
+        console.log(unit.hb.pos.x + ', ' + unit.hb.pos.y);  
     };
     window.GameMap = GameMap;
 })(window);

@@ -53,6 +53,21 @@
                 nameBarSize: [Graphics.width/4.5,25]
             });
             this.mainChat.activate();
+            this.combatChat = ChatWindow();
+            this.combatChat.init({
+                id: 'combatChat',
+                name: 'Combat',
+                width: Graphics.width/4.5,
+                height: Graphics.height/5,
+                main: true,
+                maxWidth: 900,
+                maxHeight: 500,
+                minHeight: 100,
+                minWidth: 180,
+                nameBarSize: [Graphics.width/4.5,25]
+            });
+            this.combatChat.move(Graphics.width-5-Graphics.width/4.5,Graphics.height-5-Graphics.height/5);
+            this.combatChat.activate();
 
 
             this.playerStatus = UnitStatusBar();
@@ -87,6 +102,7 @@
                 minWidth: 100,
                 nameBarSize: [160,18]
             });
+
             this.targetTargetStatus = UnitStatusBar();
             this.targetTargetStatus.init({
                 id: 'targetStatus',
@@ -134,7 +150,7 @@
                     }
                 }
             }
-            Graphics.world.on('pointerup',onClick);
+            Graphics.world.on('pointerdown',onClick);
 
             //set key callbacks
             Acorn.Input.onDown(Acorn.Input.Key.COMMAND, function(){
@@ -156,10 +172,12 @@
                 Game.characterWindow.toggle();
                 Acorn.Input.setValue(Acorn.Input.Key.CHARACTERWINDOW,false);
             });
+
             Acorn.Input.onDown(Acorn.Input.Key.BAGWINDOW, function(){
                 Game.bagWindow.toggle();
                 Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false);
             });
+
             Acorn.Input.onDown(Acorn.Input.Key.MELEEATTACK, function(){
                 Player.toggleMeleeAttack();
                 var data = {};
@@ -168,6 +186,7 @@
                 Player.sendPlayerUpdate(data);
                 Acorn.Input.setValue(Acorn.Input.Key.MELEEATTACK,false);
             });
+
             Acorn.Input.onDown(Acorn.Input.Key.RANGEDATTACK, function(){
                 Player.toggleRangedAttack();
                 var data = {};
@@ -177,6 +196,7 @@
                 console.log("turn on ranged attack!");
                 Acorn.Input.setValue(Acorn.Input.Key.RANGEDTTACK,false);
             });
+
             Acorn.Input.onDown(Acorn.Input.Key.ESCAPE, function(){
                 if (Game.cursorItem){
                     //re-add cursor item
@@ -224,6 +244,7 @@
                 this.updateScreenChange(deltaTime);
                 return;
             }
+            CombatText.update(deltaTime);
             //get movement keys!!
             var cmX = Player.currentCharacter.moveVector.x;
             var cmY = Player.currentCharacter.moveVector.y;
@@ -277,6 +298,7 @@
 
         setUILock: function(b){
             this.mainChat.setLock(b);
+            this.combatChat.setLock(b);
             this.playerStatus.setLock(b);
             this.targetStatus.setLock(b);
             this.targetTargetStatus.setLock(b);
@@ -354,11 +376,17 @@
                 case 'uiMsg':
                     this.mainChat.addMessage(data[Enums.TEXT], 0xFFFF00);
                     break;
+                case 'combatMsg':
+                    this.combatChat.addMessage(data[Enums.TEXT], 0xFFFF00);
+                    break;
                 case 'combatHit':
-                    this.mainChat.addMessage(data[Enums.TEXT], 0xf4bc42);
+                    this.combatChat.addMessage(data[Enums.TEXT], 0xf4bc42);
+                    break;
+                case 'combatHitTaken':
+                    this.combatChat.addMessage(data[Enums.TEXT], 0xff8787);
                     break;
                 case 'combatMiss':
-                    this.mainChat.addMessage(data[Enums.TEXT], 0xFFFFFF);
+                    this.combatChat.addMessage(data[Enums.TEXT], 0xFFFFFF);
                     break;
 
             }

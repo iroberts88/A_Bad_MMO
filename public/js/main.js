@@ -157,16 +157,18 @@ function init() {
     console.log('Loading Complete');
     Acorn.changeState('mainmenu');
 
-    Graphics.app.ticker.add(function update(){
+    setInterval(function update(){
+        now = Date.now();
+        var deltaTime = (now/1000-lastTime/1000);
+        lastTime = now;
         Settings.stats.begin();
-        var deltaTime = Graphics.app.ticker.elapsedMS/1000
         Acorn.states[Acorn.currentState].update(deltaTime); //update the current state
         Acorn.Sound.update(deltaTime);
         Graphics.update(deltaTime);
         Graphics.app.renderer.render(Graphics.app.stage);
 
         Settings.stats.end();
-    })
+    },1000/60)
 }
 
 //set up acorn game states

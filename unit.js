@@ -105,7 +105,7 @@ function Unit() {
             this.owner = data.owner;
 
             this.scale = data.scale;
-            this.cRadius = 16;
+            this.cRadius = 8;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 
@@ -264,7 +264,7 @@ function Unit() {
                 formula: function(){
                     if (this.owner.isEnemy){
                         //todo enemy AC formula?
-                        return 10;
+                        return Math.round(10*this.pMod+this.nMod);
                     }else{
                         this.base = 14 + this.owner.level;
                         this.cap = this.owner.level*30*Math.ceil(this.owner.level/5);
@@ -419,6 +419,7 @@ function Unit() {
                 next: function(){
                     //TODO send health percent to all non-allied units
                     //etc....
+                    this.owner.healthPercent = this.owner.currentHealth/this.owner.maxHealth.value;
                 }
             });
             this.maxMana = new Attribute();
@@ -437,6 +438,12 @@ function Unit() {
                     this.costBase = (100) + this.owner.level*10*(this.owner.level/10);
                     var statMod = (this.owner.intelligence.value*2*(this.owner.level/this.owner.manaStatMod));
                     return Math.round((this.base+statMod)*this.pMod+this.nMod);
+                },
+                next: function(){
+                    //todo send down new mana value
+                    if (this.owner.currentMana > this.value){
+                        this.owner.currentMana = this.value;
+                    }
                 }
             });
 
@@ -449,11 +456,6 @@ function Unit() {
                 min: 1,
                 max: 999
             });
-            this.currentEnergy = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
-
-            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
-            this.currentExp = Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]);
-
             this.levelMod = this.level/12;
             this.isColliding = true;
             this.currentZone = null;
@@ -479,9 +481,19 @@ function Unit() {
                     this.statIndex[this[i].id] = this[i];
                 }
             }
+            for (var i in data.statMods){
+                this.modStat({
+                    stat: i,
+                    value: data.statMods[i]
+                });
+            }
             this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
             this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
             this.healthPercent = this.currentHealth/this.maxHealth.value;
+            this.currentEnergy = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
+            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
+            this.currentExp = Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]);
+
         },
        
         _update: function(deltaTime){
@@ -566,7 +578,14 @@ function Unit() {
                 console.log(this.name + ' MISSED ' + target.name + '!');
                 var cData = {};
                 cData[this.engine.enums.UNIT] = target.id;
+                cData[this.engine.enums.BOOL] = false;
                 this.engine.queuePlayer(this.owner,this.engine.enums.MISSED,cData);
+                if (!target.isEnemy){
+                    var cData = {};
+                    cData[this.engine.enums.UNIT] = this.name;
+                    cData[this.engine.enums.BOOL] = true;
+                    this.engine.queuePlayer(target.owner,this.engine.enums.MISSED,cData);
+                }
             }else{
                 //npc hit something
             }
@@ -579,14 +598,24 @@ function Unit() {
             // -- data.type -- the type of damage inflicted
             // -- data.source -- the unit making the damaging attack
 
-            //DO any on Daamage effects
+            //DO any on Damage effects
             //check resistances etc.
 
             this.currentHealth -= data.value;
+            this.healthPercent = this.currentHealth/this.maxHealth.value;
+            if (!this.isEnemy){
+                //player is being damaged
+                var cData = {};
+                cData[this.engine.enums.UNIT] = data.source.name;
+                cData[this.engine.enums.STAT] = this.currentHealth;
+                cData[this.engine.enums.VALUE] = data.value;
+                cData[this.engine.enums.TYPE] = data.type;
+                this.engine.queuePlayer(this.owner,this.engine.enums.DEALTDAMAGE,cData);
+            }
             var clientData = {};
             clientData[this.engine.enums.UNIT] = this.id;
             clientData[this.engine.enums.STAT] = this.engine.enums.HEALTHPERCENT;
-            clientData[this.engine.enums.VALUE] = this.currentHealth/this.maxHealth.value;
+            clientData[this.engine.enums.VALUE] = this.healthPercent;
             for (var i in this.pToUpdate){
                 //check ally player
 
@@ -598,7 +627,7 @@ function Unit() {
                 cData[this.engine.enums.UNIT] = this.id;
                 cData[this.engine.enums.VALUE] = data.value;
                 cData[this.engine.enums.TYPE] = data.type;
-                this.engine.queuePlayer(data.source.owner,this.engine.enums.DEALTDAMAGE,cData);
+                this.engine.queuePlayer(data.source.owner,this.engine.enums.DEALDAMAGE,cData);
             }
             if (this.currentHealth <= 0){
                 this.kill();
@@ -606,17 +635,21 @@ function Unit() {
         },
 
         kill: function(){
-            this.spawn.enemyAlive = false;
-            this.spawn.ticker = 0;
-            this.spawn.currentEnemy = null;
+            if (this.isEnemy){
+                this.spawn.enemyAlive = false;
+                this.spawn.ticker = 0;
+                this.spawn.currentEnemy = null;
 
-            this.currentZone.removeNPC(this);
-            for (var i in this.pToUpdate){
-                if (this.pToUpdate[i].currentTarget == this){
-                    this.pToUpdate[i].clearTarget();
+                this.currentZone.removeNPC(this);
+                for (var i in this.pToUpdate){
+                    if (this.pToUpdate[i].currentTarget == this){
+                        this.pToUpdate[i].clearTarget();
+                    }
                 }
+                console.log('dead');
+            }else{
+                console.log("Player " + this.name + ' is dead!')
             }
-            console.log('dead');
         },
 
         getPToUpdate: function(){
@@ -637,7 +670,7 @@ function Unit() {
         },
 
         _getClientData: function(less){
-            var data = {}
+            var data = {};
             data[this.engine.enums.NAME] = this.name;
             data[this.engine.enums.ID] = this.id;
             data[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
@@ -699,8 +732,28 @@ function Unit() {
                 //ALL ALTERABLE STATS HERE
                 switch (data.stat){
                     case 'maxWeight':
-                        this.inventory.maxWeight.base += data.value;
+                        this.inventory.maxWeight.nMod += data.value;
                         this.inventory.maxWeight.set();
+                        break;
+                    case 'ac':
+                        this.ac.nMod += data.value;
+                        this.ac.set();
+                        break;
+                    case 'maxHealth':
+                        this.maxHealth.nMod += data.value;
+                        this.maxHealth.set();
+                        break;
+                    case 'strength':
+                        this.strength.nMod += data.value;
+                        this.strength.set();
+                        break;
+                    case 'stamina':
+                        this.stamina.nMod += data.value;
+                        this.stamina.set();
+                        break;
+                    case 'speed':
+                        this.speed.nMod += data.value;
+                        this.speed.set();
                         break;
                 }
             }catch(e){

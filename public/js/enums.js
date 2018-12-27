@@ -49,6 +49,7 @@
         CURRENTMANA: 'currentMana',
         CURRENTWEIGHT: 'currentWeight',
 
+        DEALDAMAGE: 'dealDamage',
         DEALTDAMAGE: 'dealtDamage',
         DESCRIPTION: 'descriptio',
         DEXTERITY: 'dexterity',

@@ -53,6 +53,7 @@ var P = SAT.Polygon,
                 this.maxHealth = typeof data[Enums.MAXHEALTH] == 'undefined' ? null : data[Enums.MAXHEALTH];
                 this.currentMana = typeof data[Enums.CURRENTMANA] == 'undefined' ? null : data[Enums.CURRENTMANA];
                 this.maxMana = typeof data[Enums.MAXMANA] == 'undefined' ? null : data[Enums.MAXMANA];
+                this.maxPercent = typeof data[Enums.HEALTHPERCENT] == 'undefined' ? null : data[Enums.HEALTHPERCENT];
                 this.healthPercent = data[Enums.HEALTHPERCENT];
                 this.level = data[Enums.LEVEL];
                 this.scale = data[Enums.SCALE];
@@ -115,8 +116,8 @@ var P = SAT.Polygon,
                 this.targetCircle.anchor.y = 0.5;
                 this.targetCircle.position.x = this.sprite.position.x;
                 this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/4;
-                this.targetCircle.scale.x = Math.max(.5,smSize/56);
-                this.targetCircle.scale.y = Math.max(.5,smSize/56);
+                this.targetCircle.scale.x = Math.max(.5,smSize/64);
+                this.targetCircle.scale.y = Math.max(.5,smSize/64);
                 this.hb = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
 
                 this.hitBox = Graphics.getSprite('empty');
@@ -240,6 +241,16 @@ var P = SAT.Polygon,
                 }
 
             },
+
+            checkTargetStatus: function(){
+                if (Player.currentCharacter == this){
+                    Game.playerStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                }
+                if (Player.currentTarget == this){
+                    Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                }
+            },
+
             setStat: function(e,val){
                 switch(e){
                     case  Enums.AC:
@@ -256,18 +267,15 @@ var P = SAT.Polygon,
                         break; 
                     case  Enums.CURRENTHEALTH:
                         this.currentHealth = val;
-                        if (Player.currentTarget == this){
-                            Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
-                        }
+                        this.checkTargetStatus();
                         break; 
                     case  Enums.HEALTHPERCENT:
                         this.healthPercent = val;
-                        if (Player.currentTarget == this){
-                            Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
-                        }
+                        this.checkTargetStatus();
                         break; 
                     case  Enums.MAXHEALTH:
                         this.maxHealth = val;
+                        this.checkTargetStatus();
                         break;
                     case  Enums.DEXTERITY:
                         this.dexterity = val;
@@ -292,15 +300,19 @@ var P = SAT.Polygon,
                         break; 
                     case  Enums.MAXENERGY:
                         this.maxEnergy = val;
+                        this.checkTargetStatus();
                         break; 
                     case  Enums.CURRENTENERGY:
                         this.currentEnergy = val;
+                        this.checkTargetStatus();
                         break; 
                     case  Enums.MAXMANA:
                         this.maxMana = val;
+                        this.checkTargetStatus();
                         break; 
-                    case  Enums.CURRENTMana:
+                    case  Enums.CURRENTMANA:
                         this.currentMana = val;
+                        this.checkTargetStatus();
                         break; 
                     case  Enums.CURRENTEXP:
                         this.currentExp = val;
@@ -372,6 +384,7 @@ var P = SAT.Polygon,
             }
 
         }
+
     };
     window.Unit = Unit;
 })(window);

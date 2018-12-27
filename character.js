@@ -72,6 +72,7 @@ Character = function(){
             }
             if (this.secondaryAttackDelay <=0 && this.weapons[1]){
                 //make the attack
+                console.log(this.secondaryAttackDelay);
                 this.secondaryAttackDelay = this.makeWeaponAttack(this.weapons[1],this.currentTarget);
             }
         }
