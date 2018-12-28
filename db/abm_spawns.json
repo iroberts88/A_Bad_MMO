@@ -14,3 +14,29 @@
         30.0
     ]
 }
+{ 
+    "_id" : ObjectId("5c24ee5d8dafca3bdc8d86c3"), 
+    "spawnid" : "testspawn2", 
+    "t" : 10.0, 
+    "def" : "dragon", 
+    "enemies" : [
+        "dragon"
+    ], 
+    "chances" : [
+        100.0
+    ]
+}
+{ 
+    "_id" : ObjectId("5c26809c8dafca3bdc8d86d7"), 
+    "spawnid" : "testspawn3", 
+    "t" : 3.0, 
+    "def" : "madman", 
+    "enemies" : [
+        "madwoman", 
+        "madman"
+    ], 
+    "chances" : [
+        50.0, 
+        50.0
+    ]
+}

@@ -49,3 +49,56 @@
     "noMana" : true, 
     "resource" : "enemy_skeleton"
 }
+{ 
+    "_id" : ObjectId("5c24ee318dafca3bdc8d86be"), 
+    "enemyid" : "dragon", 
+    "name" : "A Young Dragon", 
+    "level" : NumberInt(5), 
+    "statMods" : {
+        "maxHealth" : NumberInt(50), 
+        "strength" : NumberInt(100), 
+        "stamina" : NumberInt(100), 
+        "ac" : NumberInt(50)
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : 2.0, 
+    "noMana" : false, 
+    "resource" : "enemy_gdragon"
+}
+{ 
+    "_id" : ObjectId("5c26803a8dafca3bdc8d86d1"), 
+    "enemyid" : "madman", 
+    "name" : "A Desert Madman", 
+    "level" : NumberInt(2), 
+    "sex" : "m", 
+    "statMods" : {
+
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : 2.0, 
+    "noMana" : false, 
+    "resource" : "human"
+}
+{ 
+    "_id" : ObjectId("5c26804f8dafca3bdc8d86d2"), 
+    "enemyid" : "madwoman", 
+    "name" : "A Desert Madwoman", 
+    "level" : NumberInt(2), 
+    "sex" : "f", 
+    "statMods" : {
+
+    }, 
+    "idleBehaviour" : "testBehaviour", 
+    "combatBehaviour" : "testBehaviour", 
+    "acquiretarget" : "testAcquireTarget", 
+    "mapCollide" : true, 
+    "scale" : 2.0, 
+    "noMana" : false, 
+    "resource" : "human"
+}
