@@ -63,9 +63,11 @@ function User() {
                 };
                 var classes = ['priest','fighter','thief','mage'];
                 var cl = classes[Math.floor(Math.random()*classes.length)]
-                data.slot= 1;
+                data.slot = 1;
                 data.scale = 2;
-                data.name = ng.generateName('male');
+                var sex = Math.round(Math.random()) ? 'male' : 'female';
+                data.sex = sex.substring(0,1);
+                data.name = ng.generateName(sex);
                 data.race = 'human';
                 data.class = 'fighter';
                 data.classid = 'fighter';

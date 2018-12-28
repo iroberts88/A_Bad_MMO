@@ -104,13 +104,13 @@ function Unit() {
             this.name = data.name;
             this.owner = data.owner;
 
+            this.sex = data.sex;
             this.scale = data.scale;
             this.cRadius = 8;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 
             this.faceVector = new V(0,0);
-
             this.setStatFormulas(data.classid);
 
             if (data.classid == 'enemy' || data.classid == 'elite'){
@@ -461,11 +461,13 @@ function Unit() {
             this.currentZone = null;
             this.currentSector = null;
             this.currentTile = null;
+            
+            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
 
             this.copper = Utils.udCheck(data[this.engine.enums.COPPER],0,data[this.engine.enums.COPPER]);
             this.silver = Utils.udCheck(data[this.engine.enums.SILVER],0,data[this.engine.enums.SILVER]);
-            this.gold = Utils.udCheck(data[this.engine.enums.GOLD],0,data[this.engine.enums.GOLD])
-            this.platinum = Utils.udCheck(data[this.engine.enums.PLATINUM],0,data[this.engine.enums.PLATINUM])
+            this.gold = Utils.udCheck(data[this.engine.enums.GOLD],0,data[this.engine.enums.GOLD]);
+            this.platinum = Utils.udCheck(data[this.engine.enums.PLATINUM],0,data[this.engine.enums.PLATINUM]);
             this.inventory = new Inventory();
             this.inventory.init({
                 owner: this
@@ -475,23 +477,25 @@ function Unit() {
             this.currentMeleeMain = this.defaultWeapon;
             this.currentMeleeSecond = this.defaultWeapon;
 
-            for (var i in this){
-                if (this[i] instanceof Attribute){
-                    this[i].set();
-                    this.statIndex[this[i].id] = this[i];
-                }
-            }
+
             for (var i in data.statMods){
                 this.modStat({
                     stat: i,
                     value: data.statMods[i]
                 });
             }
+
+            for (var i in this){
+                if (this[i] instanceof Attribute){
+                    this[i].set();
+                    this.statIndex[this[i].id] = this[i];
+                }
+            }
+
             this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
             this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
             this.healthPercent = this.currentHealth/this.maxHealth.value;
             this.currentEnergy = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
-            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
             this.currentExp = Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]);
 
         },
@@ -504,7 +508,8 @@ function Unit() {
                     this.currentZone.changeSector(this,this.currentZone.getSector(this.hb.pos.x,this.hb.pos.y));
                 }
             }
-
+            this.meleeHitbox.pos.x = this.hb.pos.x;
+            this.meleeHitbox.pos.y = this.hb.pos.y;
         },
 
         setTarget: function(unit){
@@ -669,6 +674,27 @@ function Unit() {
             }
         },
 
+        getNearbyUnits: function(){
+            var zone = this.currentZone;
+            var sector = this.currentSector;
+            this.nearbyUnits = {};
+            for (var i = -1;i < 2;i++){
+                for (var j = -1;j < 2;j++){
+                    if (typeof zone.sectors[(sector.x+i) + 'x' + (sector.y+j)] == 'undefined'){
+                        continue;
+                    }
+                    for (var pl in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].players){
+                        var player = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].players[pl];
+                        this.nearbyUnits[player.id] = player;
+                    }
+                    for (var n in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npc){
+                        var npc = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npc[n];
+                        this.nearbyUnits[npc.id] = npc;
+                    }
+                }
+            }
+        },
+
         _getClientData: function(less){
             var data = {};
             data[this.engine.enums.NAME] = this.name;
@@ -685,6 +711,7 @@ function Unit() {
             data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
             data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
             data[this.engine.enums.LEVEL] = this.level;
+            data[this.engine.enums.SEX] = this.sex;
 
             if (less && typeof less != 'undefined'){return data;}
             data[this.engine.enums.CURRENTHEALTH] = this.currentHealth;
@@ -770,7 +797,6 @@ function Unit() {
         setStatFormulas: function(id){
             //Lvl mods increase the amount gained based on level (higher = more pwr)
             //Stat mods increase the amount based on the corresponding stat (lower = more pwr)
-            console.log(id);
             switch (id){
                 case 'enemy':
                     this.healthLvlMod = 5;

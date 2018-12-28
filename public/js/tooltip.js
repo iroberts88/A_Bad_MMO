@@ -177,7 +177,9 @@
         var outFunc = function(e){
             if (e.currentTarget.tooltipAdded){
                 Graphics.uiContainer.removeChild(e.currentTarget.tooltip.sprite);
-                Game.currentToolTip = null;
+                if (Game.currentToolTip == e.currentTarget.tooltip.sprite){
+                    Game.currentToolTip = null;
+                }
                 e.currentTarget.tooltipAdded = false;
             }
         }
@@ -314,7 +316,9 @@
         var outFunc = function(e){
             if (e.currentTarget.tooltipAdded){
                 Graphics.uiContainer.removeChild(e.currentTarget.tooltip.sprite);
-                Game.currentToolTip = null;
+                if (Game.currentToolTip == e.currentTarget.tooltip.sprite){
+                    Game.currentToolTip = null;
+                }
                 e.currentTarget.tooltipAdded = false;
             }
             //get bag

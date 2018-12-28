@@ -3,6 +3,7 @@ var P = SAT.Polygon,
     C = SAT.Circle,
     V = SAT.Vector;
 
+
 (function(window) {
 
     var Unit = function(){
@@ -18,6 +19,7 @@ var P = SAT.Polygon,
             speed: null,
             race: null,
             class: null,
+            sex: null,
 
 
             spriteid: 'human',
@@ -54,6 +56,8 @@ var P = SAT.Polygon,
                 this.currentMana = typeof data[Enums.CURRENTMANA] == 'undefined' ? null : data[Enums.CURRENTMANA];
                 this.maxMana = typeof data[Enums.MAXMANA] == 'undefined' ? null : data[Enums.MAXMANA];
                 this.maxPercent = typeof data[Enums.HEALTHPERCENT] == 'undefined' ? null : data[Enums.HEALTHPERCENT];
+                this.sex = typeof data[Enums.SEX] == 'undefined' ? 'm' : data[Enums.SEX];
+                this.race = data[Enums.RACE];
                 this.healthPercent = data[Enums.HEALTHPERCENT];
                 this.level = data[Enums.LEVEL];
                 this.scale = data[Enums.SCALE];
@@ -63,6 +67,12 @@ var P = SAT.Polygon,
                 }
                 if (this.spriteid.substring(0,5) == 'enemy'){
                     this.enemy = true;
+                }else{
+                    if (typeof this.race == 'undefined'){
+                        this.spriteid = this.spriteid + this.sex;
+                    }else{
+                        this.spriteid = this.race + this.sex;
+                    }
                 }
                 this.moveVector = new SAT.Vector(data[Enums.MOVEVECTOR][0],data[Enums.MOVEVECTOR][1]);
                 this.faceVector = new SAT.Vector(1,0);
@@ -115,7 +125,7 @@ var P = SAT.Polygon,
                 this.targetCircle.anchor.x = 0.5;
                 this.targetCircle.anchor.y = 0.5;
                 this.targetCircle.position.x = this.sprite.position.x;
-                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/4;
+                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/5;
                 this.targetCircle.scale.x = Math.max(.5,smSize/64);
                 this.targetCircle.scale.y = Math.max(.5,smSize/64);
                 this.hb = new SAT.Circle(new SAT.Vector(this.sprite.position.x,this.sprite.position.y),this.cRadius);
@@ -162,7 +172,7 @@ var P = SAT.Polygon,
                 this.sprite.position.x = this.hb.pos.x;
                 this.sprite.position.y = this.hb.pos.y;
                 this.targetCircle.position.x = this.sprite.position.x;
-                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/4;
+                this.targetCircle.position.y = this.sprite.position.y+this.sprite.height/5;
                 this.sprite2.position.x = this.hb.pos.x;
                 this.sprite2.position.y = this.hb.pos.y;
                 this.hitBox.position.x = this.hb.pos.x;
@@ -180,7 +190,7 @@ var P = SAT.Polygon,
                 if (Player.currentTarget == this){
                     this.nameFlash.t += dt;
                     if (this.nameFlash.t >= this.nameFlash.del){
-                        this.nameFlash.t -= this.nameFlash.del
+                        this.nameFlash.t -= this.nameFlash.del;
                         if (this.nameFlash.c == 1){
                             this.nameFlash.c = 2;
                             if (Player.rangedAttackOn || Player.meleeAttackOn){
@@ -248,6 +258,11 @@ var P = SAT.Polygon,
                 }
                 if (Player.currentTarget == this){
                     Game.targetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                }
+                if (Player.currentTarget){
+                    if (Player.currentTarget.target == this){
+                        Game.targetTargetStatus.resize(Game.targetStatus.width,Game.targetStatus.height);
+                    }
                 }
             },
 

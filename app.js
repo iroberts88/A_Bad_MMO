@@ -54,18 +54,29 @@ function init() {
         rc.ready('dbClasses');
         db.close();
       });
+
       dbo.collection("abm_items").find().toArray(function(err, result) {
         if (err) throw err;
         ge.loadItems(result);
         rc.ready('dbItems');
         db.close();
       });
+
       dbo.collection("abm_enemies").find().toArray(function(err, result) {
         if (err) throw err;
         ge.loadEnemies(result);
-        rc.ready('dbEnemies');
         db.close();
+        // ---- Load Enemy sprite json
+            fs.readFile( './public/img/sprites.json', function( err, data ) {
+                if( err ) {
+                    console.error( "Could not list the directory.", err );
+                    process.exit( 1 );
+                }
+                ge.getEnemyDimensions(JSON.parse(data));
+                rc.ready('dbEnemies');
+            });
       });
+
       dbo.collection("abm_spawns").find().toArray(function(err, result) {
         if (err) throw err;
         ge.loadSpawns(result);

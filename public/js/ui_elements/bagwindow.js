@@ -565,16 +565,13 @@
             this._setLock(b);  
         };
         bagWindow.activate = function(){
-            this.active = true;
-            if (this.mainContainer.parent){
-                this.mainContainer.parent.removeChild(this.mainContainer);
-            }
-            Graphics.uiContainer.addChild(this.mainContainer);
+            this._activate();
         };
         bagWindow.deActivate = function(){
-            this.active = false
-            if (this.mainContainer.parent){
-                this.mainContainer.parent.removeChild(this.mainContainer);
+            this._deActivate();
+            if (Game.currentToolTip){
+                Game.currentToolTip.parent.removeChild(Game.currentToolTip);
+                Game.currentToolTip = null;
             }
         };
 

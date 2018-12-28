@@ -28,6 +28,7 @@ var GameEngine = function() {
     this.classes = {};
     this.races = {};
     this.enemies = {};
+    this.enemyDimensions = {};
     this.buffs = {};
     this.spawns = {};
     this.items = {};
@@ -217,6 +218,7 @@ var GameEngine = function() {
         SETRANGEDATTACK: 'setrngatk',
         SETUNITSTAT: 'setUnitStat',
         SETTARGET: 'setTarget',
+        SEX: 'sex',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',
@@ -442,6 +444,16 @@ GameEngine.prototype.loadEnemies = function(arr){
         self.enemies[arr[i].enemyid] = arr[i];
     }
     console.log('loaded ' + arr.length + ' Enemies from file');
+}
+
+GameEngine.prototype.getEnemyDimensions = function(arr){
+    for (var i in arr.frames){
+        if(i.substring(0,6) == 'enemy_'){
+            //get base dimensions!
+            self.enemyDimensions[i.substring(0,i.length-4)] = arr.frames[i].frame.w;
+        }
+    }
+    console.log(self.enemyDimensions)
 }
 GameEngine.prototype.loadSpawns = function(arr){
     for (var i = 0; i < arr.length;i++){

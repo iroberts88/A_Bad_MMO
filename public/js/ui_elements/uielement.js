@@ -193,10 +193,10 @@
 
             toggle: function(){
                 if (this.active){
-                    this._deActivate();
+                    this.deActivate();
                     document.body.style.cursor = "default";
                 }else{
-                    this._activate();
+                    this.activate();
                 }
             },
 

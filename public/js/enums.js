@@ -163,6 +163,7 @@
         SETRANGEDATTACK: 'setrngatk',
         SETUNITSTAT: 'setUnitStat',
         SETTARGET: 'setTarget',
+        SEX: 'sex',
         SHADOWRES: 'shadowres',
         SHOCKRES: 'shockRes',
         SHOULDERS: 'shoulders',

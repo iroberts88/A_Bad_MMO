@@ -196,10 +196,7 @@ Zone.prototype.collideUnit = function(unit,dt){
     var xDist = unit.moveVector.x*unit.speed.value*dt;
     var yDist = unit.moveVector.y*unit.speed.value*dt;
     var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
-    console.log(unit.speed.value);
-    console.log(dt);
     this.test += xDist/Math.ceil(hyp);
-    console.log(this.test);
     var response = new R();
     var tile;
     for (var i = 1; i <= Math.ceil(hyp);i++){
@@ -237,11 +234,10 @@ Zone.prototype.collideUnit = function(unit,dt){
             }
         }
     }
-    console.log(unit.hb.pos.x + ', ' + unit.hb.pos.y)
 };
 Zone.prototype.changeSector = function(p,sector){
     var isNPC = p instanceof NPC ? true : false;
-    //p = the player to change sector
+    //p = the player or npc to change sector
     //change sectors
     //this will not update client
     var current = p.currentSector;
@@ -315,6 +311,9 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
                 this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
+            for (var n in addList[i].npcs){
+                addList[i].npcs[n].nearbyUnits[p.id] = p;
+            }
             if(!isNPC){
                 for (var n in addList[i].npcs){
                     addList[i].npcs[n].pToUpdate[p.id] = p;
@@ -342,6 +341,9 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(p.owner,this.engine.enums.REMOVEPC,d);
             }
 
+            for (var n in removeList[i].npcs){
+                delete removeList[i].npcs[n].nearbyUnits[p.id];
+            }
             if (!isNPC){
                 for (var n in removeList[i].npcs){
                     if (typeof removeList[i].npcs[n].pToUpdate[p.id] != 'undefined'){
@@ -425,7 +427,6 @@ Zone.prototype.getNPCS = function(sector){
             }
             for (var n in this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs){
                 var npc = this.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs[n];
-                console.log(npc.id + ' - gottem!');
                 npcs.push(npc);
             }
         }
@@ -448,7 +449,6 @@ Zone.prototype.getNPCData = function(sector){
     for (var i = 0; i < npcs.length;i++){
         nArr.push(npcs[i].getLessClientData());
     }
-    console.log(nArr);
     return nArr;
 }
 
@@ -464,6 +464,7 @@ Zone.prototype.addPlayer = function(p){
     }
     for (var i = 0; i < npcs.length;i++){
         npcs[i].pToUpdate[p.id] = p;
+        npcs[i].nearbyUnits[p.id] = p;
     }
     this.sendMapDataTo(p);
     sector.addPlayer(p);
@@ -489,6 +490,9 @@ Zone.prototype.removePlayer = function(p){
         if (npcs[i].pToUpdate[p.id]){
             delete npcs[i].pToUpdate[p.id];
         }
+        if (npcs[i].nearbyUnits[p.id]){
+            delete npcs[i].nearbyUnits[p.id];
+        }
     }
     delete this.players[p.id];
     this.playerCount -= 1;
@@ -505,6 +509,11 @@ Zone.prototype.addNPC = function(n){
     }
     sector.addNPC(n);
     n.getPToUpdate();
+    n.getNearbyUnits();
+    for (var i in n.nearbyUnits){
+        //add npc to nearby npc's lists
+        n.nearbyUnits[i].nearbyUnits[n.id] = n;
+    }
     return null;
 }
 
@@ -516,6 +525,12 @@ Zone.prototype.removeNPC = function(n){
         var data = {};
         data[this.engine.enums.ID] = n.id;
         this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVENPC,data);
+    }
+    //remove npc from nearby npc's lists
+    for (var i in n.nearbyUnits){
+        if (n.nearbyUnits[n.id]){
+            delete n.nearbyUnits[n.id];
+        }
     }
     delete this.npcs[n.id];
     return null;
@@ -569,7 +584,6 @@ var Sector = function(id,zone) {
         x: this.x*zone.SECTOR_SIZE,
         y: this.y*zone.SECTOR_SIZE
     }
-    console.log(this.pos);
 };
 
 Sector.prototype.addPlayer = function(p){
@@ -675,6 +689,7 @@ Spawn.prototype.tick = function(deltaTime){
         data.scale = e['scale'];
         data.engine = this.engine;
         data.classid = 'enemy';
+        data.sex = e['sex'];
         data.name = e['name'];
         data.idleBehaviour = e['idleBehaviour'];
         data.combatBehaviour = e['combatBehaviour'];

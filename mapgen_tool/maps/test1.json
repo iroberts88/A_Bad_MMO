@@ -2430,7 +2430,8 @@
           },
           {
             "resource": "1x0",
-            "open": true
+            "open": true,
+            "spawnID": "testspawn3"
           },
           {
             "resource": "1x0",

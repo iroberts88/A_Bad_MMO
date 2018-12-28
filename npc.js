@@ -15,8 +15,8 @@ NPC = function(){
     character.init = function (data) {
         this._init(data);
         //get the enemy A.I.
-        this.dIdleBehaviour = data.idleBehaviour;
-        this.dCoambatBehaviour = data.combatBehaviour;
+        this.dIdleBehaviour = data.idleBehaviour; //defaults
+        this.dCoambatBehaviour = data.combatBehaviour; //defaults
         this.idleBehaviour = data.idleBehaviour;
         this.combatBehaviour = data.combatBehaviour;
 
@@ -27,6 +27,12 @@ NPC = function(){
         this.spawn = data.spawn;
         this.hb.pos.x = this.spawn.tile.x*this.spawn.zone.TILE_SIZE+this.spawn.zone.TILE_SIZE/2;
         this.hb.pos.y = this.spawn.tile.y*this.spawn.zone.TILE_SIZE+this.spawn.zone.TILE_SIZE/2;
+        var sz = typeof this.engine.enemyDimensions[this.resource] == 'undefined' ? 16 : this.engine.enemyDimensions[this.resource]
+        this.meleeHitbox = new C(new V(this.hb.pos.x,this.hb.pos.y),sz/2*this.scale);
+
+        this.baseAggroDistance = 200;
+
+        this.nearbyUnits = {}; //list of nearby units to use for acquiretarget behaviours
 
     }
 
@@ -39,7 +45,6 @@ NPC = function(){
     character.getClientData = function(less){
         var data = this._getClientData(less);
         data[this.engine.enums.RESOURCE] = this.resource;
-        console.log(this.resource);
         return data;
     }
     character.getLessClientData = function(){

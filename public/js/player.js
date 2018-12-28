@@ -35,8 +35,32 @@
             }
             if (this.rangeMsgTicker < this.rangeMsgDelay){
                 this.rangeMsgTicker += dt;
-            }else if (this.meleeAttackOn || this.rangedAttackOn){
+            }else if ((this.meleeAttackOn || this.rangedAttackOn) && this.currentTarget){
                 //add msg depending on range!
+                var range = [0,0]
+                if (this.meleeAttackOn){
+                    range = [-Infinity,50];
+                }else{
+                    var w = Game.characterWindow.itemSlots['ranged'].item;
+                    range = w.range;
+                }
+                var hb1 = this.currentCharacter.hb.pos;
+                var hb2 = this.currentTarget.hb.pos;
+                //get proper range
+                var distance = Math.sqrt(Math.pow(hb1.x-hb2.x,2)+Math.pow(hb1.y-hb2.y,2))
+                distance -= this.currentTarget.sprite.width/2;
+                var d = {};
+                d[Enums.MESSAGETYPE] = 'rangeMsg';
+                if (distance < range[0]){
+                    d[Enums.TEXT] = 'Target is too close!!';
+                    Game.addMessage(d)
+                }else if (distance > range[1]){
+                    d[Enums.TEXT] = 'Target is too far away!!';
+                    Game.addMessage(d)
+                }else{
+                    return;
+                }
+                this.rangeMsgTicker = 0;
             }
         },
 

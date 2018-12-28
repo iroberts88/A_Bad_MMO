@@ -379,6 +379,9 @@
                 case 'combatMsg':
                     this.combatChat.addMessage(data[Enums.TEXT], 0xFFFF00);
                     break;
+                case 'rangeMsg':
+                    this.combatChat.addMessage(data[Enums.TEXT], 0xFF0000);
+                    break;
                 case 'combatHit':
                     this.combatChat.addMessage(data[Enums.TEXT], 0xf4bc42);
                     break;

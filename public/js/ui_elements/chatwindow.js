@@ -178,20 +178,11 @@
         chatWindow.scrollDown = function(){
 
         };
-
         chatWindow.activate = function(){
-            this.active = true;
-            if (this.mainContainer.parent){
-                this.mainContainer.parent.removeChild(this.mainContainer);
-            }
-            Graphics.uiContainer.addChild(this.mainContainer);
+            this._activate();
         };
-
         chatWindow.deActivate = function(){
-            this.active = false
-            if (this.mainContainer.parent){
-                this.mainContainer.parent.removeChild(this.mainContainer);
-            }
+            this._deActivate();
         };
         return chatWindow;
     };

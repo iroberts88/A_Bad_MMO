@@ -106,11 +106,8 @@ var P = SAT.Polygon,
     GameMap.prototype.collideUnit = function(unit,dt){
         var xDist = unit.moveVector.x*unit.speed*dt;
         var yDist = unit.moveVector.y*unit.speed*dt;
-        console.log(unit.speed);
-        console.log(dt);
         var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
         this.test += xDist/Math.ceil(hyp);
-        console.log(this.test);
         var response = new SAT.Response();
         for (var i = 1; i <= Math.ceil(hyp);i++){
             if (xDist){
@@ -142,8 +139,7 @@ var P = SAT.Polygon,
                     }
                 }
             }
-        }
-        console.log(unit.hb.pos.x + ', ' + unit.hb.pos.y);  
+        } 
     };
     window.GameMap = GameMap;
 })(window);
