@@ -59,7 +59,8 @@
             BAGWINDOW: 11,
             ESCAPE: 12,
             MELEEATTACK: 13,
-            RANGEDATTACK: 14
+            RANGEDATTACK: 14,
+            TABTARGET: 15
         },
         keysPressed: [],
         keyBindings: [],
@@ -71,7 +72,9 @@
             prevX: null,
             prevY: null,
             actualX: null,
-            actualY: null
+            actualY: null,
+            worldX: null,
+            worldY: null
         },
         buttons: {},
         mouseUpCallback: null,
@@ -110,7 +113,7 @@
             this.keyBindings[27] = Acorn.Input.Key.ESCAPE; //cancel all..
             this.keyBindings[69] = Acorn.Input.Key.MELEEATTACK; //melee
             this.keyBindings['s69'] = Acorn.Input.Key.RANGEDATTACK; //ranged
-
+            this.keyBindings[9] = Acorn.Input.Key.TABTARGET;
         },
         getBinding: function(keyCode) {
             return this.keyBindings[keyCode];
@@ -126,6 +129,7 @@
             this.upCallBacks = {};
         },
         keyDown: function(keyCode) {
+            console.log(keyCode);
             if (this.keysPressed[Acorn.Input.Key.MOD_SHIFT]){
                 keyCode = 's'+keyCode;
             }
@@ -165,6 +169,10 @@
             Acorn.Input.mouse.Y = e.layerY;
             Acorn.Input.mouse.actualX = e.layerX/Graphics.actualRatio[0];
             Acorn.Input.mouse.actualY = e.layerY/Graphics.actualRatio[1];
+            if (Game.ready){
+                Acorn.Input.mouse.worldX = e.layerX/Graphics.actualRatio[0] + (Player.currentCharacter.hb.pos.x-Graphics.width/2);
+                Acorn.Input.mouse.worldY = e.layerY/Graphics.actualRatio[1] + (Player.currentCharacter.hb.pos.y-Graphics.height/2);
+            }
             if(Acorn.Input.mouseMoveCallback && typeof Acorn.Input.mouseMoveCallback === 'function') {
                 Acorn.Input.mouseMoveCallback(e);
             }

@@ -2,7 +2,9 @@
 var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
     Utils = new utils(),
-    Unit = require('./unit.js').Unit;
+    Unit = require('./unit.js').Unit,
+    Behaviour = require('./behaviour.js').Behaviour,
+    Attribute = require('./attribute.js').Attribute;
 var P = SAT.Polygon,
 	V = SAT.Vector,
 	C = SAT.Circle;
@@ -30,15 +32,29 @@ NPC = function(){
         var sz = typeof this.engine.enemyDimensions[this.resource] == 'undefined' ? 16 : this.engine.enemyDimensions[this.resource]
         this.meleeHitbox = new C(new V(this.hb.pos.x,this.hb.pos.y),sz/2*this.scale);
 
-        this.baseAggroDistance = 200;
-
         this.nearbyUnits = {}; //list of nearby units to use for acquiretarget behaviours
+
+        this.baseAggroRadius = new Attribute();
+        this.baseAggroRadius.init({
+            id: 'aggro',
+            owner: this,
+            value: 500,
+            min: 1,
+            max: 9999
+        });
 
     }
 
     character.update = function(deltaTime){
         //Do behaviours before the unit update
         //this will get move vector/target etc. before move is attemted
+        if (this.currentTarget){
+            //do behavoiur
+            Behaviour.executeBehaviour(this.combatBehaviour['name'],this,deltaTime,this.combatBehaviour);
+        }else{
+            Behaviour.executeBehaviour(this.acquireTarget['name'],this,deltaTime,this.acquireTarget);
+            Behaviour.executeBehaviour(this.idleBehaviour['name'],this,deltaTime,this.idleBehaviour);
+        }
     	this._update(deltaTime);
     }
 

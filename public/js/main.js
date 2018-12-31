@@ -19,6 +19,17 @@ mainObj.playerId = 'none';
 mainObj.GAME_SCALE = 3;
 mainObj.TILE_SIZE = 16*mainObj.GAME_SCALE;
 mainObj.SECTOR_SIZE = 21*TILE_SIZE;
+var preventDefaultKeys = {
+    8: true,
+    9: true, //tab
+    16: true, //backspace??
+    32: true,
+    37: true,
+    38: true,
+    39: true,
+    40: true,
+    127: true
+}
 
 $(function() {
 
@@ -87,17 +98,11 @@ $(function() {
             Acorn.Input.keyDown(key);
         }
 
-        if ((key === 32 || key === 38 || key === 37 || key === 39 || key === 40 || key === 127) ){
+        // Prevent system wide stops
+        if (preventDefaultKeys[key]){
             e.preventDefault();
         }
 
-        // Prevent system wide stops
-        if (
-                key === 8 || // Backspace
-                key === 16
-            ){
-            e.preventDefault();
-        }
 
     });
 

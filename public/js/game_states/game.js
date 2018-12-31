@@ -178,6 +178,11 @@
                 Acorn.Input.setValue(Acorn.Input.Key.BAGWINDOW,false);
             });
 
+            Acorn.Input.onDown(Acorn.Input.Key.TABTARGET, function(){
+                Game.getNearestTarget();
+                Acorn.Input.setValue(Acorn.Input.Key.TABTARGET,false);
+            });
+
             Acorn.Input.onDown(Acorn.Input.Key.MELEEATTACK, function(){
                 Player.toggleMeleeAttack();
                 var data = {};
@@ -341,6 +346,25 @@
             Player.currentCharacter.moveVector.x = x - Player.currentCharacter.sprite.position.x;
             Player.currentCharacter.moveVector.y = y - Player.currentCharacter.sprite.position.y;
             Player.currentCharacter.moveVector.normalize();
+        },          
+
+        getNearestTarget: function(){
+            var tabTargetRange = 500;
+            //get the nearest target to the MOUSE LOCATION
+            //check if the target has been recently tab targeted??
+            //find the next target
+            for (var i in NPCS.npcs){
+                var xDist = NPCS.npcs[i].hb.pos.x-Acorn.Input.mouse.worldX;
+                var yDist = NPCS.npcs[i].hb.pos.y-Acorn.Input.mouse.worldY;
+                if (Math.sqrt(xDist*xDist + yDist*yDist) <= tabTargetRange){
+                    if (Player.currentTarget == NPCS.npcs[i]){
+                        continue;
+                    }else{
+                        Player.setTarget(NPCS.npcs[i]);
+                        return;
+                    }
+                }
+            }
         },
 
         addMessage: function(data){

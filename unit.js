@@ -139,6 +139,21 @@ function Unit() {
                 max: 3
             });
 
+
+            this.level = new Attribute();
+            this.level.init({
+                id: this.engine.enums.LEVEL,
+                owner: this,
+                updateAll: true,
+                value: Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]),
+                min: 1,
+                max: 100,
+                formula: function(){
+                    return this.value;
+                }
+            });
+            this.levelMod = this.level.value/12;
+
             this.speed = new Attribute();
             this.speed.init({
                 id: this.engine.enums.SPEED,
@@ -146,10 +161,11 @@ function Unit() {
                 value: Utils.udCheck(data.speed,75,data.speed),
                 min: 0,
                 max: 250,
+                updateAll: true,
                 formula: function(){
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
-                    this.base = (75+(this.owner.agility.value*(this.owner.level/1200)))/(weightMod*weightMod);
+                    this.base = (75+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
                     return 300//Math.round(this.base*this.pMod+this.nMod);
                 }
             });
@@ -266,9 +282,9 @@ function Unit() {
                         //todo enemy AC formula?
                         return Math.round(10*this.pMod+this.nMod);
                     }else{
-                        this.base = 14 + this.owner.level;
-                        this.cap = this.owner.level*30*Math.ceil(this.owner.level/5);
-                        return Math.min(this.owner.level*30*Math.ceil(this.owner.level/2),Math.round((this.base*this.pMod+this.nMod)*(1+this.owner.agility.value*(this.owner.level/8000))));
+                        this.base = 14 + this.owner.level.value;
+                        this.cap = this.owner.level.value*30*Math.ceil(this.owner.level.value/5);
+                        return Math.min(this.owner.level.value*30*Math.ceil(this.owner.level.value/2),Math.round((this.base*this.pMod+this.nMod)*(1+this.owner.agility.value*(this.owner.level.value/8000))));
                     }
                 }
             });
@@ -364,7 +380,7 @@ function Unit() {
                 min: 1,
                 max: 99999,
                 formula: function(){
-                    this.base = (this.owner.dexterity.value*(this.owner.level/this.owner.rangedStatMod) + this.owner.level*this.owner.rangedLvlMod);
+                    this.base = (this.owner.dexterity.value*(this.owner.level.value/this.owner.rangedStatMod) + this.owner.level.value*this.owner.rangedLvlMod);
                     return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
@@ -376,7 +392,7 @@ function Unit() {
                 min: 1,
                 max: 99999,
                 formula: function(){
-                    this.base = (this.owner.intelligence.value*(this.owner.level/this.owner.spellStatMod) + this.owner.level*this.owner.spellLvlMod);
+                    this.base = (this.owner.intelligence.value*(this.owner.level.value/this.owner.spellStatMod) + this.owner.level.value*this.owner.spellLvlMod);
                     return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
@@ -388,7 +404,7 @@ function Unit() {
                 min: 1,
                 max: 99999,
                 formula: function(){
-                    this.base = (this.owner.strength.value*(this.owner.level/this.owner.meleeStatMod) + this.owner.level*this.owner.meleeLvlMod);
+                    this.base = (this.owner.strength.value*(this.owner.level.value/this.owner.meleeStatMod) + this.owner.level.value*this.owner.meleeLvlMod);
                     return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
@@ -400,7 +416,7 @@ function Unit() {
                 min: 1,
                 max: 99999,
                 formula: function(){
-                    this.base = (this.owner.wisdom.value*(this.owner.level/this.owner.healingStatMod) + this.owner.level*this.owner.healingLvlMod);
+                    this.base = (this.owner.wisdom.value*(this.owner.level.value/this.owner.healingStatMod) + this.owner.level.value*this.owner.healingLvlMod);
                     return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
@@ -413,13 +429,13 @@ function Unit() {
                 min: 1,
                 max: 99999,
                 formula: function(){
-                    this.base =30+ (this.owner.stamina.value*(this.owner.level/this.owner.healthStatMod) + this.owner.level*this.owner.healthLvlMod*(this.owner.level/this.owner.healthStatMod));
+                    this.base =30+ (this.owner.stamina.value*(this.owner.level.value/this.owner.healthStatMod) + this.owner.level.value*this.owner.healthLvlMod*(this.owner.level.value/this.owner.healthStatMod));
                     return Math.round(this.base*this.pMod+this.nMod);
                 },
-                next: function(){
+                next: function(updateClient){
                     //TODO send health percent to all non-allied units
                     //etc....
-                    this.owner.healthPercent = this.owner.currentHealth/this.owner.maxHealth.value;
+                    this.owner.healthPercent.set(updateClient);
                 }
             });
             this.maxMana = new Attribute();
@@ -428,21 +444,22 @@ function Unit() {
                 owner: this,
                 value: Utils.udCheck(data[this.engine.enums.MAXMANA],30,data[this.engine.enums.MAXMANA]),
                 min: 1,
+                updateAll: true,
                 max: 99999,
                 formula: function(){
                     if (this.owner.noMana){
                         return 0;
                     }
-                    this.base =(this.owner.manaLvlMod*10) + this.owner.level*this.owner.manaLvlMod*(this.owner.level/this.owner.manaStatMod);
+                    this.base =(this.owner.manaLvlMod*10) + this.owner.level.value*this.owner.manaLvlMod*(this.owner.level.value/this.owner.manaStatMod);
                     //set the cost base for spells
-                    this.costBase = (100) + this.owner.level*10*(this.owner.level/10);
-                    var statMod = (this.owner.intelligence.value*2*(this.owner.level/this.owner.manaStatMod));
+                    this.costBase = (100) + this.owner.level.value*10*(this.owner.level.value/10);
+                    var statMod = (this.owner.intelligence.value*2*(this.owner.level.value/this.owner.manaStatMod));
                     return Math.round((this.base+statMod)*this.pMod+this.nMod);
                 },
-                next: function(){
+                next: function(updateClient){
                     //todo send down new mana value
-                    if (this.owner.currentMana > this.value){
-                        this.owner.currentMana = this.value;
+                    if (this.owner.currentMana.value > this.value){
+                        this.owner.currentMana.value = this.value;
                     }
                 }
             });
@@ -452,17 +469,15 @@ function Unit() {
             this.maxEnergy.init({
                 id: this.engine.enums.MAXENERGY,
                 owner: this,
+                updateAll: true,
                 value: Utils.udCheck(data[this.engine.enums.MAXENERGY],100,data[this.engine.enums.MAXENERGY]),
                 min: 1,
                 max: 999
             });
-            this.levelMod = this.level/12;
             this.isColliding = true;
             this.currentZone = null;
             this.currentSector = null;
             this.currentTile = null;
-            
-            this.level = Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]);
 
             this.copper = Utils.udCheck(data[this.engine.enums.COPPER],0,data[this.engine.enums.COPPER]);
             this.silver = Utils.udCheck(data[this.engine.enums.SILVER],0,data[this.engine.enums.SILVER]);
@@ -477,26 +492,84 @@ function Unit() {
             this.currentMeleeMain = this.defaultWeapon;
             this.currentMeleeSecond = this.defaultWeapon;
 
+            this.currentHealth = new Attribute();
+            this.currentHealth.init({
+                id: this.engine.enums.CURRENTHEALTH,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]),
+                min: 0,
+                max: 99999,
+                next: function(updateClient){
+                    this.owner.healthPercent.set(updateClient);
+                },
+                formula: function(){
+                    return this.value;
+                }
+            });
+            this.healthPercent = new Attribute();
+            this.healthPercent.init({
+                id: this.engine.enums.HEALTHPERCENT,
+                owner: this,
+                updateAll: true,
+                value: this.currentHealth.value/this.maxHealth.value,
+                min: 0,
+                max: 1,
+                formula: function(updateClient){
+                    return this.owner.currentHealth.value/this.owner.maxHealth.value;
+                }
+            });
+            this.currentMana = new Attribute();
+            this.currentMana.init({
+                id: this.engine.enums.CURRENTMANA,
+                owner: this,
+                updateAll: true,
+                value: Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]),
+                min: 0,
+                max: 99999,
+                formula: function(){
+                    return this.value;
+                }
+            });
+            this.currentEnergy = new Attribute();
+            this.currentEnergy.init({
+                id: this.engine.enums.CURRENTENERGY,
+                owner: this,
+                updateAll: true,
+                value: Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]),
+                min: 0,
+                max: 99999,
+                formula: function(){
+                    return this.value;
+                }
+            });
+            this.currentExp = new Attribute();
+            this.currentExp.init({
+                id: this.engine.enums.CURRENTEXP,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]),
+                min: 0,
+                max: 99999,
+                formula: function(){
+                    return this.value;
+                }
+            });
 
             for (var i in data.statMods){
                 this.modStat({
                     stat: i,
                     value: data.statMods[i]
-                });
+                },false);
             }
 
             for (var i in this){
                 if (this[i] instanceof Attribute){
-                    this[i].set();
+                    this[i].set(false);
                     this.statIndex[this[i].id] = this[i];
                 }
             }
-
-            this.currentHealth = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
-            this.currentMana = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
-            this.healthPercent = this.currentHealth/this.maxHealth.value;
-            this.currentEnergy = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
-            this.currentExp = Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]);
+            this.currentHealth.value = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
+            this.currentMana.value = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
+            this.currentEnergy.value = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
 
         },
        
@@ -534,7 +607,7 @@ function Unit() {
         makeWeaponAttack: function(weapon,target,ranged = false){
             if (!target){
                 console.log('No Target!!!')
-                return;
+                return 0;
             }
             var arr = null;
             var rand = Math.random() * 100;
@@ -606,13 +679,13 @@ function Unit() {
             //DO any on Damage effects
             //check resistances etc.
 
-            this.currentHealth -= data.value;
-            this.healthPercent = this.currentHealth/this.maxHealth.value;
+            this.currentHealth.value -= data.value;
+            this.healthPercent = this.currentHealth.value/this.maxHealth.value;
             if (!this.isEnemy){
                 //player is being damaged
                 var cData = {};
                 cData[this.engine.enums.UNIT] = data.source.name;
-                cData[this.engine.enums.STAT] = this.currentHealth;
+                cData[this.engine.enums.STAT] = this.currentHealth.value;
                 cData[this.engine.enums.VALUE] = data.value;
                 cData[this.engine.enums.TYPE] = data.type;
                 this.engine.queuePlayer(this.owner,this.engine.enums.DEALTDAMAGE,cData);
@@ -634,7 +707,7 @@ function Unit() {
                 cData[this.engine.enums.TYPE] = data.type;
                 this.engine.queuePlayer(data.source.owner,this.engine.enums.DEALDAMAGE,cData);
             }
-            if (this.currentHealth <= 0){
+            if (this.currentHealth.value <= 0){
                 this.kill();
             }
         },
@@ -687,8 +760,8 @@ function Unit() {
                         var player = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].players[pl];
                         this.nearbyUnits[player.id] = player;
                     }
-                    for (var n in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npc){
-                        var npc = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npc[n];
+                    for (var n in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs){
+                        var npc = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs[n];
                         this.nearbyUnits[npc.id] = npc;
                     }
                 }
@@ -703,18 +776,18 @@ function Unit() {
             data[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
             data[this.engine.enums.SPEED] = this.speed.value;
             data[this.engine.enums.SCALE] = this.scale;
-            data[this.engine.enums.HEALTHPERCENT] = this.healthPercent;
+            data[this.engine.enums.HEALTHPERCENT] = this.healthPercent.value;
             data[this.engine.enums.MAXMANA] = this.maxMana.value;
-            data[this.engine.enums.CURRENTMANA] = this.currentMana;
-            data[this.engine.enums.CURRENTENERGY] = this.currentEnergy;
+            data[this.engine.enums.CURRENTMANA] = this.currentMana.value;
+            data[this.engine.enums.CURRENTENERGY] = this.currentEnergy.value;
             data[this.engine.enums.MAXENERGY] = this.maxEnergy.value;
             data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
             data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
-            data[this.engine.enums.LEVEL] = this.level;
+            data[this.engine.enums.LEVEL] = this.level.value;
             data[this.engine.enums.SEX] = this.sex;
 
             if (less && typeof less != 'undefined'){return data;}
-            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth;
+            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth.value;
             data[this.engine.enums.MAXHEALTH] = this.maxHealth.value;
             data[this.engine.enums.STRENGTH] = this.strength.value;
             data[this.engine.enums.STAMINA] = this.stamina.value;
@@ -730,7 +803,7 @@ function Unit() {
             data[this.engine.enums.HEALINGPOWER] = this.healingPower.value;
             data[this.engine.enums.RANGEDPOWER] = this.rangedPower.value;
             data[this.engine.enums.SPELLPOWER] = this.spellPower.value;
-            data[this.engine.enums.CURRENTEXP] = this.currentExp;
+            data[this.engine.enums.CURRENTEXP] = this.currentExp.value;
             data[this.engine.enums.FROSTRES] = this.frostRes.value;
             data[this.engine.enums.FIRERES] = this.fireRes.value;
             data[this.engine.enums.WINDRES] = this.windRes.value;
@@ -750,7 +823,7 @@ function Unit() {
             return this._getClientData(true);
         },
 
-        modStat: function(data){
+        modStat: function(data, updateClient = true){
             //data.stat = the stat to be modded
             //data.set = if true, set stat to value instead of adding
             //data.value = the value to modify the stat
@@ -760,27 +833,55 @@ function Unit() {
                 switch (data.stat){
                     case 'maxWeight':
                         this.inventory.maxWeight.nMod += data.value;
-                        this.inventory.maxWeight.set();
+                        this.inventory.maxWeight.set(updateClient);
                         break;
                     case 'ac':
                         this.ac.nMod += data.value;
-                        this.ac.set();
+                        this.ac.set(updateClient);
                         break;
                     case 'maxHealth':
                         this.maxHealth.nMod += data.value;
-                        this.maxHealth.set();
+                        this.maxHealth.set(updateClient);
                         break;
                     case 'strength':
                         this.strength.nMod += data.value;
-                        this.strength.set();
+                        this.strength.set(updateClient);
                         break;
                     case 'stamina':
                         this.stamina.nMod += data.value;
-                        this.stamina.set();
+                        this.stamina.set(updateClient);
                         break;
                     case 'speed':
                         this.speed.nMod += data.value;
-                        this.speed.set();
+                        this.speed.set(updateClient);
+                        break;
+                    case 'agility':
+                        this.agility.nMod += data.value;
+                        this.agility.set(updateClient);
+                        break;
+                    case 'dexterity':
+                        this.dexterity.nMod += data.value;
+                        this.dexterity.set(updateClient);
+                        break;
+                    case 'intelligence':
+                        this.intelligence.nMod += data.value;
+                        this.intelligence.set(updateClient);
+                        break;
+                    case 'willpower':
+                        this.willpower.nMod += data.value;
+                        this.willpower.set(updateClient);
+                        break;
+                    case 'charisma':
+                        this.charisma.nMod += data.value;
+                        this.charisma.set(updateClient);
+                        break;
+                    case 'perception':
+                        this.perception.nMod += data.value;
+                        this.perception.set(updateClient);
+                        break;
+                    case 'luck':
+                        this.luck.nMod += data.value;
+                        this.luck.set(updateClient);
                         break;
                 }
             }catch(e){

@@ -68,7 +68,7 @@ Attribute.prototype.set = function(updateClient){
     		}
     	}
 	}
-    this.next(updateClient)
+    this.next(updateClient);
     var clientData = {};
     clientData[this.engine.enums.UNIT] = this.owner.id;
     clientData[this.engine.enums.STAT] = this.id;
@@ -77,7 +77,9 @@ Attribute.prototype.set = function(updateClient){
     if (updateClient && this.updateClient && this.owner.owner){
         this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
     }else if (updateClient && this.updateAll){
-        this.engine.queueData(this.engine.enums.SETUNITSTAT,clientData);
+        for (var i in this.owner.pToUpdate){
+            this.engine.queuePlayer(this.owner.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
+        }
     }
     return;
 }

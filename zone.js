@@ -99,6 +99,9 @@ Zone.prototype.tick = function(deltaTime) {
     for (var i in this.spawns){
         this.spawns[i].tick(deltaTime);
     }
+    for (var i in this.npcs){
+        this.npcs[i].update(deltaTime);
+    }
 };
 
 Zone.prototype.say = function(p,text){
@@ -512,7 +515,9 @@ Zone.prototype.addNPC = function(n){
     n.getNearbyUnits();
     for (var i in n.nearbyUnits){
         //add npc to nearby npc's lists
-        n.nearbyUnits[i].nearbyUnits[n.id] = n;
+        if (n.nearbyUnits[i].isEnemy){
+            n.nearbyUnits[i].nearbyUnits[n.id] = n;
+        }
     }
     return null;
 }
@@ -693,6 +698,7 @@ Spawn.prototype.tick = function(deltaTime){
         data.name = e['name'];
         data.idleBehaviour = e['idleBehaviour'];
         data.combatBehaviour = e['combatBehaviour'];
+        data.acquireTarget = e['acquireTarget'];
         data.level = e['level'];
         data.resource = e['resource'];
         data.noMana = e['noMana'];

@@ -529,7 +529,7 @@ Player.prototype.parseCommand = function(cmd,string,dev) {
                 for (var i in this.engine.items){
                     this.activeChar.inventory.addItemById(i,1);
                 }
-                break
+                break;
             case 'additem':
                 if (typeof args[0] == 'undefined'){
                     console.log("missing item id");
@@ -539,7 +539,43 @@ Player.prototype.parseCommand = function(cmd,string,dev) {
                     args.push(1);
                 }
                 this.activeChar.inventory.addItemById(args[0],parseInt(args[1]));
-                break
+                break;
+            case 'modstat':
+                if (typeof args[0] == 'undefined'){
+                    console.log("missing item id");
+                    return;
+                }
+                if (typeof args[1] == 'undefined'){
+                    args.push(1);
+                }
+                this.activeChar.modStat({
+                    stat: args[0],
+                    value: parseInt(args[1]),
+                });
+                break;
+            case 'setstat':
+                //this will force the base stat
+                if (typeof args[0] == 'undefined'){
+                    console.log("missing item id");
+                    return;
+                }
+                if (typeof args[1] == 'undefined'){
+                    args.push(1);
+                }
+                this.activeChar.modStat({
+                    stat: args[0],
+                    value: parseInt(args[1])
+                    //set: true
+                });
+                break;
+            case 'levelup':
+                //for quick testing purposes
+                this.activeChar.levelUp();
+                break;
+            case 't':
+                //for quick testing purposes
+                this.activeChar.inventory.addItemById('w_branch', 2);
+                break;
         }
         return;
     }

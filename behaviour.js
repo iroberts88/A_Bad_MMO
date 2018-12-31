@@ -11,7 +11,9 @@ var C = SAT.Circle;
 var Behaviour = function() {};
 
 var behaviourEnums = {
-    TestBehaviour: 'TestBehaviour'
+    TestBehaviour: 'TestBehaviour',
+    Wander: 'wander',
+    SearchInRadius: 'searchInRadius'
 }
 
 //--------------------------------------------------------
@@ -20,7 +22,21 @@ var behaviourEnums = {
 
 Behaviour.prototype.testBehaviour = function(unit,dt,data){
     console.log(data);
+    return null;
+}
+Behaviour.prototype.wander = function(unit,dt,data){
+    console.log('Wandering!')
+    return null;
+}
 
+Behaviour.prototype.searchInRadius = function(unit,dt,data){
+    for (var i in unit.nearbyUnits){
+        if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value){
+            console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
+            unit.currentTarget = unit.nearbyUnits[i];
+            return null;
+        }
+    }
     return null;
 }
 
@@ -178,6 +194,15 @@ Behaviour.prototype.executeBehaviour = function(actionStr,unit,dt,data){
     var Behaviour = require('./behaviour.js').Behaviour;
     switch(actionStr) {
         case behaviourEnums.TestBehaviour:
+            return Behaviour.testBehaviour(unit,dt,data);
+            break;
+        case behaviourEnums.Wander:
+            return Behaviour.wander(unit,dt,data);
+            break;
+        case behaviourEnums.SearchInRadius:
+            return Behaviour.searchInRadius(unit,dt,data);
+            break;
+        default:
             return Behaviour.testBehaviour(unit,dt,data);
             break;
     }

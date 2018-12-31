@@ -394,6 +394,10 @@ var P = SAT.Polygon,
                         break;
                     case  Enums.LEVEL:
                         this.level = val;
+                        this.checkTargetStatus();
+                        try{
+                            Game.characterWindow.nameText.text = Game.characterWindow.name + ', the level ' + Player.currentCharacter.level + ' ' + Player.currentCharacter.class
+                        }catch(e){};
                         break;
                 }
             }

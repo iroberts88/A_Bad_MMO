@@ -7,17 +7,17 @@ var P = SAT.Polygon,
 
     CombatText = {
 
-        container: [],
+        container: {},
 
         font: {
-            font: '24px Lato',
+            font: '28px Lato',
             fill: Graphics.pallette.color1,
             align: 'left',
             stroke: '#000000',
             strokeThickness: 1
         },
 
-        time: 0.75,
+        time: 1.5,
         
         hitColor: 0xFFFFFF,
         getHitColor: 0xFF0000,
@@ -25,24 +25,37 @@ var P = SAT.Polygon,
         healColor: 0x00FF00,
 
         update: function(dt){
-            for (var i = 0; i < this.container.length;i++){
-                var t = this.container[i];
-                //t.vec.y += 0.01
-                t.fs += 0.2;
-                t.text.style.fontSize = t.fs;
+            for (var i in this.container){
+                this.updateText(this.container[i],dt);
+                if (this.container[i].length == 0){
+                    delete this.container[i]
+                }
+            }
+        },
+
+        updateText: function(arr,dt){
+            for (var i = arr.length-1; i >= 0;i--){
+                var t = arr[i];
+                t.xPos = t.unit.hb.pos.x;
+                t.yPos = t.unit.hb.pos.y;
+                if (typeof arr[i+1] != 'undefined'){
+                    while((arr[i+1].yPos+arr[i+1].diff[1])-(t.yPos+t.diff[1]) < t.text.height){
+                        t.yPos -= 1;
+                    }
+                }
                 t.diff[1] += t.vec.y*t.speed*dt;
                 t.diff[0] += t.vec.x*t.speed*dt;
-                if (t.unit){
-                    t.xPos = t.unit.hb.pos.x;
-                    t.yPos = t.unit.hb.pos.y;
-                }
+                //check collision?
                 t.text.position.x = t.xPos+t.diff[0];
                 t.text.position.y = t.yPos+t.diff[1];
                 t.t += dt;
                 if (t.t >= this.time){
-                    Graphics.worldContainer.removeChild(t.text);
-                    this.container.splice(i,1);
+                    Graphics.world.removeChild(t.text);
+                    arr.splice(i,1);
                     i -= 1;
+                    if (arr.length == 0){
+                        return;
+                    }
                 }
             }
         },
@@ -54,12 +67,12 @@ var P = SAT.Polygon,
             var textObj = {
                 text: new PIXI.Text(text,this.font),
                 unit: unit,
-                diff: [Math.random()*30-15,Math.random()*30-30-(unit.sprite.height/2)],
-                vec: new V(Math.random()*0.25-.125,-(Math.random()*0.4+0.75)),
+                diff: [Math.random()*30-15,0],
+                vec: new V(0,-1),
                 xPos: unit.hb.pos.x,
                 yPos: unit.hb.pos.y,
                 t: 0,
-                speed: 200,
+                speed: 100,
                 fs: 24
             };
             textObj.text.anchor.x = 0.5;
@@ -67,14 +80,17 @@ var P = SAT.Polygon,
             textObj.text.position.x = unit.hb.pos.x;
             textObj.text.position.y = unit.hb.pos.y;
             textObj.text.style.fill = color;
-            Graphics.worldContainer.addChild(textObj.text);
-            this.container.push(textObj);
+            Graphics.world.addChild(textObj.text);
+            if (typeof this.container[unit.id] == 'undefined'){
+                this.container[unit.id] = [];
+            }
+            this.container[unit.id].push(textObj);
         },
 
         clear: function(){
             for (var i = 0; i < this.container.length;i++){
                 var t = this.container[i];
-                Graphics.worldContainer.removeChild(t.text);
+                Graphics.world.removeChild(t.text);
             }
             this.container = [];
         },

@@ -3,7 +3,8 @@ var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     Item = require('./inventory.js').Item,
-    Unit = require('./unit.js').Unit;
+    Unit = require('./unit.js').Unit,
+    Attribute = require('./attribute.js').Attribute;
 var P = SAT.Polygon,
 	V = SAT.Vector,
 	C = SAT.Circle;
@@ -71,14 +72,34 @@ Character = function(){
                 //attack with melee OR ranged
                 //make the attack
                 this.attackDelay = this.makeWeaponAttack(this.weapons[0],this.currentTarget,this.rangedOn);
+                console.log(this.secondaryAttackDelay);
             }
             if (this.secondaryAttackDelay <=0 && this.weapons[1]){
                 //make the attack
-                console.log(this.secondaryAttackDelay);
                 this.secondaryAttackDelay = this.makeWeaponAttack(this.weapons[1],this.currentTarget);
             }
         }
 
+    }
+
+    character.levelUp = function(less){
+        this.level.value += 1;
+        this.level.set(true);
+        this.strength.set(true);
+        this.stamina.set(true);
+        this.intelligence.set(true);
+        this.wisdom.set(true);
+        this.agility.set(true);
+        this.dexterity.set(true);
+        this.charisma.set(true);
+        this.perception.set(true);
+        this.luck.set(true);
+        this.currentHealth.value = this.maxHealth.value;
+        this.currentHealth.set(true);
+        this.currentMana.value = this.maxMana.value;
+        this.currentMana.set(true);
+        this.currentEnergy.value = this.maxEnergy.value;
+        this.currentEnergy.set(true);
     }
 
     character.getClientData = function(less){

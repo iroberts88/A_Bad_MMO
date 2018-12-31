@@ -591,7 +591,7 @@
             this.gfx.endFill();
 
             this.nameText = new PIXI.Text(this.name + ', the level ' + Player.currentCharacter.level + ' ' + Player.currentCharacter.class,this.font);
-            this.nameText.style.fill = 0xFFFFFF;Player.currentCharacter.level
+            this.nameText.style.fill = 0xFFFFFF;
             this.nameText.position.x = this.width/2;
             this.nameText.anchor.x = 0.5;
             this.nameText.position.y = this.nameBarSize[1]/2;
