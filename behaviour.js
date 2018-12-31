@@ -21,17 +21,15 @@ var behaviourEnums = {
 //--------------------------------------------------------
 
 Behaviour.prototype.testBehaviour = function(unit,dt,data){
-    console.log(data);
     return null;
 }
 Behaviour.prototype.wander = function(unit,dt,data){
-    console.log('Wandering!')
     return null;
 }
 
 Behaviour.prototype.searchInRadius = function(unit,dt,data){
     for (var i in unit.nearbyUnits){
-        if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value){
+        if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value && unit != unit.nearbyUnits[i]){
             console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
             unit.currentTarget = unit.nearbyUnits[i];
             return null;

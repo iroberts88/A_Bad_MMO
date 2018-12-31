@@ -315,7 +315,12 @@ Zone.prototype.changeSector = function(p,sector){
                 this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
             }
             for (var n in addList[i].npcs){
-                addList[i].npcs[n].nearbyUnits[p.id] = p;
+                if (p != addList[i].npcs[n]){
+                    addList[i].npcs[n].nearbyUnits[p.id] = p;
+                    if (isNPC){
+                        p.nearbyUnits[addList[i].npcs[n].id] = addList[i].npcs[n];
+                    }
+                }
             }
             if(!isNPC){
                 for (var n in addList[i].npcs){
@@ -346,6 +351,9 @@ Zone.prototype.changeSector = function(p,sector){
 
             for (var n in removeList[i].npcs){
                 delete removeList[i].npcs[n].nearbyUnits[p.id];
+                if (isNPC){
+                    delete p.nearbyUnits[removeList[i].npcs[n].id];
+                }
             }
             if (!isNPC){
                 for (var n in removeList[i].npcs){

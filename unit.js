@@ -762,7 +762,9 @@ function Unit() {
                     }
                     for (var n in zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs){
                         var npc = zone.sectors[(sector.x+i) + 'x' + (sector.y+j)].npcs[n];
-                        this.nearbyUnits[npc.id] = npc;
+                        if (npc != this){
+                            this.nearbyUnits[npc.id] = npc;
+                        }
                     }
                 }
             }
