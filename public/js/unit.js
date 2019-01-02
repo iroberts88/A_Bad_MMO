@@ -47,6 +47,10 @@ var P = SAT.Polygon,
                 c3: 0xFF7777
             },
 
+            stickToTarget: false,
+            meleeHitbox: null,
+
+
             _init: function(data){
                 this.enemy = false;
                 this.id = data[Enums.ID];
@@ -151,12 +155,26 @@ var P = SAT.Polygon,
                 this.hitBox.on('pointerover',onHover);
                 this.hitBox.on('pointerout',onOut);
 
+                this.meleeHitbox = new C(new V(this.hb.pos.x,this.hb.pos.y),this.sprite.width/2*this.scale);
+
                 this._updateStats(data);
             },
 
             _update: function(dt){
                 this.aTicker += dt;
                 //get direction
+                if (this.stickToTarget && this.target){
+                    var distance = Math.sqrt(Math.pow(this.hb.pos.x-this.target.meleeHitbox.pos.x,2)+Math.pow(this.hb.pos.y-this.target.meleeHitbox.pos.y,2));
+                    console.log(distance);
+                    if (distance > 50){
+                        this.moveVector.x = this.target.hb.pos.x-this.hb.pos.x;
+                        this.moveVector.y = this.target.hb.pos.y-this.hb.pos.y;
+                        this.moveVector.normalize();
+                    }else{
+                        this.moveVector.x = 0;
+                        this.moveVector.y = 0;
+                    }
+                }
                 if (!this.moveVector.x == 0 || this.moveVector.y != 0){
                     Game.map.collideUnit(this,dt);
                     this.getDir();
@@ -177,6 +195,8 @@ var P = SAT.Polygon,
                 this.sprite2.position.y = this.hb.pos.y;
                 this.hitBox.position.x = this.hb.pos.x;
                 this.hitBox.position.y = this.hb.pos.y;
+                this.meleeHitbox.pos.x = this.hb.pos.x;
+                this.meleeHitbox.pos.y = this.hb.pos.y;
                 this.spriteMask.position.x = this.sprite2.position.x - this.sprite2.width/2;
                 this.spriteMask.position.y = this.sprite2.position.y - this.sprite2.width*0.6;
                 this.nameTag.position.x = this.sprite.position.x;
@@ -207,7 +227,6 @@ var P = SAT.Polygon,
                     this.nameTag.style.fill = this.nameFlash.c2;
                 }
             },
-
             getDir: function(){
                 if (this.faceVector.x >= this.diagM){
                     this.dir = 'r';

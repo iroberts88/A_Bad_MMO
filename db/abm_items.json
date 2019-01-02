@@ -880,3 +880,43 @@
     "flavorText" : "", 
     "stack" : 200.0
 }
+{ 
+    "_id" : ObjectId("5c2a2b988dafca3bdc8d86e8"), 
+    "itemid" : "w_branch", 
+    "name" : "Ancient Petrified Branch", 
+    "info" : "", 
+    "magic" : true, 
+    "soulbound" : false, 
+    "lore" : false, 
+    "scale" : {
+        "x" : 1.0, 
+        "y" : 3.0
+    }, 
+    "resource" : "w_qstaff", 
+    "bludgeon" : [
+        3.0, 
+        0.5, 
+        100.0
+    ], 
+    "slots" : [
+        "main", 
+        "secondary"
+    ], 
+    "2h" : false, 
+    "onEquip" : {
+
+    }, 
+    "classes" : {
+        "fighter" : true, 
+        "monk" : true
+    }, 
+    "races" : {
+        "all" : true
+    }, 
+    "onUse" : {
+
+    }, 
+    "value" : 400.0, 
+    "weight" : 0.1, 
+    "flavorText" : ""
+}

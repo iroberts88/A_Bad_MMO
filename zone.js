@@ -239,7 +239,7 @@ Zone.prototype.collideUnit = function(unit,dt){
     }
 };
 Zone.prototype.changeSector = function(p,sector){
-    var isNPC = p instanceof NPC ? true : false;
+    var isNPC = p.isEnemy;
     //p = the player or npc to change sector
     //change sectors
     //this will not update client
@@ -629,6 +629,10 @@ var Tile = function(x,y,data,zone) {
         x: this.x*zone.TILE_SIZE,
         y: this.y*zone.TILE_SIZE
     }
+    this.center = {
+        x: this.x*zone.TILE_SIZE + zone.TILE_SIZE/2,
+        y: this.y*zone.TILE_SIZE + zone.TILE_SIZE/2
+    }
     this.zone = zone;
     this.triggers = Utils.udCheck(data['triggers'],[],data['triggers']);
     this.resource = Utils.udCheck(data['resoure'],'0x0',data['resoure']);
@@ -640,6 +644,19 @@ var Tile = function(x,y,data,zone) {
         zone.spawns[id].spawnid = id;
         this.spawn = id;
     }
+    this.searchInit();
+};
+
+Tile.prototype.searchInit = function(){
+    //initialize tile for A* searching
+    this.f = 0;
+    this.h = 0;
+    this.g = 0;
+    this.parent = null;
+};
+
+Tile.prototype.print = function(){
+    console.log(this.x + ', ' + this.y)
 };
 
 exports.Tile = Tile;
@@ -714,6 +731,7 @@ Spawn.prototype.tick = function(deltaTime){
         newEnemy.init(data);
         this.enemyAlive = true;
         this.zone.addNPC(newEnemy);
+        console.log(newEnemy.id);
 
         this.ticker = 0;
     }

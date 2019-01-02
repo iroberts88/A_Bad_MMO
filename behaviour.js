@@ -1,6 +1,7 @@
 var utils = require('./utils.js').Utils;
 var Utils = new utils();
 var SAT = require('./SAT.js'); //SAT POLYGON COLLISSION1
+var Behaviour = require('./behaviour.js').Behaviour;
 
 var V = SAT.Vector;
 var P = SAT.Polygon;
@@ -13,7 +14,8 @@ var Behaviour = function() {};
 var behaviourEnums = {
     TestBehaviour: 'TestBehaviour',
     Wander: 'wander',
-    SearchInRadius: 'searchInRadius'
+    SearchInRadius: 'searchInRadius',
+    BasicAttack: 'basicAttack'
 }
 
 //--------------------------------------------------------
@@ -23,16 +25,79 @@ var behaviourEnums = {
 Behaviour.prototype.testBehaviour = function(unit,dt,data){
     return null;
 }
+Behaviour.prototype.basicAttack = function(unit,dt,data){
+    //move into melee attack range
+    var distance = Math.sqrt(Math.pow(unit.hb.pos.x-unit.currentTarget.meleeHitbox.pos.x,2)+Math.pow(unit.hb.pos.y-unit.currentTarget.meleeHitbox.pos.y,2));
+    if (distance > 50){
+        if (!unit.stickToTarget){
+            unit.setStick(true); //stick on target
+        }
+        unit.setMoveVector(unit.currentTarget.hb.pos.x-unit.hb.pos.x,unit.currentTarget.hb.pos.y-unit.hb.pos.y,false);
+    }
+    return null;
+}
 Behaviour.prototype.wander = function(unit,dt,data){
+    var Behaviour = require('./behaviour.js').Behaviour;
+    if (typeof data.openNodes == 'undefined'){
+        data.openNodes = [];
+        var start = unit.spawn ? unit.spawn.tile : unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y);
+        var r = typeof data['radius'] == 'undefined' ? 5 : data['radius'];
+        for (var i = -r; i <= r;i++){
+            for (var j = -r; j <= r;j++){
+                if (unit.currentZone.map[start.x+i][start.y+j].open){
+                    data.openNodes.push(unit.currentZone.map[start.x+i][start.y+j]);
+                }
+            }
+        }
+        data.waitTicker = 0;
+        data.waiting = false;
+        data.nextPosition = null;
+    }
+    if (typeof data.currentPath == 'undefined' || !data.currentPath.length){
+        data.currentPath = Behaviour.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),data.openNodes[Math.floor(Math.random()*data.openNodes.length)]);
+        if (!data.currentPath.length){
+            return null;
+        }
+        data.currentPath.shift();
+    }
+    if (data.waiting){
+        data.waitTicker -= dt;
+        if (data.waitTicker <= 0){
+            data.waiting = false;
+        }
+    }else{
+        if (data.nextPosition){
+            //check to see if at new position!
+            if (Math.abs(unit.hb.pos.x-data.nextPosition[0]) < 10 && Math.abs(unit.hb.pos.y-data.nextPosition[1]) < 10){
+                data.currentPath.shift();
+                if (!data.currentPath.length){
+                    data.waiting = true;
+                    data.waitTicker = Math.ceil(Math.random()*3) + 3;
+                    unit.setMoveVector(0,0);
+                    return null;
+                }
+                data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
+                unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y);
+            }
+        }else{
+            //get the new position!
+            data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
+            unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y);
+        }
+    }
+
     return null;
 }
 
 Behaviour.prototype.searchInRadius = function(unit,dt,data){
     for (var i in unit.nearbyUnits){
         if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value && unit != unit.nearbyUnits[i]){
-            console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
-            unit.currentTarget = unit.nearbyUnits[i];
-            return null;
+            if (!unit.nearbyUnits[i].isEnemy){
+                console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
+                unit.setTarget(unit.nearbyUnits[i])
+                unit.setMoveVector(0,0);
+                return null;
+            }
         }
     }
     return null;
@@ -46,21 +111,11 @@ Behaviour.prototype.astar = function(map,start,end){
     //end = ending coordinates [x,y];
     //returns empty array if no path exists
     //returns path array if path exists [node,node,node,...]
-
     var Behaviour = require('./behaviour.js').Behaviour;
-    //init the base map for searching
-    for(var x = 0; x < map.width; x++) {
-        for(var y = 0; y < map.height; y++) {
-            map.BaseMap[x][y].f = 0;
-            map.BaseMap[x][y].g = 0;
-            map.BaseMap[x][y].h = 0;
-            map.BaseMap[x][y].parent = null;
-        }
-    }
 
     var openList   = [];
     var closedList = [];
-    openList.push(map.BaseMap[start[0]][start[1]]);
+    openList.push(map[start.x][start.y]);
 
     while(openList.length > 0) {
         // Grab the lowest f(x) to process next
@@ -70,7 +125,7 @@ Behaviour.prototype.astar = function(map,start,end){
         }
         var currentNode = openList[lowInd];
 
-        if(currentNode.x == end[0] && currentNode.y == end[1]) {
+        if(currentNode.x == end.x && currentNode.y == end.y) {
             var curr = currentNode;
             var ret = [];
             while(curr.parent) {
@@ -78,7 +133,14 @@ Behaviour.prototype.astar = function(map,start,end){
                 curr = curr.parent;
             }
             var arr = ret.reverse();
-            arr.unshift(map.BaseMap[start[0]][start[1]]);
+            arr.unshift(map[start.x][start.y]);
+            //return all scores to 0
+            for (var i = 0; i < openList.length;i++){
+                openList[i].searchInit();
+            }
+            for (var i = 0; i < closedList.length;i++){
+                closedList[i].searchInit();
+            }
             return arr;
         }
 
@@ -91,33 +153,33 @@ Behaviour.prototype.astar = function(map,start,end){
         var x = currentNode.x;
         var y = currentNode.y;
         try{
-            if(map.BaseMap[x-1] && map.BaseMap[x-1][y]) {
-                neighbors.push(map.BaseMap[x-1][y]);
+            if(map[x-1] && map[x-1][y]) {
+                neighbors.push(map[x-1][y]);
             }
-            if(map.BaseMap[x+1] && map.BaseMap[x+1][y]) {
-                neighbors.push(map.BaseMap[x+1][y]);
+            if(map[x+1] && map[x+1][y]) {
+                neighbors.push(map[x+1][y]);
             }
-            if(map.BaseMap[x][y-1] && map.BaseMap[x][y-1]) {
-                neighbors.push(map.BaseMap[x][y-1]);
+            if(map[x][y-1] && map[x][y-1]) {
+                neighbors.push(map[x][y-1]);
             }
-            if(map.BaseMap[x][y+1] && map.BaseMap[x][y+1]) {
-                neighbors.push(map.BaseMap[x][y+1]);
+            if(map[x][y+1] && map[x][y+1]) {
+                neighbors.push(map[x][y+1]);
             }
             // Southwest
-            if(map.BaseMap[x-1] && map.BaseMap[x-1][y-1]) {
-                neighbors.push(map.BaseMap[x-1][y-1]);
+            if(map[x-1] && map[x-1][y-1]) {
+                neighbors.push(map[x-1][y-1]);
             }
             // Southeast
-            if(map.BaseMap[x+1] && map.BaseMap[x+1][y-1]) {
-                neighbors.push(map.BaseMap[x+1][y-1]);
+            if(map[x+1] && map[x+1][y-1]) {
+                neighbors.push(map[x+1][y-1]);
             }
             // Northwest
-            if(map.BaseMap[x-1] && map.BaseMap[x-1][y+1]) {
-                neighbors.push(map.BaseMap[x-1][y+1]);
+            if(map[x-1] && map[x-1][y+1]) {
+                neighbors.push(map[x-1][y+1]);
             }
             // Northeast
-            if(map.BaseMap[x+1] && map.BaseMap[x+1][y+1]) {
-                neighbors.push(map.BaseMap[x+1][y+1]);
+            if(map[x+1] && map[x+1][y+1]) {
+                neighbors.push(map[x+1][y+1]);
             }
         }catch(e){
             console.log(x + "," + y);
@@ -126,7 +188,7 @@ Behaviour.prototype.astar = function(map,start,end){
 
         for(var i=0; i<neighbors.length;i++) {
             var neighbor = neighbors[i];
-            if(Behaviour.findGraphNode(closedList,neighbor) || neighbor.type == map.WALL) {
+            if(Behaviour.findGraphNode(closedList,neighbor) || !neighbor.open) {
                 // not a valid node to process, skip to next neighbor
                 continue;
             }
@@ -142,8 +204,8 @@ Behaviour.prototype.astar = function(map,start,end){
                 gScoreIsBest = true;
 
                 //take heuristic score
-                var d1 = Math.abs(map.BaseMap[end[0]][end[1]].x - neighbor.x);
-                var d2 = Math.abs(map.BaseMap[end[0]][end[1]].y - neighbor.y);
+                var d1 = Math.abs(map[end.x][end.y].x - neighbor.x);
+                var d2 = Math.abs(map[end.x][end.y].y - neighbor.y);
                 neighbor.h = d1+d2;
                 openList.push(neighbor);
             }
@@ -162,6 +224,12 @@ Behaviour.prototype.astar = function(map,start,end){
         }
     }
 
+    for (var i = 0; i < openList.length;i++){
+        openList[i].searchInit();
+    }
+    for (var i = 0; i < closedList.length;i++){
+        closedList[i].searchInit();
+    }
     // No result was found -- empty array signifies failure to find path
     return [];
 }
@@ -193,6 +261,9 @@ Behaviour.prototype.executeBehaviour = function(actionStr,unit,dt,data){
     switch(actionStr) {
         case behaviourEnums.TestBehaviour:
             return Behaviour.testBehaviour(unit,dt,data);
+            break;
+        case behaviourEnums.BasicAttack:
+            return Behaviour.basicAttack(unit,dt,data);
             break;
         case behaviourEnums.Wander:
             return Behaviour.wander(unit,dt,data);

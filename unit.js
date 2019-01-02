@@ -96,6 +96,7 @@ function Unit() {
         statIndex: {},
 
         currentTarget: null,
+        stickToTarget: false,
 
         _init: function(data){
             //REQUIRED DATA VARIABLES
@@ -571,6 +572,8 @@ function Unit() {
             this.currentMana.value = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
             this.currentEnergy.value = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
 
+            this.healthPercent.set(false);
+
         },
        
         _update: function(deltaTime){
@@ -727,6 +730,31 @@ function Unit() {
                 console.log('dead');
             }else{
                 console.log("Player " + this.name + ' is dead!')
+            }
+        },
+
+        setMoveVector: function(x,y,updateClient=true){
+            this.moveVector.x = x;
+            this.moveVector.y = y;
+            this.moveVector.normalize();
+            //TODO check if valid move?
+            if (updateClient){
+                for (var i in this.pToUpdate){
+                    var d = {};
+                    d[this.engine.enums.ID] = this.id;
+                    d[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
+                    d[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y]
+                    this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.POSUPDATE, d);
+                }
+            }
+        },
+        setStick: function(bool){
+            this.stickToTarget = bool;
+            for (var i in this.pToUpdate){
+                var d = {};
+                d[this.engine.enums.ID] = this.id;
+                d[this.engine.enums.BOOL] = bool;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.STICK, d);
             }
         },
 

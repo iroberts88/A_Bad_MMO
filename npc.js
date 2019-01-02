@@ -38,10 +38,11 @@ NPC = function(){
         this.baseAggroRadius.init({
             id: 'aggro',
             owner: this,
-            value: 500,
+            value: 100,
             min: 1,
             max: 9999
         });
+        this.baseAggroRadius.set();
 
     }
 

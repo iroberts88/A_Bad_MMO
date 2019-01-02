@@ -178,7 +178,16 @@
 
             Acorn.Net.on(Enums.POSUPDATE, function (data) {
                 if (data[Enums.ID] != Player.currentCharacter.id){
-                    PCS.updatePCPos(data);
+                    Game.allUnits[data[Enums.ID]].moveVector.x = data[Enums.MOVEVECTOR][0];
+                    Game.allUnits[data[Enums.ID]].moveVector.y = data[Enums.MOVEVECTOR][1];
+                    Game.allUnits[data[Enums.ID]].hb.pos.x = data[Enums.POSITION][0];
+                    Game.allUnits[data[Enums.ID]].hb.pos.y = data[Enums.POSITION][1];
+                }
+            });
+
+            Acorn.Net.on(Enums.STICK, function (data) {
+                if (data[Enums.ID] != Player.currentCharacter.id){
+                    Game.allUnits[data[Enums.ID]].stickToTarget = data[Enums.BOOL];
                 }
             });
 

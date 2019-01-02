@@ -235,6 +235,7 @@ var GameEngine = function() {
         STAT: 'stat',
         STATS: 'stats',
         STAMINA: 'stamina',
+        STICK: 'stick',
         STRENGTH: 'strength',
 
         TARGET: 'targetdsad',
