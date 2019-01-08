@@ -443,6 +443,11 @@ GameEngine.prototype.loadClasses = function(arr){
 GameEngine.prototype.loadEnemies = function(arr){
     for (var i = 0; i < arr.length;i++){
         self.enemies[arr[i].enemyid] = arr[i];
+        if (arr[i]['elite']){
+            self.enemies[arr[i].enemyid]['classid'] = 'elite';
+        }else{
+            self.enemies[arr[i].enemyid]['classid'] = 'enemy';
+        }
     }
     console.log('loaded ' + arr.length + ' Enemies from file');
 }

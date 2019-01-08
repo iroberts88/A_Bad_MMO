@@ -213,13 +213,16 @@
             //0 - normal overlay
             //1 = grass overlay
             //2 - top layer overlay
-            this.spawnID = null;
+            this.spawnID = typeof data['spawnID'] == 'undefined' ? null : data['spawnID'];
+            if (data['spawnID']){
+                console.log(data['spawnID'])
+            }
             if (this.overlayResource){
                 this.overlaySprite = Graphics.getSprite(data.overlayResource); //tile sprite
                 this.overlaySprite.scale.x = 2;
                 this.overlaySprite.scale.y = 2;
             }
-            this.triggers = data.triggers;
+            this.triggers = typeof data['triggers'] == 'undefined' ? [] : data['triggers'];
         }catch(e){
             console.log("failed to init Tile");
             console.log(e);

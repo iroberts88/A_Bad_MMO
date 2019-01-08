@@ -40,3 +40,15 @@
         50.0
     ]
 }
+{ 
+    "_id" : ObjectId("5c3384288dafca3bdc8d8703"), 
+    "spawnid" : "spawn_marinn", 
+    "t" : 360.0, 
+    "def" : "marinn", 
+    "enemies" : [
+        "marinn"
+    ], 
+    "chances" : [
+        100.0
+    ]
+}

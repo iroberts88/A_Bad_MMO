@@ -13,9 +13,12 @@ var Behaviour = function() {};
 
 var behaviourEnums = {
     TestBehaviour: 'TestBehaviour',
-    Wander: 'wander',
+
+    BasicAttack: 'basicAttack',
+
     SearchInRadius: 'searchInRadius',
-    BasicAttack: 'basicAttack'
+
+    Wander: 'wander',
 }
 
 //--------------------------------------------------------
@@ -25,19 +28,96 @@ var behaviourEnums = {
 Behaviour.prototype.testBehaviour = function(unit,dt,data){
     return null;
 }
+Behaviour.prototype.testBehaviourInit = function(unit,data){
+    return data;
+}
+
 Behaviour.prototype.basicAttack = function(unit,dt,data){
+    var Behaviour = require('./behaviour.js').Behaviour;
     //move into melee attack range
+    //check if path to target is blocked!!!
+    if (!unit.currentZone.checkPathBlocked(unit,unit.currentTarget)){
+        //path is blocked, use A* move
+        if (unit.stickToTarget){
+            unit.setStick(false); //unstick
+        }
+        if (data.targetLastTile != unit.currentZone.getTile(unit.currentTarget.hb.pos.x,unit.currentTarget.hb.pos.y) || !data.currentPath.length){
+            //target has moved or path hasn't been initialized
+            data.currentPath = Behaviour.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),unit.currentZone.getTile(unit.currentTarget.hb.pos.x,unit.currentTarget.hb.pos.y));
+            if (!data.currentPath.length){
+                return null;
+                //there is no path to the target!!!
+            }
+            data.targetLastTile = unit.currentZone.getTile(unit.currentTarget.hb.pos.x,unit.currentTarget.hb.pos.y)
+            data.currentPath.shift();
+
+        }
+        Behaviour.aStarMoveToNode(unit,dt,data);
+        return;
+    }
+
     var distance = Math.sqrt(Math.pow(unit.hb.pos.x-unit.currentTarget.meleeHitbox.pos.x,2)+Math.pow(unit.hb.pos.y-unit.currentTarget.meleeHitbox.pos.y,2));
     if (distance > 50){
         if (!unit.stickToTarget){
             unit.setStick(true); //stick on target
         }
         unit.setMoveVector(unit.currentTarget.hb.pos.x-unit.hb.pos.x,unit.currentTarget.hb.pos.y-unit.hb.pos.y,false);
+    }else{
+        if (unit.moveVector.x || unit.moveVector.y){
+            unit.setMoveVector(0,0,false);
+        }
+        if (unit.attackDelay <= 0){
+            //make the attack
+            //check equipped weapons?
+            unit.attackDelay = unit.makeWeaponAttack(unit.defaultWeapon,unit.currentTarget);
+        }
     }
     return null;
 }
+Behaviour.prototype.basicAttackInit = function(unit,data){
+    if (typeof data['speedMod'] == 'undefined'){
+        data.speedMod = 1;
+    }else{
+        data.speedMod = data['speedMod']
+    }
+    return data;
+}
+
 Behaviour.prototype.wander = function(unit,dt,data){
     var Behaviour = require('./behaviour.js').Behaviour;
+    if (!data.currentPath.length){
+        data.currentPath = Behaviour.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),data.openNodes[Math.floor(Math.random()*data.openNodes.length)]);
+        if (!data.currentPath.length){
+            return null;
+        }
+        data.currentPath.shift();
+    }
+    if (data.waiting){
+        data.waitTicker -= dt;
+        if (data.waitTicker <= 0){
+            data.waiting = false;
+        }
+    }else{
+        Behaviour.aStarMoveToNode(unit,dt,data);
+        if (!data.currentPath.length){
+            data.waiting = true;
+            data.waitTicker = Math.ceil(Math.random()*3) + 3;
+            unit.setMoveVector(0,0);
+        }
+    }
+
+    return null;
+}
+Behaviour.prototype.wanderInit = function(unit,data){
+    console.log(data);
+    if (typeof data.currentPath == 'undefined'){
+        data.currentPath = [];
+    }
+    if (typeof data['speedMod'] == 'undefined'){
+        data.speedMod = 0.5;
+    }else{
+        data.speedMod = data['speedMod']
+    }
     if (typeof data.openNodes == 'undefined'){
         data.openNodes = [];
         var start = unit.spawn ? unit.spawn.tile : unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y);
@@ -53,40 +133,7 @@ Behaviour.prototype.wander = function(unit,dt,data){
         data.waiting = false;
         data.nextPosition = null;
     }
-    if (typeof data.currentPath == 'undefined' || !data.currentPath.length){
-        data.currentPath = Behaviour.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),data.openNodes[Math.floor(Math.random()*data.openNodes.length)]);
-        if (!data.currentPath.length){
-            return null;
-        }
-        data.currentPath.shift();
-    }
-    if (data.waiting){
-        data.waitTicker -= dt;
-        if (data.waitTicker <= 0){
-            data.waiting = false;
-        }
-    }else{
-        if (data.nextPosition){
-            //check to see if at new position!
-            if (Math.abs(unit.hb.pos.x-data.nextPosition[0]) < 10 && Math.abs(unit.hb.pos.y-data.nextPosition[1]) < 10){
-                data.currentPath.shift();
-                if (!data.currentPath.length){
-                    data.waiting = true;
-                    data.waitTicker = Math.ceil(Math.random()*3) + 3;
-                    unit.setMoveVector(0,0);
-                    return null;
-                }
-                data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
-                unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y);
-            }
-        }else{
-            //get the new position!
-            data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
-            unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y);
-        }
-    }
-
-    return null;
+    return data;
 }
 
 Behaviour.prototype.searchInRadius = function(unit,dt,data){
@@ -94,10 +141,52 @@ Behaviour.prototype.searchInRadius = function(unit,dt,data){
         if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value && unit != unit.nearbyUnits[i]){
             if (!unit.nearbyUnits[i].isEnemy){
                 console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
-                unit.setTarget(unit.nearbyUnits[i])
+                unit.setTarget(unit.nearbyUnits[i]);
                 unit.setMoveVector(0,0);
                 return null;
             }
+        }
+    }
+    return null;
+}
+Behaviour.prototype.searchInRadiusInit = function(unit,data){
+    return data;
+}
+
+//UTILITY FUCTIONS
+
+Behaviour.prototype.aStarMoveToNode = function(unit,dt,data){
+    var cTile = unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y);
+    if (data.nextPosition){
+        //check to see if at new position!
+        if (cTile == data.currentPath[0]){
+            data.currentPath.shift();
+            if (!data.currentPath.length){
+                return null;
+            }
+            data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
+            unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y,true,data.speedMod);
+            data.oldPosition = cTile;
+            return;
+        }
+    }else if (data.currentPath.length){
+        //get the new position!
+        data.nextPosition = [data.currentPath[0].center.x,data.currentPath[0].center.y];
+        unit.setMoveVector(data.nextPosition[0]-unit.hb.pos.x,data.nextPosition[1]-unit.hb.pos.y,true,data.speedMod);
+        data.oldPosition = cTile;
+        return;
+    }else{
+        data.currentPath = [];
+        data.nextPosition = null;
+        return null;
+    }
+
+    if (data.currentPath[0] != cTile && cTile != data.oldPosition && data.currentPath.length){
+        //make sure not diagonal!!
+        if (!(Math.abs(data.currentPath[0].x-cTile.x+data.oldPosition.x-cTile.x) == 1 && Math.abs(data.currentPath[0].y-cTile.y+data.oldPosition.y-cTile.y) == 1)){
+
+            data.currentPath = [];
+            data.nextPosition = null;
         }
     }
     return null;
@@ -233,6 +322,7 @@ Behaviour.prototype.astar = function(map,start,end){
     // No result was found -- empty array signifies failure to find path
     return [];
 }
+
 Behaviour.prototype.findGraphNode = function(arr,node){
     //for use in astar
     //searches array 'arr' for node 'node'
@@ -245,6 +335,7 @@ Behaviour.prototype.findGraphNode = function(arr,node){
     }
     return false;
 }
+
 Behaviour.prototype.removeGraphNode = function(arr,node){
     //for use in astar
     //removes node 'node' from array 'arr'
@@ -273,6 +364,28 @@ Behaviour.prototype.executeBehaviour = function(actionStr,unit,dt,data){
             break;
         default:
             return Behaviour.testBehaviour(unit,dt,data);
+            break;
+    }
+}
+
+Behaviour.prototype.initBehaviour = function(actionStr,unit,data){
+    //initialize a behaviour data object
+    var Behaviour = require('./behaviour.js').Behaviour;
+    switch(actionStr) {
+        case behaviourEnums.TestBehaviour:
+            return Behaviour.testBehaviourInit(unit,data);
+            break;
+        case behaviourEnums.BasicAttack:
+            return Behaviour.basicAttackInit(unit,data);
+            break;
+        case behaviourEnums.Wander:
+            return Behaviour.wanderInit(unit,data);
+            break;
+        case behaviourEnums.SearchInRadius:
+            return Behaviour.searchInRadiusInit(unit,data);
+            break;
+        default:
+            return Behaviour.testBehaviourInit(unit,data);
             break;
     }
 }

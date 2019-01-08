@@ -42,6 +42,14 @@
                     range = [-Infinity,50];
                 }else{
                     var w = Game.characterWindow.itemSlots['ranged'].item;
+                    if (!w){
+                        var d = {};
+                        d[Enums.MESSAGETYPE] = 'rangeMsg';
+                        d[Enums.TEXT] = 'You must equip a ranged weapon!';
+                        Game.addMessage(d);
+                        this.rangeMsgTicker = 0;
+                        return null;
+                    }
                     range = w.range;
                 }
                 var hb1 = this.currentCharacter.hb.pos;

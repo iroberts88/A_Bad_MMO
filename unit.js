@@ -86,37 +86,37 @@ function Unit() {
         currentZone: null,
         currentSector: null,
         currentTile: null,
-
         hb: null,
         moveVector: null,
         cRadius: null,
-
         pToUpdate: [], //the array of players to keep updated of this units position and information
-
         statIndex: {},
-
         currentTarget: null,
+        targetOf: {},
         stickToTarget: false,
+
+        currentZone: null,
+        currentSector: null,
+        currentTile: null,
 
         _init: function(data){
             //REQUIRED DATA VARIABLES
-            this.engine = data.engine;
             this.id = this.engine.getId();
-            this.name = data.name;
-            this.owner = data.owner;
+            this.name = data['name'];
 
-            this.sex = data.sex;
-            this.scale = data.scale;
+            this.sex = data['sex'];
+            this.scale = data['scale'];
             this.cRadius = 8;
             this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 
             this.faceVector = new V(0,0);
-            this.setStatFormulas(data.classid);
+            this.setStatFormulas(data['classid']);
 
-            if (data.classid == 'enemy' || data.classid == 'elite'){
+            if (data['classid'] == 'enemy' || data['classid'] == 'elite'){
                 this.isEnemy = true;
-                this.noMana = data.noMana;
+                this.noMana = data['noMana'];
+                this.cRadius = 1;
             }else{
                 this.isEnemy = false;
                 this.noMana = false;
@@ -166,14 +166,16 @@ function Unit() {
                 formula: function(){
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
-                    this.base = (75+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
-                    return 300//Math.round(this.base*this.pMod+this.nMod);
+                    this.base = (85+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
 
             if (this.isEnemy){
                 this.speed.formula = function(){
-                    this.base = 80+(this.owner.agility.value*this.owner.levelMod);
+                    var inv = this.owner.inventory;
+                    var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
+                    this.base = (90+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
                     return Math.round(this.base*this.pMod+this.nMod);
                 }
             }
@@ -476,9 +478,6 @@ function Unit() {
                 max: 999
             });
             this.isColliding = true;
-            this.currentZone = null;
-            this.currentSector = null;
-            this.currentTile = null;
 
             this.copper = Utils.udCheck(data[this.engine.enums.COPPER],0,data[this.engine.enums.COPPER]);
             this.silver = Utils.udCheck(data[this.engine.enums.SILVER],0,data[this.engine.enums.SILVER]);
@@ -589,7 +588,11 @@ function Unit() {
         },
 
         setTarget: function(unit){
+            if (this.currentTarget){
+                delete this.currentTarget.targetOf[this.id];
+            }
             this.currentTarget = unit;
+            unit.targetOf[this.id] = this;
             for (var i in this.pToUpdate){
                 var data = {};
                 data[this.engine.enums.UNIT] = this.id;
@@ -599,11 +602,44 @@ function Unit() {
         },
 
         clearTarget: function(unit){
+            this.setStick(false);
+            if (this.currentTarget){
+                delete this.currentTarget.targetOf[this.id];
+            }
             this.currentTarget = null;
             for (var i in this.pToUpdate){
                 var data = {};
                 data[this.engine.enums.UNIT] = this.id;
                 this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.CLEARTARGET,data);
+            }
+        },
+
+        setMoveVector: function(x,y,updateClient=true,speedMod=1){
+            var prevX = this.moveVector.x;
+            var prevY = this.moveVector.y;
+            this.moveVector.x = x;
+            this.moveVector.y = y;
+            this.moveVector.normalize();
+            this.moveVector.x *= speedMod;
+            this.moveVector.y *= speedMod;
+            //TODO check if valid move?
+            if (updateClient && (prevX != this.moveVector.x || prevY != this.moveVector.y)){
+                for (var i in this.pToUpdate){
+                    var d = {};
+                    d[this.engine.enums.ID] = this.id;
+                    d[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
+                    d[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y]
+                    this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.POSUPDATE, d);
+                }
+            }
+        },
+        setStick: function(bool){
+            this.stickToTarget = bool;
+            for (var i in this.pToUpdate){
+                var d = {};
+                d[this.engine.enums.ID] = this.id;
+                d[this.engine.enums.BOOL] = bool;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.STICK, d);
             }
         },
 
@@ -668,7 +704,15 @@ function Unit() {
                     this.engine.queuePlayer(target.owner,this.engine.enums.MISSED,cData);
                 }
             }else{
-                //npc hit something
+                if (!target.isEnemy){
+                    var cData = {};
+                    cData[this.engine.enums.UNIT] = this.name;
+                    cData[this.engine.enums.BOOL] = true;
+                    this.engine.queuePlayer(target.owner,this.engine.enums.MISSED,cData);
+                }
+            }
+            for (var i in this.pToUpdate){
+                //make a visual weapon swing//shot etc...
             }
             return arr[1];
         },
@@ -716,45 +760,19 @@ function Unit() {
         },
 
         kill: function(){
+
+            for (var i in this.targetOf){
+                this.targetOf[i].clearTarget();
+            }
             if (this.isEnemy){
                 this.spawn.enemyAlive = false;
                 this.spawn.ticker = 0;
                 this.spawn.currentEnemy = null;
 
                 this.currentZone.removeNPC(this);
-                for (var i in this.pToUpdate){
-                    if (this.pToUpdate[i].currentTarget == this){
-                        this.pToUpdate[i].clearTarget();
-                    }
-                }
                 console.log('dead');
             }else{
                 console.log("Player " + this.name + ' is dead!')
-            }
-        },
-
-        setMoveVector: function(x,y,updateClient=true){
-            this.moveVector.x = x;
-            this.moveVector.y = y;
-            this.moveVector.normalize();
-            //TODO check if valid move?
-            if (updateClient){
-                for (var i in this.pToUpdate){
-                    var d = {};
-                    d[this.engine.enums.ID] = this.id;
-                    d[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
-                    d[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y]
-                    this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.POSUPDATE, d);
-                }
-            }
-        },
-        setStick: function(bool){
-            this.stickToTarget = bool;
-            for (var i in this.pToUpdate){
-                var d = {};
-                d[this.engine.enums.ID] = this.id;
-                d[this.engine.enums.BOOL] = bool;
-                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.STICK, d);
             }
         },
 
@@ -799,6 +817,7 @@ function Unit() {
         },
 
         _getClientData: function(less){
+
             var data = {};
             data[this.engine.enums.NAME] = this.name;
             data[this.engine.enums.ID] = this.id;
@@ -815,6 +834,8 @@ function Unit() {
             data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
             data[this.engine.enums.LEVEL] = this.level.value;
             data[this.engine.enums.SEX] = this.sex;
+            data[this.engine.enums.TARGET] = this.currentTarget ? this.currentTarget.id : null;
+            data[this.engine.enums.STICK] = this.stickToTarget;
 
             if (less && typeof less != 'undefined'){return data;}
             data[this.engine.enums.CURRENTHEALTH] = this.currentHealth.value;
@@ -921,9 +942,18 @@ function Unit() {
             }
         },
 
-        setGameSession: function(se) {
-            this.session = se;
-            this.engine = se.engine;
+        setEngine:  function(e){
+            this.engine = e;
+        },
+        setZone:  function(z){
+            this.currentZone = z;
+        },
+        setSpawn:  function(s){
+            this.spawn = s;
+            this.setZone(s.zone);
+        },
+        setOwner:  function(o){
+            this.owner = o;
         },
         setStatFormulas: function(id){
             //Lvl mods increase the amount gained based on level (higher = more pwr)

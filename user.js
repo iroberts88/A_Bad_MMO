@@ -57,10 +57,9 @@ function User() {
                 this.guest = true;
                 this.characters = {};
                 var newChar = new Character();
-                var data = {
-                    owner: this.owner,
-                    engine: this.owner.engine
-                };
+                newChar.setOwner(this.owner);
+                newChar.setEngine(this.owner.engine);
+                var data = {};
                 var classes = ['priest','fighter','thief','mage'];
                 var cl = classes[Math.floor(Math.random()*classes.length)]
                 data.slot = 1;

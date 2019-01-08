@@ -48,6 +48,7 @@ var P = SAT.Polygon,
             },
 
             stickToTarget: false,
+            needToSetTarget: null,
             meleeHitbox: null,
 
 
@@ -79,6 +80,11 @@ var P = SAT.Polygon,
                     }
                 }
                 this.moveVector = new SAT.Vector(data[Enums.MOVEVECTOR][0],data[Enums.MOVEVECTOR][1]);
+                this.stickToTarget = typeof data[Enums.STICK] == 'undefined' ? false : data[Enums.STICK];
+                if (typeof data[Enums.TARGET] != 'undefined'){
+                    //need to get a target!
+                    this.needToSetTarget = data[Enums.Target];
+                }
                 this.faceVector = new SAT.Vector(1,0);
 
                 if (this.enemy){
@@ -162,10 +168,16 @@ var P = SAT.Polygon,
 
             _update: function(dt){
                 this.aTicker += dt;
+                //check new target
+                if (this.needToSetTarget){
+                    if (typeof Game.allUnits[this.needToSetTarget] == 'undefined'){
+                        this.setTarget(Game.allUnits[this.setTarget]);
+                        this.needToSetTarget = null;
+                    }
+                }
                 //get direction
                 if (this.stickToTarget && this.target){
                     var distance = Math.sqrt(Math.pow(this.hb.pos.x-this.target.meleeHitbox.pos.x,2)+Math.pow(this.hb.pos.y-this.target.meleeHitbox.pos.y,2));
-                    console.log(distance);
                     if (distance > 50){
                         this.moveVector.x = this.target.hb.pos.x-this.hb.pos.x;
                         this.moveVector.y = this.target.hb.pos.y-this.hb.pos.y;
@@ -185,6 +197,7 @@ var P = SAT.Polygon,
                     }
                     this.faceVector.x = this.moveVector.x;
                     this.faceVector.y = this.moveVector.y;
+                    this.faceVector.normalize();
                     this.targetCircle.rotation = Math.atan2(this.moveVector.y,this.moveVector.x) - (1.5708/2);
                 }
                 this.sprite.position.x = this.hb.pos.x;
@@ -254,12 +267,14 @@ var P = SAT.Polygon,
                     Game.targetTargetStatus.activate();
                     Game.targetTargetStatus.resize(Game.targetTargetStatus.width,Game.targetTargetStatus.height);
                 }
+                this.needToSetTarget = null;
             },
             clearTarget: function(){
                 this.target = null;
                 if (Player.currentTarget == this){
                     Game.targetTargetStatus.deActivate();
                 }
+                this.needToSetTarget = null;
             },
             _updateStats: function(data){
                 for (var i in data){

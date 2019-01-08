@@ -252,7 +252,7 @@
             if (typeof Graphics.resources[id] === 'undefined'){
                 console.log(id);
                 console.log('-- Graphics resource not found' )
-                return Graphics.resources['base_tile1'];
+                return Graphics.resources['0x0'];
             }else{
                 return Graphics.resources[id];
             }
@@ -274,6 +274,8 @@
             }catch(e){
                 console.log(e);
                 console.log('-- Graphics resource not found' )
+                var s = new PIXI.Sprite(this.getResource('0x0'));
+                return s;
             }
 		},
         drawBoxAround: function(sprite,g,options){

@@ -22,7 +22,9 @@ var Zone = function(ge) {
     this.SECTOR_SIZE = this.TILE_SIZE*21;
     this.engine = ge;
 
+    //TODO delete
     this.test = 0;
+
     //map info
     this.mapid = null;
     this.map = {}; //contains all tiles
@@ -41,6 +43,8 @@ var Zone = function(ge) {
     this.shoutDistance = 2000;
     this.whisperDistance = 150;
     this.mapData = null;
+
+    this.cResponse = new R();
 
     this.tileHitBox = new B(new V(0,0),this.TILE_SIZE,this.TILE_SIZE).toPolygon();
 }
@@ -191,16 +195,10 @@ Zone.prototype.getSectorXY = function(string){
     return coords;
 };
 
-// ----------------------------------------------------------
-// Player Functions
-// ----------------------------------------------------------
-
 Zone.prototype.collideUnit = function(unit,dt){
     var xDist = unit.moveVector.x*unit.speed.value*dt;
     var yDist = unit.moveVector.y*unit.speed.value*dt;
     var hyp = Math.sqrt((xDist*xDist) + (yDist*yDist));
-    this.test += xDist/Math.ceil(hyp);
-    var response = new R();
     var tile;
     for (var i = 1; i <= Math.ceil(hyp);i++){
         if (xDist){
@@ -210,16 +208,16 @@ Zone.prototype.collideUnit = function(unit,dt){
                 if (!tile.open){
                     this.tileHitBox.pos.x = tile.pos.x;
                     this.tileHitBox.pos.y = tile.pos.y;
-                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
-                        unit.hb.pos.x += response.overlapV.x;
-                        response.clear();
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,this.cResponse)){
+                        unit.hb.pos.x += this.cResponse.overlapV.x;
+                        this.cResponse.clear();
                     }
                 }
             }else{
                 unit.hb.pos.x -= xDist/Math.ceil(hyp);
             }
         }
-        response.clear();
+        this.cResponse.clear();
         if (yDist){
             unit.hb.pos.y += yDist/Math.ceil(hyp);
             tile = this.getTile(unit.hb.pos.x,unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)));
@@ -227,9 +225,9 @@ Zone.prototype.collideUnit = function(unit,dt){
                 if (!tile.open){
                     this.tileHitBox.pos.x = tile.pos.x;
                     this.tileHitBox.pos.y = tile.pos.y;
-                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,response)){
-                        unit.hb.pos.y += response.overlapV.y;
-                        response.clear();
+                    if (SAT.testPolygonCircle(this.tileHitBox,unit.hb,this.cResponse)){
+                        unit.hb.pos.y += this.cResponse.overlapV.y;
+                        this.cResponse.clear();
                     }
                 }
             }else{
@@ -237,6 +235,20 @@ Zone.prototype.collideUnit = function(unit,dt){
             }
         }
     }
+};
+Zone.prototype.checkPathBlocked = function(u1,u2){
+    var mVec = new V(u2.hb.pos.x-u1.hb.pos.x,u2.hb.pos.y-u1.hb.pos.y);
+    var hyp = Math.sqrt((mVec.x*mVec.x) + (mVec.y*mVec.y));
+    mVec.normalize();
+    var tile;
+    for (var i = 1; i <= Math.ceil(hyp/this.TILE_SIZE);i++){
+        tile = this.getTile(u1.hb.pos.x+this.TILE_SIZE*mVec.x*i,u1.hb.pos.y+this.TILE_SIZE*mVec.y*i);
+        if (!tile){return false;}
+        if (!tile.open){
+            return false;
+        }
+    }
+    return true;
 };
 Zone.prototype.changeSector = function(p,sector){
     var isNPC = p.isEnemy;
@@ -380,6 +392,7 @@ Zone.prototype.changeSector = function(p,sector){
 }
 
 Zone.prototype.getSector = function(x,y){
+    //console.log('Getting Sector At:   ' +  x + ', ' + y);
     //get sector by position
     if (typeof this.sectors[Math.floor(x/this.SECTOR_SIZE)+'x'+Math.floor(y/this.SECTOR_SIZE)] != 'undefined'){
         return this.sectors[Math.floor(x/this.SECTOR_SIZE)+'x'+Math.floor(y/this.SECTOR_SIZE)];
@@ -531,18 +544,20 @@ Zone.prototype.addNPC = function(n){
 }
 
 Zone.prototype.removeNPC = function(n){
-    var cid = n.currentSector.id;
+    var cid = n.currentSector.id; 
     n.currentSector.removeNPC(n);
     var players = this.getPlayers(this.sectors[cid]);
-    for (var i = 0; i < players.length;i++){
+    for (var i in n.pToUpdate){
         var data = {};
         data[this.engine.enums.ID] = n.id;
-        this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVENPC,data);
+        this.engine.queuePlayer(n.pToUpdate[i].owner,this.engine.enums.REMOVENPC,data);
     }
-    //remove npc from nearby npc's lists
+    //remove npc from nearby npc unit lists
     for (var i in n.nearbyUnits){
-        if (n.nearbyUnits[n.id]){
-            delete n.nearbyUnits[n.id];
+        if (n.nearbyUnits[i].isEnemy){
+            if (n.nearbyUnits[i].nearbyUnits[n.id]){
+                delete n.nearbyUnits[i].nearbyUnits[n.id];
+            }
         }
     }
     delete this.npcs[n.id];
@@ -671,6 +686,7 @@ var Spawn = function(data,tile) {
     this.enemies = data['enemies'];
     this.chances = data['chances'];
 
+    this.bDelay = typeof data['bDelay'] == 'undefined' ? 3.0 : data['bDelay'];
     this.enemyAlive = false;
 
     this.currentEnemy;
@@ -714,21 +730,12 @@ Spawn.prototype.tick = function(deltaTime){
         }
         var newEnemy = new NPC();
         var e = this.engine.enemies[enemyToSpawn];
-        var data = {};
-        data.spawn = this;
-        data.scale = e['scale'];
-        data.engine = this.engine;
-        data.classid = 'enemy';
-        data.sex = e['sex'];
-        data.name = e['name'];
-        data.idleBehaviour = e['idleBehaviour'];
-        data.combatBehaviour = e['combatBehaviour'];
-        data.acquireTarget = e['acquireTarget'];
-        data.level = e['level'];
-        data.resource = e['resource'];
-        data.noMana = e['noMana'];
-        data.statMods = e['statMods'];
-        newEnemy.init(data);
+        newEnemy.setSpawn(this);
+        newEnemy.setEngine(this.engine);
+        newEnemy.setOwner(null);
+
+        newEnemy.init(e);
+        newEnemy.bDelay = this.bDelay;
         this.enemyAlive = true;
         this.zone.addNPC(newEnemy);
         console.log(newEnemy.id);

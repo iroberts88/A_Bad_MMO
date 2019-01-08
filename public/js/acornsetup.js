@@ -186,7 +186,7 @@
             });
 
             Acorn.Net.on(Enums.STICK, function (data) {
-                if (data[Enums.ID] != Player.currentCharacter.id){
+                if (data[Enums.ID] != Player.currentCharacter.id && Game.allUnits[data[Enums.ID]]){
                     Game.allUnits[data[Enums.ID]].stickToTarget = data[Enums.BOOL];
                 }
             });
@@ -208,7 +208,9 @@
                     //force target clear
                     Player.clearTarget(false);
                 }
-                Game.allUnits[data[Enums.UNIT]].clearTarget();
+                if (Game.allUnits[data[Enums.UNIT]]){
+                    Game.allUnits[data[Enums.UNIT]].clearTarget();
+                }
             });
 
             Acorn.Net.on(Enums.MESSAGE, function (data) {

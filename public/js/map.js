@@ -129,7 +129,7 @@ var P = SAT.Polygon,
                 unit.hb.pos.y += yDist/Math.ceil(hyp);
                 var tile = Game.map[Math.floor((unit.hb.pos.x)/mainObj.TILE_SIZE)][Math.floor((unit.hb.pos.y+unit.cRadius*(yDist/Math.abs(yDist)))/mainObj.TILE_SIZE)];
                 if (typeof tile == 'undefined'){
-                    unit.hb.pos.y -= xDist/Math.ceil(hyp);
+                    unit.hb.pos.y -= yDist/Math.ceil(hyp);
                 }else if (!tile.open){
                     this.tileHitBox.pos.x = tile.sprite.position.x;
                     this.tileHitBox.pos.y = tile.sprite.position.y;

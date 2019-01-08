@@ -1594,7 +1594,6 @@
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_3x27",
             "oType": 0
           },
@@ -2068,7 +2067,6 @@
           },
           {
             "resource": "d_7x12",
-            "open": true,
             "overlayResource": "t_4x27",
             "oType": 0
           },
@@ -5347,19 +5345,16 @@
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_13x29",
             "oType": 0
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_3x27",
             "oType": 0
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_3x27",
             "oType": 0
           },
@@ -5792,19 +5787,16 @@
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_14x29",
             "oType": 0
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_4x27",
             "oType": 0
           },
           {
             "resource": "deep_water",
-            "open": true,
             "overlayResource": "t_4x27",
             "oType": 0
           },

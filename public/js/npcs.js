@@ -41,7 +41,7 @@
             Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].nameTag);
             Graphics.unitContainer2.removeChild(this.npcs[data[Enums.ID]].hitBox);
             delete this.npcs[data[Enums.ID]];
-            delete Game.allUnits[data[Enums.ID]];
+            Game.allUnits[data[Enums.ID]] = null;
         },
 
         getNPC: function(id){

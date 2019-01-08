@@ -84,6 +84,7 @@
         "stamina" : NumberInt(100), 
         "ac" : NumberInt(50)
     }, 
+    "elite" : true, 
     "idleBehaviour" : {
         "name" : "wander", 
         "radius" : 5.0
@@ -144,6 +145,31 @@
     "acquireTarget" : {
         "name" : "searchInRadius", 
         "radius" : NumberInt(1000)
+    }, 
+    "mapCollide" : true, 
+    "scale" : 2.0, 
+    "noMana" : false, 
+    "resource" : "human"
+}
+{ 
+    "_id" : ObjectId("5c3383e98dafca3bdc8d86fe"), 
+    "enemyid" : "marinn", 
+    "name" : "Marinn", 
+    "level" : NumberInt(10), 
+    "sex" : "f", 
+    "statMods" : {
+
+    }, 
+    "idleBehaviour" : {
+        "name" : "wander", 
+        "radius" : 2.0, 
+        "speedMod" : 0.3
+    }, 
+    "combatBehaviour" : {
+        "name" : "basicAttack"
+    }, 
+    "acquireTarget" : {
+        "name" : "searchInRadius"
     }, 
     "mapCollide" : true, 
     "scale" : 2.0, 

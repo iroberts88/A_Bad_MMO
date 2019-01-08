@@ -572,6 +572,19 @@ Player.prototype.parseCommand = function(cmd,string,dev) {
                 //for quick testing purposes
                 this.activeChar.levelUp();
                 break;
+            case 'lvl':
+                //for quick testing purposes
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                this.activeChar.levelUp();
+                break;
             case 't':
                 //for quick testing purposes
                 this.activeChar.inventory.addItemById('w_branch', 2);

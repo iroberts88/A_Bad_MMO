@@ -27,8 +27,8 @@ Attribute.prototype.init = function(data){
 	this.base = data.value; //this stat's base value before buff/item mods etc.
 	this.nMod = 0; //a numeric modifier added to the base value before usage
 	this.pMod = 1.0; //a percentile modifier added to the base value before usage
-	this.min = data.min; //minimum value
-	this.max = data.max; //maximum value
+	this.min = Utils._udCheck(data.min) ? -Infinity : data.min; //minimum value
+	this.max = Utils._udCheck(data.max) ? Infinity : data.max; //maximum value
 
 	this.setBool = false; //the attribute is forced to change to this value if true
 	this.setValue = 0;
@@ -57,16 +57,8 @@ Attribute.prototype.set = function(updateClient){
 		//normal set value
 		this.value = this.formula();
 		//check bounds
-		if (!Utils._udCheck(this.min)){
-    		if (this.value < this.min){
-    			this.value = this.min;
-    		}
-    	}
-        if (!Utils._udCheck(this.max)){
-    		if (this.value > this.max){
-    			this.value = this.max;
-    		}
-    	}
+		this.value = Math.max(this.min,this.value);
+		this.value = Math.min(this.max,this.value);
 	}
     this.next(updateClient);
     var clientData = {};

@@ -1056,6 +1056,7 @@
                 this.tileInfo.text = 'Tile: ' + tileX + 'x' + tileY;
 
                 var tile = this.map.sectors[sectorX + 'x' + sectorY].tiles[tileX][tileY];
+                console.log(tile);
                 if (tile.triggers.length > 0){
                     var str = '';
                     for (var i = 0; i < tile.triggers.length; i++){

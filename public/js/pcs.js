@@ -41,7 +41,7 @@
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].nameTag);
             Graphics.unitContainer2.removeChild(this.pcs[data[Enums.ID]].hitBox);
             delete this.pcs[data[Enums.ID]];
-            delete Game.allUnits[data[Enums.ID]];
+            Game.allUnits[data[Enums.ID]] = null;
         },
 
         getPC: function(id){
