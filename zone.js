@@ -238,17 +238,20 @@ Zone.prototype.collideUnit = function(unit,dt){
 };
 Zone.prototype.checkPathBlocked = function(u1,u2){
     var mVec = new V(u2.hb.pos.x-u1.hb.pos.x,u2.hb.pos.y-u1.hb.pos.y);
+    if (u1.getTile() == u2.getTile()){
+        return false;
+    }
     var hyp = Math.sqrt((mVec.x*mVec.x) + (mVec.y*mVec.y));
     mVec.normalize();
     var tile;
     for (var i = 1; i <= Math.ceil(hyp/this.TILE_SIZE);i++){
         tile = this.getTile(u1.hb.pos.x+this.TILE_SIZE*mVec.x*i,u1.hb.pos.y+this.TILE_SIZE*mVec.y*i);
-        if (!tile){return false;}
+        if (!tile){return true;}
         if (!tile.open){
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 };
 Zone.prototype.changeSector = function(p,sector){
     var isNPC = p.isEnemy;

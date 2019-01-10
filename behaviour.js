@@ -36,7 +36,7 @@ Behaviour.prototype.basicAttack = function(unit,dt,data){
     var Behaviour = require('./behaviour.js').Behaviour;
     //move into melee attack range
     //check if path to target is blocked!!!
-    if (!unit.currentZone.checkPathBlocked(unit,unit.currentTarget)){
+    if (unit.currentZone.checkPathBlocked(unit,unit.currentTarget)){
         //path is blocked, use A* move
         if (unit.stickToTarget){
             unit.setStick(false); //unstick
@@ -54,13 +54,14 @@ Behaviour.prototype.basicAttack = function(unit,dt,data){
         }
         Behaviour.aStarMoveToNode(unit,dt,data);
         return;
+    }else{
+        if (!unit.stickToTarget){
+            unit.setStick(true); //stick on target
+        }
     }
 
     var distance = Math.sqrt(Math.pow(unit.hb.pos.x-unit.currentTarget.meleeHitbox.pos.x,2)+Math.pow(unit.hb.pos.y-unit.currentTarget.meleeHitbox.pos.y,2));
     if (distance > 50){
-        if (!unit.stickToTarget){
-            unit.setStick(true); //stick on target
-        }
         unit.setMoveVector(unit.currentTarget.hb.pos.x-unit.hb.pos.x,unit.currentTarget.hb.pos.y-unit.hb.pos.y,false);
     }else{
         if (unit.moveVector.x || unit.moveVector.y){
@@ -100,6 +101,7 @@ Behaviour.prototype.wander = function(unit,dt,data){
     }else{
         Behaviour.aStarMoveToNode(unit,dt,data);
         if (!data.currentPath.length){
+            data.nextPosition = null;
             data.waiting = true;
             data.waitTicker = Math.ceil(Math.random()*3) + 3;
             unit.setMoveVector(0,0);
@@ -109,7 +111,6 @@ Behaviour.prototype.wander = function(unit,dt,data){
     return null;
 }
 Behaviour.prototype.wanderInit = function(unit,data){
-    console.log(data);
     if (typeof data.currentPath == 'undefined'){
         data.currentPath = [];
     }
@@ -254,7 +255,7 @@ Behaviour.prototype.astar = function(map,start,end){
             if(map[x][y+1] && map[x][y+1]) {
                 neighbors.push(map[x][y+1]);
             }
-            // Southwest
+            /*// Southwest
             if(map[x-1] && map[x-1][y-1]) {
                 neighbors.push(map[x-1][y-1]);
             }
@@ -269,7 +270,7 @@ Behaviour.prototype.astar = function(map,start,end){
             // Northeast
             if(map[x+1] && map[x+1][y+1]) {
                 neighbors.push(map[x+1][y+1]);
-            }
+            }*/
         }catch(e){
             console.log(x + "," + y);
             console.log(e);

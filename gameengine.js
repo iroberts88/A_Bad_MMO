@@ -231,6 +231,7 @@ var GameEngine = function() {
         SPAWNID: 'spawnID',
         SPELLPOWER: 'spellPower',
         SPEED: 'speed',
+        SPIRIT: 'spirit',
         STACK: 'stack',
         STAT: 'stat',
         STATS: 'stats',
@@ -331,6 +332,7 @@ var GameEngine = function() {
         'charisma': this.enums.CHARISMA,
         'perception': this.enums.PERCEPTION,
         'luck': this.enums.LUCK,
+        'spirit': this.enums.SPIRIT,
         'ac': this.enums.AC,
         'maxHealth': this.enums.MAXHEALTH
     };

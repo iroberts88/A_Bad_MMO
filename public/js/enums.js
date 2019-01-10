@@ -176,6 +176,7 @@
         SPAWNID: 'spawnID',
         SPELLPOWER: 'spellPower',
         SPEED: 'speed',
+        SPIRIT: 'spirit',
         STACK: 'stack',
         STAT: 'stat',
         STATS: 'stats',

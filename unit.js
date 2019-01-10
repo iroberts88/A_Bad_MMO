@@ -106,8 +106,6 @@ function Unit() {
 
             this.sex = data['sex'];
             this.scale = data['scale'];
-            this.cRadius = 8;
-            this.hb = new C(new V(500,500), this.cRadius);
             this.moveVector = new V(0,0);
 
             this.faceVector = new V(0,0);
@@ -116,8 +114,11 @@ function Unit() {
             if (data['classid'] == 'enemy' || data['classid'] == 'elite'){
                 this.isEnemy = true;
                 this.noMana = data['noMana'];
-                this.cRadius = 1;
+                this.cRadius = 2;
+                this.hb = new C(new V(500,500), this.cRadius);
             }else{
+                this.cRadius = 8;
+                this.hb = new C(new V(500,500), this.cRadius);
                 this.isEnemy = false;
                 this.noMana = false;
             }
@@ -167,7 +168,7 @@ function Unit() {
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
                     this.base = (85+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
-                    return Math.round(this.base*this.pMod+this.nMod);
+                    return 300//Math.round(this.base*this.pMod+this.nMod);
                 }
             });
 
@@ -190,6 +191,7 @@ function Unit() {
                 max: 999,
                 next: function(u){
                     this.owner.meleePower.set(u);
+                    this.owner.inventory.carryWeight.set(u);
                 }
             });
             this.stamina = new Attribute();
@@ -223,6 +225,7 @@ function Unit() {
                 max: 999,
                 next: function(u){
                     this.owner.speed.set(u);
+                    this.owner.ac.set(u);
                 }
             });
             this.wisdom = new Attribute();
@@ -234,6 +237,7 @@ function Unit() {
                 max: 999,
                 next: function(u){
                     this.owner.healingPower.set(u);
+                    this.owner.maxMana.set(u);
                 }
             });
             this.intelligence = new Attribute();
@@ -272,6 +276,14 @@ function Unit() {
                 min: 1,
                 max: 999
             });
+            this.spirit = new Attribute();
+            this.spirit.init({
+                id: this.engine.enums.SPIRIT,
+                owner: this,
+                value: Utils.udCheck(data[this.engine.enums.SPIRIT],100,data[this.engine.enums.SPIRIT]),
+                min: 1,
+                max: 999
+            });
 
             this.ac = new Attribute();
             this.ac.init({
@@ -282,13 +294,11 @@ function Unit() {
                 max: 99999,
                 formula: function(){
                     if (this.owner.isEnemy){
-                        //todo enemy AC formula?
-                        return Math.round(10*this.pMod+this.nMod);
-                    }else{
-                        this.base = 14 + this.owner.level.value;
-                        this.cap = this.owner.level.value*30*Math.ceil(this.owner.level.value/5);
-                        return Math.min(this.owner.level.value*30*Math.ceil(this.owner.level.value/2),Math.round((this.base*this.pMod+this.nMod)*(1+this.owner.agility.value*(this.owner.level.value/8000))));
+                        this.base = (10+this.owner.level.value/2)*(1+this.owner.level.value/2);
+                        return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
                     }
+                    this.base = 14 + this.owner.level.value;
+                    return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
                 }
             });
 
@@ -681,9 +691,8 @@ function Unit() {
             var attkrandom = Math.random();
             var pwr = ranged ? this.rangedPower.value : this.meleePower.value;
             if (target.ac.value*acrandom < pwr*attkrandom){
-                var dmgmod = (pwr*attkrandom - target.ac.value*acrandom) / 100;
+                var dmgmod = (pwr*attkrandom) / 100;
                 var dmg = Math.ceil(Math.random()*arr[0] + dmgmod*arr[0]);
-                console.log(this.name + ' HIT ' + target.name + ' with ' + weapon.name + ' for ' + dmg + ' ' + type + '  damage!');
                 //DO ANY WEAPON EFFECTS
                 //reduce target hp
                 target.damage({
@@ -725,9 +734,10 @@ function Unit() {
 
             //DO any on Damage effects
             //check resistances etc.
-
-            this.currentHealth.value -= data.value;
-            this.healthPercent = this.currentHealth.value/this.maxHealth.value;
+            var val = data.value;
+            var acReduce = Math.min(this.ac.value / (33*data.source.level.value + this.ac.value+400),0.80);
+            this.currentHealth.value -= Math.round(val*(1-acReduce));
+            this.currentHealth.set(true);
             if (!this.isEnemy){
                 //player is being damaged
                 var cData = {};
@@ -736,16 +746,6 @@ function Unit() {
                 cData[this.engine.enums.VALUE] = data.value;
                 cData[this.engine.enums.TYPE] = data.type;
                 this.engine.queuePlayer(this.owner,this.engine.enums.DEALTDAMAGE,cData);
-            }
-            var clientData = {};
-            clientData[this.engine.enums.UNIT] = this.id;
-            clientData[this.engine.enums.STAT] = this.engine.enums.HEALTHPERCENT;
-            clientData[this.engine.enums.VALUE] = this.healthPercent;
-            for (var i in this.pToUpdate){
-                //check ally player
-
-                //check enemy player
-                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
             }
             if (!data.source.isEnemy){
                 var cData = {};
@@ -816,6 +816,10 @@ function Unit() {
             }
         },
 
+        getTile: function(){
+            //return the current map tile
+            return this.currentZone.getTile(this.hb.pos.x,this.hb.pos.y);
+        },
         _getClientData: function(less){
 
             var data = {};
@@ -849,6 +853,7 @@ function Unit() {
             data[this.engine.enums.CHARISMA] = this.charisma.value;
             data[this.engine.enums.PERCEPTION] = this.perception.value;
             data[this.engine.enums.LUCK] = this.luck.value;
+            data[this.engine.enums.SPIRIT] = this.spirit.value;
             data[this.engine.enums.AC] = this.ac.value;
             data[this.engine.enums.MELEEPOWER] = this.meleePower.value;
             data[this.engine.enums.HEALINGPOWER] = this.healingPower.value;

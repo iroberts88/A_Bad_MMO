@@ -430,6 +430,16 @@
             this.statDisplays[Enums.LUCK].position.x = xStart + buffer;
             this.statDisplays[Enums.LUCK].position.y = yStart;
             this.container.addChild(this.statDisplays[Enums.LUCK]);
+            yStart += stat.height + 5;
+            var stat = new PIXI.Text('Spirit: ',style1);
+            stat.position.x = xStart;
+            stat.position.y = yStart;
+            this.container.addChild(stat);
+            this.statDisplays[Enums.SPIRIT] = new PIXI.Text(char.spirit,style2);
+            this.statDisplays[Enums.SPIRIT].position.x = xStart + buffer;
+            this.statDisplays[Enums.SPIRIT].position.y = yStart;
+            this.container.addChild(this.statDisplays[Enums.SPIRIT]);
+
             yStart = tmp;
             xStart = this.width/2 + 10;
             var stat = new PIXI.Text('AC: ',style1);

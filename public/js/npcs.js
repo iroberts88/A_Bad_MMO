@@ -16,6 +16,8 @@
         addNPC: function(data){
             var char = Unit();
             char._init(data);
+            char.cRadius = 2;
+            char.hb.r = 2;
             this.npcs[char.id] = char;
             Game.allUnits[char.id] = char;
             Graphics.worldContainer.addChild(char.targetCircle);

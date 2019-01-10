@@ -393,6 +393,9 @@ var P = SAT.Polygon,
                     case  Enums.SPEED:
                         this.speed = val;
                         break;
+                    case  Enums.SPIRIT:
+                        this.spirit = val;
+                        break;
                     case  Enums.STRENGTH:
                         this.strength = val;
                         break; 

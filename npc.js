@@ -70,7 +70,7 @@ NPC = function(){
             return null;
         }
         if (this.attackDelay >0){
-            this.attackDelay -= deltaTime;a
+            this.attackDelay -= deltaTime;
         }
         if (this.currentTarget){
             //do behavoiur
