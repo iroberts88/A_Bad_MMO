@@ -111,7 +111,7 @@
                         x: i,
                         y: j,
                         resource: this.defaultTile,
-                        open: true,
+                        open: false,
                         triggers: [],
                         overlayResource: 0
                     });

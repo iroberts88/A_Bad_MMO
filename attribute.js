@@ -50,6 +50,7 @@ Attribute.prototype.init = function(data){
     }
 }
 Attribute.prototype.set = function(updateClient){
+    var pVal = this.value;
 	if (this.setBool){
 		//force value change
 		this.value = this.setValue;
@@ -61,16 +62,18 @@ Attribute.prototype.set = function(updateClient){
 		this.value = Math.min(this.max,this.value);
 	}
     this.next(updateClient);
-    var clientData = {};
-    clientData[this.engine.enums.UNIT] = this.owner.id;
-    clientData[this.engine.enums.STAT] = this.id;
-    clientData[this.engine.enums.VALUE] = this.value;
-    clientData[this.engine.enums.MOD] = Math.round(this.value)-Math.round(this.base);
-    if (updateClient && this.updateClient && this.owner.owner){
-        this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
-    }else if (updateClient && this.updateAll){
-        for (var i in this.owner.pToUpdate){
-            this.engine.queuePlayer(this.owner.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
+    if (pVal != this.value){
+        var clientData = {};
+        clientData[this.engine.enums.UNIT] = this.owner.id;
+        clientData[this.engine.enums.STAT] = this.id;
+        clientData[this.engine.enums.VALUE] = this.value;
+        clientData[this.engine.enums.MOD] = Math.round(this.value)-Math.round(this.base);
+        if (updateClient && this.updateClient && this.owner.owner){
+            this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
+        }else if (updateClient && this.updateAll){
+            for (var i in this.owner.pToUpdate){
+                this.engine.queuePlayer(this.owner.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
+            }
         }
     }
     return;

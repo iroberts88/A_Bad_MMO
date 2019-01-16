@@ -83,7 +83,7 @@ var P = SAT.Polygon,
                 this.stickToTarget = typeof data[Enums.STICK] == 'undefined' ? false : data[Enums.STICK];
                 if (typeof data[Enums.TARGET] != 'undefined'){
                     //need to get a target!
-                    this.needToSetTarget = data[Enums.Target];
+                    this.needToSetTarget = data[Enums.TARGET];
                 }
                 this.faceVector = new SAT.Vector(1,0);
 
@@ -170,8 +170,8 @@ var P = SAT.Polygon,
                 this.aTicker += dt;
                 //check new target
                 if (this.needToSetTarget){
-                    if (typeof Game.allUnits[this.needToSetTarget] == 'undefined'){
-                        this.setTarget(Game.allUnits[this.setTarget]);
+                    if (typeof Game.allUnits[this.needToSetTarget] != 'undefined'){
+                        this.setTarget(Game.allUnits[this.needToSetTarget]);
                         this.needToSetTarget = null;
                     }
                 }

@@ -39,6 +39,9 @@
                     Acorn.Net.socket_.emit('confirmMapSave',{c:false});
                 }
             });
+             Acorn.Net.on('mapSaved', function (data) {
+                alert("Map save successful!");
+            });
             
         },
 

@@ -59,6 +59,8 @@ NPC = function(){
         });
         this.baseAggroRadius.set();
 
+        this.aggroList = [];
+
     }
 
     character.update = function(deltaTime){

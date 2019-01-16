@@ -17,6 +17,7 @@ var MapTool = function() {
     this.maps = {};
     this.mapids = [];
 
+    this.debugList = {};
     //variables for ID's
     this.idIterator = 0;
     this.possibleIDChars = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz";

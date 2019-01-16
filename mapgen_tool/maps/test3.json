@@ -1,0 +1,1380 @@
+{
+  "mapid": "test3",
+  "mapname": "test 3",
+  "sectorArray": [
+    "0x0"
+  ],
+  "mapData": {
+    "0x0": {
+      "tiles": [
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ],
+        [
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          },
+          {
+            "resource": "k_3x2"
+          }
+        ]
+      ],
+      "x": 0,
+      "y": 0
+    }
+  }
+}

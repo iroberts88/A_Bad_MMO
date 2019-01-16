@@ -141,7 +141,6 @@ Behaviour.prototype.searchInRadius = function(unit,dt,data){
     for (var i in unit.nearbyUnits){
         if (Math.sqrt(Math.pow(unit.hb.pos.x-unit.nearbyUnits[i].hb.pos.x,2) + Math.pow(unit.hb.pos.y-unit.nearbyUnits[i].hb.pos.y,2)) <= unit.baseAggroRadius.value && unit != unit.nearbyUnits[i]){
             if (!unit.nearbyUnits[i].isEnemy){
-                console.log('GOT TARGET - ' + unit.nearbyUnits[i].name);
                 unit.setTarget(unit.nearbyUnits[i]);
                 unit.setMoveVector(0,0);
                 return null;

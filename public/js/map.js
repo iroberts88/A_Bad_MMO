@@ -197,11 +197,15 @@ var getSectorXY = function(string){
                 });
                 newTile.sprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                 newTile.sprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                Graphics.worldContainer.addChild(newTile.sprite);
+                if (newTile.resource == 'deep_water' && !newTile.overlaySprite){
+                    Graphics.worldContainer2.addChild(newTile.sprite);
+                }else{
+                    Graphics.worldContainer.addChild(newTile.sprite);
+                }
                 if (newTile.overlaySprite){
                     newTile.overlaySprite.position.x = this.pos.x*this.fullSectorSize + i*this.TILE_SIZE;
                     newTile.overlaySprite.position.y = this.pos.y*this.fullSectorSize + j*this.TILE_SIZE;
-                    if (r == 'deep_water' || newTile.overlayType == 1){
+                    if (newTile.overlayType == 1){
                         Graphics.worldContainer2.addChild(newTile.overlaySprite);
                     }else if (newTile.overlayType == 2){
                         Graphics.worldContainer3.addChild(newTile.overlaySprite);

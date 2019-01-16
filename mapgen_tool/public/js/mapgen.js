@@ -900,14 +900,37 @@
                         if (typeof this.map.sectors[sectorX + 'x' + sectorY] == 'undefined'){
                             break;
                         }else{
-                            Acorn.Input.buttons = {2:true}
-                            Acorn.Input.mouseDown = true;
-                            if (tile.open){
-                                this.changesMade = true;
-                                tile.open = false;
-                                tile.sprite.tint = 0xfcd9d9;
-                                if (tile.overlaySprite){
-                                    tile.overlaySprite.tint = 0xfcd9d9;
+                            for (var x = this.toolSize-1;x >= -(this.toolSize-1);x--){
+                                for (var y = this.toolSize-1;y >= -(this.toolSize-1);y--){
+                                    var sectorPos = [this.map.sectors[tile.sectorId].x,this.map.sectors[tile.sectorId].y];
+                                    var tPos = [tile.x+x,tile.y+y];
+                                    if (tPos[0] < 0){
+                                        sectorPos[0] -= 1;
+                                        tPos[0] = 20;
+                                    }else if (tPos[0] > 20){
+                                        sectorPos[0] += 1;
+                                        tPos[0] = 0;
+                                    }if (tPos[1] < 0){
+                                        sectorPos[1] -= 1;
+                                        tPos[1] = 20;
+                                    }else if (tPos[1] > 20){
+                                        sectorPos[1] += 1;
+                                        tPos[1] = 0;
+                                    }
+                                    if (typeof this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]] == 'undefined'){
+                                        continue;
+                                    }
+                                    var cTile = this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]].tiles[tPos[0]][tPos[1]];
+                                    Acorn.Input.buttons = {2:true}
+                                    Acorn.Input.mouseDown = true;
+                                    if (cTile.open){
+                                        this.changesMade = true;
+                                        cTile.open = false;
+                                        cTile.sprite.tint = 0xfcd9d9;
+                                        if (cTile.overlaySprite){
+                                            cTile.overlaySprite.tint = 0xfcd9d9;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -921,14 +944,37 @@
                         if (typeof this.map.sectors[sectorX + 'x' + sectorY] == 'undefined'){
                             break;
                         }else{
-                            Acorn.Input.buttons = {2:true}
-                            Acorn.Input.mouseDown = true;
-                            if (!tile.open){
-                                this.changesMade = true;
-                                tile.open = true;
-                                tile.sprite.tint = 0xffffff;
-                                if (tile.overlaySprite){
-                                    tile.overlaySprite.tint = 0xffffff;
+                            for (var x = this.toolSize-1;x >= -(this.toolSize-1);x--){
+                                for (var y = this.toolSize-1;y >= -(this.toolSize-1);y--){
+                                    var sectorPos = [this.map.sectors[tile.sectorId].x,this.map.sectors[tile.sectorId].y];
+                                    var tPos = [tile.x+x,tile.y+y];
+                                    if (tPos[0] < 0){
+                                        sectorPos[0] -= 1;
+                                        tPos[0] = 20;
+                                    }else if (tPos[0] > 20){
+                                        sectorPos[0] += 1;
+                                        tPos[0] = 0;
+                                    }if (tPos[1] < 0){
+                                        sectorPos[1] -= 1;
+                                        tPos[1] = 20;
+                                    }else if (tPos[1] > 20){
+                                        sectorPos[1] += 1;
+                                        tPos[1] = 0;
+                                    }
+                                    if (typeof this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]] == 'undefined'){
+                                        continue;
+                                    }
+                                    var cTile = this.map.sectors[sectorPos[0] + 'x' + sectorPos[1]].tiles[tPos[0]][tPos[1]];
+                                    Acorn.Input.buttons = {2:true}
+                                    Acorn.Input.mouseDown = true;
+                                    if (!cTile.open){
+                                        this.changesMade = true;
+                                        cTile.open = true;
+                                        cTile.sprite.tint = 0xffffff;
+                                        if (cTile.overlaySprite){
+                                            cTile.overlaySprite.tint = 0xffffff;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1056,7 +1102,6 @@
                 this.tileInfo.text = 'Tile: ' + tileX + 'x' + tileY;
 
                 var tile = this.map.sectors[sectorX + 'x' + sectorY].tiles[tileX][tileY];
-                console.log(tile);
                 if (tile.triggers.length > 0){
                     var str = '';
                     for (var i = 0; i < tile.triggers.length; i++){

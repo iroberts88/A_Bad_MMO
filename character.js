@@ -72,7 +72,6 @@ Character = function(){
                 //attack with melee OR ranged
                 //make the attack
                 this.attackDelay = this.makeWeaponAttack(this.weapons[0],this.currentTarget,this.rangedOn);
-                console.log(this.secondaryAttackDelay);
             }
             if (this.secondaryAttackDelay <=0 && this.weapons[1]){
                 //make the attack

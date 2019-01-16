@@ -16,9 +16,9 @@ function Unit() {
         id: null,
         owner: null,
 
-        strength: null, //carry weight, melee power, melee crit damage
+        strength: null, //carry weight, melee power
         stamina: null, //maximum health
-        dexterity: null, // ranged power, weapon skill increase chance, ranged crit damage
+        dexterity: null, // ranged power,
         agility: null, // run speed, casting concentrations, AC, Dodge
         wisdom: null, // healing power, mana regen
         intelligence: null, //spell power, skill increase chance, maximum mana
@@ -186,9 +186,9 @@ function Unit() {
             this.strength.init({
                 id: this.engine.enums.STRENGTH,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.STRENGTH],100,data[this.engine.enums.STRENGTH]),
+                value: Utils.udCheck(data[this.engine.enums.STRENGTH],10,data[this.engine.enums.STRENGTH]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.meleePower.set(u);
                     this.owner.inventory.carryWeight.set(u);
@@ -198,9 +198,9 @@ function Unit() {
             this.stamina.init({
                 id: this.engine.enums.STAMINA,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.STAMINA],100,data[this.engine.enums.STAMINA]),
+                value: Utils.udCheck(data[this.engine.enums.STAMINA],10,data[this.engine.enums.STAMINA]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.maxHealth.set(u);
                 }
@@ -209,9 +209,9 @@ function Unit() {
             this.dexterity.init({
                 id: this.engine.enums.DEXTERITY,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.DEXTERITY],100,data[this.engine.enums.DEXTERITY]),
+                value: Utils.udCheck(data[this.engine.enums.DEXTERITY],10,data[this.engine.enums.DEXTERITY]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.rangedPower.set(u);
                 }
@@ -220,9 +220,9 @@ function Unit() {
             this.agility.init({
                 id: this.engine.enums.AGILITY,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.AGILITY],100,data[this.engine.enums.AGILITY]),
+                value: Utils.udCheck(data[this.engine.enums.AGILITY],10,data[this.engine.enums.AGILITY]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.speed.set(u);
                     this.owner.ac.set(u);
@@ -232,9 +232,9 @@ function Unit() {
             this.wisdom.init({
                 id: this.engine.enums.WISDOM,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.WISDOM],100,data[this.engine.enums.WISDOM]),
+                value: Utils.udCheck(data[this.engine.enums.WISDOM],10,data[this.engine.enums.WISDOM]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.healingPower.set(u);
                     this.owner.maxMana.set(u);
@@ -244,9 +244,9 @@ function Unit() {
             this.intelligence.init({
                 id: this.engine.enums.INTELLIGENCE,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.INTELIIGENCE],100,data[this.engine.enums.INTELIIGENCE]),
+                value: Utils.udCheck(data[this.engine.enums.INTELIIGENCE],10,data[this.engine.enums.INTELIIGENCE]),
                 min: 1,
-                max: 999,
+                max: 99,
                 next: function(u){
                     this.owner.spellPower.set(u);
                     this.owner.maxMana.set(u);
@@ -256,33 +256,33 @@ function Unit() {
             this.perception.init({
                 id: this.engine.enums.PERCEPTION,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.PERCEPTION],100,data[this.engine.enums.PERCEPTION]),
+                value: Utils.udCheck(data[this.engine.enums.PERCEPTION],10,data[this.engine.enums.PERCEPTION]),
                 min: 1,
-                max: 999
+                max: 99
             });
             this.charisma = new Attribute();
             this.charisma.init({
                 id: this.engine.enums.CHARISMA,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.CHARISMA],100,data[this.engine.enums.CHARISMA]),
+                value: Utils.udCheck(data[this.engine.enums.CHARISMA],10,data[this.engine.enums.CHARISMA]),
                 min: 1,
-                max: 999
+                max: 99
             });
             this.luck = new Attribute();
             this.luck.init({
                 id: this.engine.enums.LUCK,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.LUCK],100,data[this.engine.enums.LUCK]),
+                value: Utils.udCheck(data[this.engine.enums.LUCK],10,data[this.engine.enums.LUCK]),
                 min: 1,
-                max: 999
+                max: 99
             });
             this.spirit = new Attribute();
             this.spirit.init({
                 id: this.engine.enums.SPIRIT,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.SPIRIT],100,data[this.engine.enums.SPIRIT]),
+                value: Utils.udCheck(data[this.engine.enums.SPIRIT],10,data[this.engine.enums.SPIRIT]),
                 min: 1,
-                max: 999
+                max: 99
             });
 
             this.ac = new Attribute();
@@ -295,10 +295,10 @@ function Unit() {
                 formula: function(){
                     if (this.owner.isEnemy){
                         this.base = (10+this.owner.level.value/2)*(1+this.owner.level.value/2);
-                        return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
+                        return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/10));
                     }
                     this.base = 14 + this.owner.level.value;
-                    return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
+                    return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/10));
                 }
             });
 
@@ -447,7 +447,6 @@ function Unit() {
                 },
                 next: function(updateClient){
                     //TODO send health percent to all non-allied units
-                    //etc....
                     this.owner.healthPercent.set(updateClient);
                 }
             });
@@ -463,16 +462,19 @@ function Unit() {
                     if (this.owner.noMana){
                         return 0;
                     }
-                    this.base =(this.owner.manaLvlMod*10) + this.owner.level.value*this.owner.manaLvlMod*(this.owner.level.value/this.owner.manaStatMod);
+                    this.base =100+this.owner.level.value*14
                     //set the cost base for spells
-                    this.costBase = (100) + this.owner.level.value*10*(this.owner.level.value/10);
-                    var statMod = (this.owner.intelligence.value*2*(this.owner.level.value/this.owner.manaStatMod));
-                    return Math.round((this.base+statMod)*this.pMod+this.nMod);
+                    var int = this.owner.intelligence.value;
+                    var wis = this.owner.wisdom.value;
+
+                    var statMod = ((int*int+wis*wis)/30)*this.owner.level.value/this.owner.manaStatMod;
+                    return Math.ceil((this.base+statMod)*this.pMod+this.nMod);
                 },
                 next: function(updateClient){
                     //todo send down new mana value
                     if (this.owner.currentMana.value > this.value){
                         this.owner.currentMana.value = this.value;
+                        this.owner.currentMana.set(updateClient);
                     }
                 }
             });
@@ -701,7 +703,6 @@ function Unit() {
                     source: this
                 })
             }else if (!this.isEnemy){
-                console.log(this.name + ' MISSED ' + target.name + '!');
                 var cData = {};
                 cData[this.engine.enums.UNIT] = target.id;
                 cData[this.engine.enums.BOOL] = false;
@@ -770,7 +771,6 @@ function Unit() {
                 this.spawn.currentEnemy = null;
 
                 this.currentZone.removeNPC(this);
-                console.log('dead');
             }else{
                 console.log("Player " + this.name + ' is dead!')
             }

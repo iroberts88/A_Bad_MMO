@@ -153,11 +153,13 @@
                 }
             });
             Acorn.Net.on(Enums.ADDNPC, function (data) {
+                console.log("adding npc");
                 console.log(data);
                 NPCS.addNPC(data)
             });
 
             Acorn.Net.on(Enums.REMOVENPC, function (data) {
+                console.log("removing npc");
                 console.log(data);
                 NPCS.removeNPC(data);
             });
@@ -253,7 +255,6 @@
             });
 
             Acorn.Net.on(Enums.SETUNITSTAT, function (data) {
-                console.log(data);
                 if (!Player.currentCharacter){return;}
                 if (data[Enums.UNIT] == Player.currentCharacter.id){
                     Player.currentCharacter.setStat(data[Enums.STAT],data[Enums.VALUE]);

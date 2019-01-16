@@ -116,6 +116,7 @@ Player.prototype.setupSocket = function() {
                         return console.log(err);
                     }
                 });
+                that.mapTool.queuePlayer(that,"mapSaved", {id:that.mapData.id});
             }else{
                 that.mapTool.queuePlayer(that,"confirmMapSave", {id:d.id});
                 that.mapData = d;
