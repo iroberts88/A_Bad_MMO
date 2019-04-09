@@ -327,7 +327,7 @@
                 Game.screenTicker = 0;
                 Graphics.uiPrimitives2.clear();
                 for (var i = 0; i < Game.newMapData.players.length;i++){
-                    if (Game.newMapData.players[i].id != mainObj.id){
+                    if (Game.newMapData.players[i].id != Player.id){
                         var pc = new PlayerCharacter();
                         pc.init(Game.newMapData.players[i]);
                         Game.pcs[Game.newMapData.players[i].id] = pc;

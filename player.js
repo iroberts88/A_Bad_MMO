@@ -6,6 +6,7 @@ var User = require('./user.js').User,
     PlayerItem = require('./inventory.js').PlayerItem,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
+    Enums = require('./enums.js').Enums,
     Zone = require('./zone.js').Zone;
 
 const crypto = require('crypto');
@@ -48,11 +49,14 @@ Player.prototype.tick = function(deltaTime){
     if (this.checkName){
         this.checkNameTicker += deltaTime;
         if (this.checkNameTicker >= 0.75){
+            console.log(this.checkNameText)
             //send checkname
             if (this.engine.filter.isProfaneLike(this.checkNameText)){
                 var d = {};
-                d[this.engine.enums.BOOL] = false;
-                this.engine.queuePlayer(this,this.engine.enums.CHECKNAME, d);
+                d[Enums.BOOL] = false;
+                this.engine.queuePlayer(this,Enums.CHECKNAME, d);
+                this.checkNameTicker = 0;
+                this.checkName = false;
                 return;
             }
             var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
@@ -69,12 +73,12 @@ Player.prototype.tick = function(deltaTime){
                     console.error("Unable to find user data. Error JSON:", JSON.stringify(err, null, 2));
                 } else {
                     if (typeof data.Item == 'undefined'){
-                        d[that.engine.enums.BOOL] = true;
+                        d[Enums.BOOL] = true;
                     }else{
-                        d[that.engine.enums.BOOL] = false;
+                        d[Enums.BOOL] = false;
                     }
                 }
-                that.engine.queuePlayer(that,that.engine.enums.CHECKNAME, d);
+                that.engine.queuePlayer(that,Enums.CHECKNAME, d);
             });
             this.checkNameTicker = 0;
             this.checkName = false;
@@ -98,39 +102,38 @@ Player.prototype.setupSocket = function() {
     // On playerUpdate event
     var that = this;
 
-    this.socket.on(this.engine.enums.PLAYERUPDATE, function (data) {
+    this.socket.on(Enums.PLAYERUPDATE, function (data) {
         try{
-            var enums = that.engine.enums;
-            if (!that.engine.checkData(data,enums.COMMAND)){return;}
-            switch(data[enums.COMMAND]){
-                case enums.LOGOUT:
+            if (!that.engine.checkData(data,Enums.COMMAND)){return;}
+            switch(data[Enums.COMMAND]){
+                case Enums.LOGOUT:
                     that.engine.playerLogout(that);
-                    that.engine.queuePlayer(that,enums.LOGOUT, {});
+                    that.engine.queuePlayer(that,Enums.LOGOUT, {});
                     break;
-                case enums.CHECKNAME:
+                case Enums.CHECKNAME:
                     //check if valid name
-                    if (!that.engine.checkData(data,enums.TEXT)){return;}
+                    if (!that.engine.checkData(data,Enums.TEXT)){return;}
                     that.checkName = true;
                     that.checkNameTicker = 0.0;
-                    that.checkNameText = data[enums.TEXT].toLowerCase();
+                    that.checkNameText = data[Enums.TEXT].toLowerCase();
                     break;
-                case enums.CREATECHAR:
+                case Enums.CREATECHAR:
                     //CREATE CHARACTER
                     //check valid slot
-                    if (!that.engine.checkData(data,enums.SLOT)){return;}
-                    if (!that.engine.checkData(data,enums.RACE)){return;}
-                    if (!that.engine.checkData(data,enums.CLASS)){return;}
-                    if (!that.engine.checkData(data,enums.NAME)){return;}
-                    var slot = data[enums.SLOT];
-                    var name = data[enums.NAME] + '';
+                    if (!that.engine.checkData(data,Enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,Enums.RACE)){return;}
+                    if (!that.engine.checkData(data,Enums.CLASS)){return;}
+                    if (!that.engine.checkData(data,Enums.NAME)){return;}
+                    var slot = data[Enums.SLOT];
+                    var name = data[Enums.NAME] + '';
                     name = name.toLowerCase();
-                    var race = data[enums.RACE];
-                    var cclass = data[enums.CLASS];
+                    var race = data[Enums.RACE];
+                    var cclass = data[Enums.CLASS];
 
                     if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] != 'undefined'){
                         var d = {};
-                        d[enums.CREATECHARERROR] = "Invalid slot!";
-                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
+                        d[Enums.CREATECHARERROR] = "Invalid slot!";
+                        that.engine.queuePlayer(that,Enums.CREATECHARERROR, d);
                         return;
                     }
                     //check valid race/class
@@ -143,22 +146,22 @@ Player.prototype.setupSocket = function() {
                     for (var i = 0; i < name.length;i++){
                         if (Utils._udCheck(that.engine.possibleNameChars[name.charAt(i)])){
                             var d = {};
-                            d[enums.CREATECHARERROR] = "Invalid Name!";
-                            that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
+                            d[Enums.CREATECHARERROR] = "Invalid Name!";
+                            that.engine.queuePlayer(that,Enums.CREATECHARERROR, d);
                             return;
                         }
                     }
                     if (name.length < 3 || name.length > 16){
                         var d = {};
-                        d[enums.CREATECHARERROR] = "Name must be between 3 and 16 characters!";
-                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
+                        d[Enums.CREATECHARERROR] = "Name must be between 3 and 16 characters!";
+                        that.engine.queuePlayer(that,Enums.CREATECHARERROR, d);
                         return;
                     }
                     //profanity check
                     if (that.engine.filter.isProfaneLike(this.checkNameText)){
                         var d = {};
-                        d[enums.CREATECHARERROR] = "Bad words!";
-                        that.engine.queuePlayer(that,enums.CREATECHARERROR, d);
+                        d[Enums.CREATECHARERROR] = "Bad words!";
+                        that.engine.queuePlayer(that,Enums.CREATECHARERROR, d);
                         return;
                     }
                     var docClient = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
@@ -179,30 +182,35 @@ Player.prototype.setupSocket = function() {
                                 console.log("All data valid - create character!!")
                                 name = name.charAt(0).toUpperCase() + name.substr(1);
                                 var newChar = new Character();
+                                console.log(data);
+                                data['name'] = name;
+                                data.scale = 2;
                                 newChar.init(data);
+                                newChar.setRace();
+                                newChar.setClass();
                                 newChar.name = name;
                                 that.user.addCharacter(slot,newChar);
                             }
                         }
                     });
                     break;
-                case enums.ENTERGAME:
+                case Enums.ENTERGAME:
                     //check if the slot is a valid character
-                    if (!that.engine.checkData(data,enums.SLOT)){return;}
-                    var slot = data[enums.SLOT];
+                    if (!that.engine.checkData(data,Enums.SLOT)){return;}
+                    var slot = data[Enums.SLOT];
                     if (parseInt(slot) < 1 || parseInt(slot) > 10 || typeof that.user.characters[slot] == 'undefined'){
                         console.log('Player Error - Invalid Slot')
                         return;
                     }
                     //Add to zone/sector
                     that.activeChar = that.user.characters[slot];
-                    that.engine.queuePlayer(that,enums.GETINVENTORY,that.activeChar.inventory.getClientData());
+                    that.engine.queuePlayer(that,Enums.GETINVENTORY,that.activeChar.inventory.getClientData());
                     that.engine.addPlayerToZone(that.activeChar,that.activeChar.zoneid);
                     break;
-                case enums.REQUESTMAPDATA:
+                case Enums.REQUESTMAPDATA:
                     /*try{
                         var zoneData = that.engine.zones[data.name].zoneData;
-                        that.engine.queuePlayer(that,enums.MAPDATA,{
+                        that.engine.queuePlayer(that,Enums.MAPDATA,{
                             zoneData: zoneData,
                             name: data.name
                         });
@@ -210,61 +218,61 @@ Player.prototype.setupSocket = function() {
                         that.engine.debug(that,{id: 'requestMapDataError', error: e.stack});
                     }*/
                     break;
-                case enums.MOVE:
-                    that.activeChar.moveVector.x = data[enums.MOVEVECTOR][0];
-                    that.activeChar.moveVector.y = data[enums.MOVEVECTOR][1];
+                case Enums.MOVE:
+                    that.activeChar.moveVector.x = data[Enums.MOVEVECTOR][0];
+                    that.activeChar.moveVector.y = data[Enums.MOVEVECTOR][1];
                     //TODO check if valid move!
-                    that.activeChar.hb.pos.x = data[enums.POSITION][0];
-                    that.activeChar.hb.pos.y = data[enums.POSITION][1];
+                    that.activeChar.hb.pos.x = data[Enums.POSITION][0];
+                    that.activeChar.hb.pos.y = data[Enums.POSITION][1];
                     for (var i in that.activeChar.pToUpdate){
                         var d = {};
-                        d[enums.ID] = that.activeChar.id;
-                        d[enums.POSITION] = data[enums.POSITION];
-                        d[enums.MOVEVECTOR] = data[enums.MOVEVECTOR];
-                        that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,enums.POSUPDATE, d);
+                        d[Enums.ID] = that.activeChar.id;
+                        d[Enums.POSITION] = data[Enums.POSITION];
+                        d[Enums.MOVEVECTOR] = data[Enums.MOVEVECTOR];
+                        that.engine.queuePlayer(that.activeChar.pToUpdate[i].owner,Enums.POSUPDATE, d);
                     }
                     break;
-                case enums.MOVEITEM:
-                    if (!that.engine.checkData(data,enums.BAG)){return;}
-                    if (!that.engine.checkData(data,enums.POSITION,'object')){return;}
-                    if (!that.engine.checkData(data,enums.FLIPPED,'boolean')){return;}
-                    if (!that.engine.checkData(data,enums.ID,'string')){return;}
+                case Enums.MOVEITEM:
+                    if (!that.engine.checkData(data,Enums.BAG)){return;}
+                    if (!that.engine.checkData(data,Enums.POSITION,'object')){return;}
+                    if (!that.engine.checkData(data,Enums.FLIPPED,'boolean')){return;}
+                    if (!that.engine.checkData(data,Enums.ID,'string')){return;}
                     that.activeChar.inventory.moveItem(data);
                     break;
-                case enums.EQUIPITEM:
-                    if (!that.engine.checkData(data,enums.SLOT)){return;}
-                    if (!that.engine.checkData(data,enums.ITEM)){return;}
-                    that.activeChar.inventory.equipItem(data[enums.SLOT],data[enums.ITEM]);
+                case Enums.EQUIPITEM:
+                    if (!that.engine.checkData(data,Enums.SLOT)){return;}
+                    if (!that.engine.checkData(data,Enums.ITEM)){return;}
+                    that.activeChar.inventory.equipItem(data[Enums.SLOT],data[Enums.ITEM]);
                     break;
-                case enums.SETTARGET:
-                    if (!that.engine.checkData(data,enums.UNIT)){return;}
+                case Enums.SETTARGET:
+                    if (!that.engine.checkData(data,Enums.UNIT)){return;}
                     //get the unit
-                    var unit = that.activeChar.currentZone.getUnit(data[enums.UNIT]);
+                    var unit = that.activeChar.currentZone.getUnit(data[Enums.UNIT]);
                     if (!unit){
                         return;
                     }
                     that.activeChar.setTarget(unit);
                     break;
-                case enums.CLEARTARGET:
+                case Enums.CLEARTARGET:
                     that.activeChar.clearTarget();
                     that.activeChar.meleeOn = false;
                     that.activeChar.rangedOn = false;
                     break;
-                case enums.SETMELEEATTACK:
+                case Enums.SETMELEEATTACK:
                     console.log(data);
-                    if (!that.engine.checkData(data,enums.BOOL,'boolean')){return;}
-                    if (data[enums.BOOL]){
+                    if (!that.engine.checkData(data,Enums.BOOL,'boolean')){return;}
+                    if (data[Enums.BOOL]){
                         that.activeChar.rangedOn = false;
                     }
-                    that.activeChar.meleeOn = data[enums.BOOL];
+                    that.activeChar.meleeOn = data[Enums.BOOL];
                     break;
-                case enums.SETRANGEDATTACK:
+                case Enums.SETRANGEDATTACK:
                     console.log(data);
-                    if (!that.engine.checkData(data,enums.BOOL,'boolean')){return;}
-                    if (data[enums.BOOL]){
+                    if (!that.engine.checkData(data,Enums.BOOL,'boolean')){return;}
+                    if (data[Enums.BOOL]){
                         that.activeChar.meleeOn = false;
                     }
-                    that.activeChar.rangedOn = data[enums.BOOL];
+                    that.activeChar.rangedOn = data[Enums.BOOL];
                     break;
             }
         }catch(e){
@@ -289,9 +297,9 @@ Player.prototype.setupSocket = function() {
         }
     });
 
-    //TODO CONVERT LOGIN COMMANDS TO ENUMS
+    //TODO CONVERT LOGIN COMMANDS TO Enums
     
-    this.socket.on(this.engine.enums.LOGINATTEMPT, function (d) {
+    this.socket.on(Enums.LOGINATTEMPT, function (d) {
         if (that.user){return;}
         try{
             if (d.sn && d.pw){
@@ -317,12 +325,12 @@ Player.prototype.setupSocket = function() {
                                     that.user.init(data.Item);
                                     that.user.lock();
                                     that.engine.users[d.sn] = that.user;
-                                    that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:data.Item.username, characters: that.user.characters});
+                                    that.engine.queuePlayer(that,Enums.LOGGEDIN, {name:data.Item.username, characters: that.user.characters});
                                 }else{
-                                    that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
+                                    that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
                                 }
                             }else{
-                                that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
+                                that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
                             }
                         }
                     }catch(e){
@@ -333,7 +341,7 @@ Player.prototype.setupSocket = function() {
         }catch(e){
             console.log('Login Attempt failed');
             console.log(e);
-            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
+            that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'wrongpass'});
         }
     });
     this.socket.on('guestLogin', function (d) {
@@ -362,11 +370,11 @@ Player.prototype.setupSocket = function() {
                         that.user.setOwner(that);
                         that.user.init(u);
                         that.engine.users[d.sn] = that.user;
-                        that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, that.user.getClientData());
+                        that.engine.queuePlayer(that,Enums.LOGGEDIN, that.user.getClientData());
                     }else if (typeof data.Item != 'undefined' || typeof that.engine.users[d.sn] != 'undefined'){
-                        that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
+                        that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'userexists'});
                     }else{
-                        that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'snlength'});
+                        that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'snlength'});
                     }
                 }
             });
@@ -419,7 +427,7 @@ Player.prototype.setupSocket = function() {
                                     that.user.setOwner(that);
                                     that.user.init(u);
                                     that.engine.users[d.sn] = that.user;
-                                    that.engine.queuePlayer(that,that.engine.enums.LOGGEDIN, {name:d.sn, characters: that.user.characters});
+                                    that.engine.queuePlayer(that,Enums.LOGGEDIN, {name:d.sn, characters: that.user.characters});
                                     var params3 = {
                                         TableName: 'users',
                                         Item: {
@@ -442,11 +450,11 @@ Player.prototype.setupSocket = function() {
                             });
                             
                         }else if (typeof data.Item != 'undefined'){
-                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'userexists'});
+                            that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'userexists'});
                         }else if (d.sn.length < 3 || d.sn.length > 16){
-                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'snlength'});
+                            that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'snlength'});
                         }else if (d.pw.length < 8 || d.pw.length > 16){
-                            that.engine.queuePlayer(that,that.engine.enums.SETLOGINERRORTEXT, {text: 'plength'});
+                            that.engine.queuePlayer(that,Enums.SETLOGINERRORTEXT, {text: 'plength'});
                         }
                     }
                 });
@@ -460,9 +468,9 @@ Player.prototype.setupSocket = function() {
         }
     });
 
-    this.socket.on(this.engine.enums.CLIENTCOMMAND, function(data) {
-        if (!that.engine.checkData(data,that.engine.enums.COMMAND)){return;}
-        var cmd = data[that.engine.enums.COMMAND];
+    this.socket.on(Enums.CLIENTCOMMAND, function(data) {
+        if (!that.engine.checkData(data,Enums.COMMAND)){return;}
+        var cmd = data[Enums.COMMAND];
         //MAX LENGTH?
         if (cmd.length > 200 || cmd == ''){
             return;

@@ -8,6 +8,7 @@ var Player = require('./player.js').Player,
     CharClass = require('./charclass.js').CharClass,
     Inventory = require('./inventory.js').Inventory,
     PlayerItem = require('./inventory.js').PlayerItem,
+    Enums = require('./enums.js').Enums,
     Item = require('./inventory.js').Item,
     fs = require('fs'),
     utils = require('./utils.js').Utils,
@@ -34,6 +35,8 @@ var GameEngine = function() {
     this.items = {};
     this.factions = {};
 
+    this.behaviour = require('./behaviour.js').Behaviour;
+
     //database objects
     this.mapids = [];
     this.mapCount = 0; //for checking if all maps have loaded before ready
@@ -55,286 +58,74 @@ var GameEngine = function() {
 
     this.filter = new Filter();
     
-    this.enums = {
-        //TODO change to just numbers...
-
-        AC: 'ac',
-        ACQUIRETARGET: 'acquireTargetasdf',
-        ADDCHARACTER: 'addcharacter',
-        ADDITEM: 'addItem',
-        ADDPC: 'addPC',
-        ADDNPC: 'addNPC',
-        AGILITY: 'agility',
-        ALL: 'all',
-        AMMO: 'ammo',
-        ARCANERES: 'arcaneRes',
-        ARMS: 'arms',
-        ATTRIBUTES: 'attribute',
-        AVAILABLECLASSES: 'availableClasse',
-
-        BACK: 'back',
-        BAG: 'bag',
-        BAG1: 'bag1',
-        BAG2: 'bag2',
-        BAG3: 'bag3',
-        BAG4: 'bag4',
-        BAGSIZE: 'bagSize',
-        BLUDGEON: 'bludgeon',
-        BOOL: 'bool',
-
-        CARRYWEIGHT: 'carryWeight',
-        CLEARTARGET: 'clrtr',
-        CHARACTERS: 'characters',
-        CHARISMA: 'charisma',
-        CHECKNAME: 'checkName',
-        CHEST: 'chest',
-        CLIENTCOMMAND: 'clientCommand',
-        CLASSES: 'classes',
-        CLASS: 'class',
-        CLASSID: 'classi',
-        COMBATBEHAVIOUR: 'combatBehaviourfdsa',
-        COMMAND: 'command',
-        CONNINFO: 'connInfo',
-        COPPER: 'copper',
-        CREATECHAR: 'CreateChar',
-        CREATECHARERROR: 'createCharError',
-        CURRENTENERGY: 'currentEnergy',
-        CURRENTEXP: 'currentExp',
-        CURRENTHEALTH: 'currentHealth',
-        CURRENTMANA: 'currentMana',
-        CURRENTWEIGHT: 'currentWeight',
-
-        DEALDAMAGE: 'dealDamage',
-        DEALTDAMAGE: 'dealtDamage',
-        DESCRIPTION: 'descriptio',
-        DEXTERITY: 'dexterity',
-        DISEASERES: 'diseaseRes',
-        DWARF: 'dwarf',
-
-        EAR1: 'ear1',
-        EAR2: 'ear2',
-        EARTHRES: 'earthRes',
-        ELF: 'elf',
-        ENTERGAME: 'entergame',
-        EQUIPITEM: 'equipItem',
-
-        FACE: 'face',
-        FEET: 'feet',
-        FIGHTER: 'fighter',
-        FINGER1: 'finger1',
-        FINGER2: 'finger2',
-        FIRERES: 'fireRes',
-        FLAVORTEXT: 'flavorText',
-        FLIPPED: 'flipped',
-        FROSTRES: 'frostRes',
-
-        GETINVENTORY: 'getInventory',
-        GNOME: 'gnome',
-        GOLD: 'gold',
-        GRID: 'grid',
-
-        HANDS: 'hands',
-        HEAD: 'head',
-        HEALINGPOWER: 'healingPower',
-        HEALTHPERCENT: 'healthPercent',
-        HOLYRES: 'holyres',
-        HUMAN: 'human',
-
-        ID: 'id',
-        IDLEBEHAVIOUR: 'idleBehaviourfdsa',
-        INTELLIGENCE: 'intelligence',
-        ITEM: 'item',
-        ITEMID: 'itemid',
-        ITEMS: 'items',
-
-        JUMPSPEED: 'jumpSpeed',
-        JUMPTIME: 'jumpTime',
-
-        LEGS: 'legs',
-        LEVEL: 'level',
-        LOGINATTEMPT: 'loginAttempt',
-        LOGOUT: 'logout',
-        LOGGEDIN: 'loggedIn',
-        LORE: 'lore',
-        LUCK: 'luck',
-
-        MAGE: 'mage',
-        MAGIC: 'magic',
-        MAIN: 'main',
-        MAPDATA: 'mapDat',
-        MAPNAME: 'mapidfdsaf',
-        MAXENERGY: 'maxEnergy',
-        MAXHEALTH: 'maxHealth',
-        MAXMANA: 'maxMana',
-        MESSAGE: 'message',
-        MESSAGETYPE: 'messageType',
-        MELEEPOWER: 'meleePower',
-        MISSED: 'missed',
-        MOD: 'mod',
-        MOVE: 'move',
-        MOVEITEM: 'moveItem',
-        MOVEVECTOR: 'moveVector',
-
-        NAME: 'nam',
-        NECK: 'neck',
-        NEWMAP: 'newmap',
-        NPCS: 'NPCS',
-
-        ONEQUIPTEXT: 'onEquipText',
-        OPEN: 'openfds',
-        OVERLAYRESOURCE: 'overlayResourcefds',
-        OVERLAYTYPE: 'oType',
-        OWNER: 'owner',
-
-        PERCEPTION: 'perception',
-        PIERCE: 'pierce',
-        PLATINUM: 'platinum',
-        PLAYERS: 'players',
-        PLAYERUPDATE: 'playerUpdate',
-        POISONRES: 'poisonRes',
-        POSITION: 'position',
-        POSUPDATE: 'posUpdate',
-
-        QUANTITY: 'quantity',
-
-        RACE: 'race',
-        RACEID: 'racei',
-        RACES: 'races',
-        RANGE: 'range',
-        RANGED: 'ranged',
-        RANGEDPOWER: 'rangedPower',
-        REMOVEITEM: 'removeItem',
-        REMOVEPC: 'removePC',
-        REMOVENPC: 'removeNPC',
-        RESOURCE: 'resource',
-
-        SAY: 'say',
-        SCALE: 'scale',
-        SECONDARY: 'secondary',
-        SECTORARRAY: 'sectorArr',
-        SETITEMQUANTITY: 'setItemQuantity',
-        SETLOGINERRORTEXT: 'setLoginErrorText',
-        SETMELEEATTACK: 'setmatk',
-        SETRANGEDATTACK: 'setrngatk',
-        SETUNITSTAT: 'setUnitStat',
-        SETTARGET: 'setTarget',
-        SEX: 'sex',
-        SHADOWRES: 'shadowres',
-        SHOCKRES: 'shockRes',
-        SHOULDERS: 'shoulders',
-        SHOUT: 'shout',
-        SILVER: 'silver',
-        SIZE: 'size',
-        SLASH: 'slash',
-        SLOT: 'slot',
-        SLOTS: 'slots',
-        SPAWNID: 'spawnID',
-        SPELLPOWER: 'spellPower',
-        SPEED: 'speed',
-        SPIRIT: 'spirit',
-        STACK: 'stack',
-        STAT: 'stat',
-        STATS: 'stats',
-        STAMINA: 'stamina',
-        STICK: 'stick',
-        STRENGTH: 'strength',
-
-        TARGET: 'targetdsad',
-        TEXT: 'text',
-        THIEF: 'thief',
-        TILES: 'tifdsafd',
-        TRIGGERS: 'triggerfdsaf',
-        TRINKET1: 'trinket1',
-        TRINKET2: 'trinket2',
-        TWOHANDED: 'twoHanded',
-
-        UNIT: 'unit',
-        UNEQUIPITEM: 'unequipItem',
-        
-        VALUE: 'value',
-
-        WAIST: 'waist',
-        WEIGHT: 'weight',
-        WHISPER: 'whisper',
-        WINDRES: 'windRes',
-        WISDOM: 'wisdom',
-        WRIST1: 'wrist1',
-        WRIST2: 'wrist2',
-
-        X: 'x',
-
-        Y: 'y',
-
-        ZONE: 'zone'
-    };
     
     this.slotEnums = {
-        'ear': this.enums.EAR,
-        'head': this.enums.HEAD,
-        'face': this.enums.FACE,
-        'neck': this.enums.NECK,
-        'arms': this.enums.ARMS,
-        'back': this.enums.BACK,
-        'shoulders': this.enums.SHOULDERS,
-        'chest': this.enums.CHEST,
-        'wrist': this.enums.WRIST,
-        'hands': this.enums.HANDS,
-        'finger': this.enums.FINGER,
-        'waist': this.enums.WAIST,
-        'legs': this.enums.LEGS,
-        'feet': this.enums.FEET,
-        'trinket': this.enums.TRINKET,
-        'main': this.enums.MAIN,
-        'secondary': this.enums.SECONDARY,
-        'ranged': this.enums.RANGED,
-        'ammo': this.enums.AMMO,
-        'bag': this.enums.BAG,
+        'ear': Enums.EAR,
+        'head': Enums.HEAD,
+        'face': Enums.FACE,
+        'neck': Enums.NECK,
+        'arms': Enums.ARMS,
+        'back': Enums.BACK,
+        'shoulders': Enums.SHOULDERS,
+        'chest': Enums.CHEST,
+        'wrist': Enums.WRIST,
+        'hands': Enums.HANDS,
+        'finger': Enums.FINGER,
+        'waist': Enums.WAIST,
+        'legs': Enums.LEGS,
+        'feet': Enums.FEET,
+        'trinket': Enums.TRINKET,
+        'main': Enums.MAIN,
+        'secondary': Enums.SECONDARY,
+        'ranged': Enums.RANGED,
+        'ammo': Enums.AMMO,
+        'bag': Enums.BAG,
     };
 
     this.slotEnums2 = {};
-    this.slotEnums2[this.enums.HEAD] = 'head';
+    this.slotEnums2[Enums.HEAD] = 'head';
 
-    this.slotEnums2[this.enums.EAR1] = 'ear';
-    this.slotEnums2[this.enums.EAR2] = 'ear';
-    this.slotEnums2[this.enums.HEAD] = 'head';
-    this.slotEnums2[this.enums.FACE] = 'face';
-    this.slotEnums2[this.enums.NECK] = 'neck';
-    this.slotEnums2[this.enums.ARMS] = 'arms';
-    this.slotEnums2[this.enums.BACK] = 'back';
-    this.slotEnums2[this.enums.SHOULDERS] = 'shoulders';
-    this.slotEnums2[this.enums.CHEST] = 'chest';
-    this.slotEnums2[this.enums.WRIST1] = 'wrist';
-    this.slotEnums2[this.enums.WRIST2] = 'wrist';
-    this.slotEnums2[this.enums.HANDS] = 'hands';
-    this.slotEnums2[this.enums.FINGER1] = 'finger';
-    this.slotEnums2[this.enums.FINGER2] = 'finger';
-    this.slotEnums2[this.enums.WAIST] = 'waist';
-    this.slotEnums2[this.enums.LEGS] = 'legs';
-    this.slotEnums2[this.enums.FEET] = 'feet';
-    this.slotEnums2[this.enums.TRINKET1] = 'trinket';
-    this.slotEnums2[this.enums.TRINKET2] = 'trinket';
-    this.slotEnums2[this.enums.MAIN] = 'main';
-    this.slotEnums2[this.enums.SECONDARY] = 'secondary';
-    this.slotEnums2[this.enums.RANGED] = 'ranged';
-    this.slotEnums2[this.enums.AMMO] = 'ammo';
-    this.slotEnums2[this.enums.BAG1] = 'bag';
-    this.slotEnums2[this.enums.BAG2] = 'bag';
-    this.slotEnums2[this.enums.BAG3] = 'bag';
-    this.slotEnums2[this.enums.BAG4] = 'bag';
+    this.slotEnums2[Enums.EAR1] = 'ear';
+    this.slotEnums2[Enums.EAR2] = 'ear';
+    this.slotEnums2[Enums.HEAD] = 'head';
+    this.slotEnums2[Enums.FACE] = 'face';
+    this.slotEnums2[Enums.NECK] = 'neck';
+    this.slotEnums2[Enums.ARMS] = 'arms';
+    this.slotEnums2[Enums.BACK] = 'back';
+    this.slotEnums2[Enums.SHOULDERS] = 'shoulders';
+    this.slotEnums2[Enums.CHEST] = 'chest';
+    this.slotEnums2[Enums.WRIST1] = 'wrist';
+    this.slotEnums2[Enums.WRIST2] = 'wrist';
+    this.slotEnums2[Enums.HANDS] = 'hands';
+    this.slotEnums2[Enums.FINGER1] = 'finger';
+    this.slotEnums2[Enums.FINGER2] = 'finger';
+    this.slotEnums2[Enums.WAIST] = 'waist';
+    this.slotEnums2[Enums.LEGS] = 'legs';
+    this.slotEnums2[Enums.FEET] = 'feet';
+    this.slotEnums2[Enums.TRINKET1] = 'trinket';
+    this.slotEnums2[Enums.TRINKET2] = 'trinket';
+    this.slotEnums2[Enums.MAIN] = 'main';
+    this.slotEnums2[Enums.SECONDARY] = 'secondary';
+    this.slotEnums2[Enums.RANGED] = 'ranged';
+    this.slotEnums2[Enums.AMMO] = 'ammo';
+    this.slotEnums2[Enums.BAG1] = 'bag';
+    this.slotEnums2[Enums.BAG2] = 'bag';
+    this.slotEnums2[Enums.BAG3] = 'bag';
+    this.slotEnums2[Enums.BAG4] = 'bag';
 
     this.statEnums = {
-        'strength': this.enums.STRENGTH,
-        'stamina': this.enums.STAMINA,
-        'agility': this.enums.AGILITY,
-        'dexterity': this.enums.DEXTERITY,
-        'intelligence': this.enums.INTELLIGENCE,
-        'wisdom': this.enums.WISDOM,
-        'charisma': this.enums.CHARISMA,
-        'perception': this.enums.PERCEPTION,
-        'luck': this.enums.LUCK,
-        'spirit': this.enums.SPIRIT,
-        'ac': this.enums.AC,
-        'maxHealth': this.enums.MAXHEALTH
+        'strength': Enums.STRENGTH,
+        'stamina': Enums.STAMINA,
+        'agility': Enums.AGILITY,
+        'dexterity': Enums.DEXTERITY,
+        'intelligence': Enums.INTELLIGENCE,
+        'wisdom': Enums.WISDOM,
+        'charisma': Enums.CHARISMA,
+        'perception': Enums.PERCEPTION,
+        'luck': Enums.LUCK,
+        'spirit': Enums.SPIRIT,
+        'ac': Enums.AC,
+        'maxHealth': Enums.MAXHEALTH
     };
 }
 
@@ -415,71 +206,72 @@ GameEngine.prototype.loadMaps = function(arr) {
     console.log('loaded ' + arr.length + ' Maps from file');
 }
 
-GameEngine.prototype.loadItems = function(arr){
-    for (var i = 0; i < arr.length;i++){
+GameEngine.prototype.loadItems = function(d){
+    for (var i = 0; i < d['items'].length;i++){
         var item = new Item(self);
-        item.init(arr[i]);
-        self.items[arr[i].itemid] = item;
+        item.init(d['items'][i]);
+        self.items[d['items'][i].itemid] = item;
     }
-    console.log('loaded ' + arr.length + ' Classes from file');
+    console.log('loaded ' + d['items'].length + ' Items from file');
 }
 
-GameEngine.prototype.loadRaces = function(arr){
-    for (var i = 0; i < arr.length;i++){
+GameEngine.prototype.loadRaces = function(d){
+    for (var i = 0; i < d['items'].length;i++){
         var race = new Race(self);
-        race.init(arr[i]);
-        self.races[arr[i].raceid] = race;
+        race.init(d['items'][i]);
+        self.races[d['items'][i]['raceid']] = race;
     }
-    console.log('loaded ' + arr.length + ' Races from file');
+    console.log('loaded ' + d['items'].length + ' Races from file');
 }
 
-GameEngine.prototype.loadClasses = function(arr){
-    for (var i = 0; i < arr.length;i++){
+GameEngine.prototype.loadClasses = function(d){
+    console.log(d['items']);
+    for (var i = 0; i < d['items'].length;i++){
         var charclass = new CharClass(self);
-        charclass.init(arr[i]);
-        self.classes[arr[i].classid] = charclass;
+        charclass.init(d['items'][i]);
+        self.classes[d['items'][i]['classid']] = charclass;
     }
-    console.log('loaded ' + arr.length + ' Classes from file');
+    console.log('loaded ' + d['items'].length + ' Classes from file');
 }
 
-GameEngine.prototype.loadEnemies = function(arr){
-    for (var i = 0; i < arr.length;i++){
-        self.enemies[arr[i].enemyid] = arr[i];
-        if (arr[i]['elite']){
-            self.enemies[arr[i].enemyid]['classid'] = 'elite';
+GameEngine.prototype.loadEnemies = function(d){
+    for (var i = 0; i < d['items'].length;i++){
+        self.enemies[d['items'][i].enemyid] = d['items'][i];
+        if (d['items'][i]['elite']){
+            self.enemies[d['items'][i]['enemyid']]['classid'] = 'elite';
         }else{
-            self.enemies[arr[i].enemyid]['classid'] = 'enemy';
+            self.enemies[d['items'][i]['enemyid']]['classid'] = 'enemy';
         }
     }
-    console.log('loaded ' + arr.length + ' Enemies from file');
+    console.log('loaded ' + d['items'].length + ' Enemies from file');
 }
 
 GameEngine.prototype.getEnemyDimensions = function(arr){
-    for (var i in arr.frames){
+    for (var i in arr['frames']){
         if(i.substring(0,6) == 'enemy_'){
             //get base dimensions!
-            self.enemyDimensions[i.substring(0,i.length-4)] = arr.frames[i].frame.w;
+            self.enemyDimensions[i.substring(0,i.length-4)] = arr['frames'][i]['frame']['w'];
         }
     }
     console.log(self.enemyDimensions)
 }
-GameEngine.prototype.loadSpawns = function(arr){
-    for (var i = 0; i < arr.length;i++){
-        self.spawns[arr[i].spawnid] = arr[i];
+GameEngine.prototype.loadSpawns = function(d){
+    for (var i = 0; i < d['items'].length;i++){
+        self.spawns[d['items'][i].spawnid] = d['items'][i];
     }
-    console.log('loaded ' + arr.length + ' Spawns from file');
+    console.log('loaded ' + d['items'].length + ' Spawns from file');
 }
-GameEngine.prototype.loadBuffs = function(arr){
-    for (var i = 0; i < arr.length;i++){
-        self.buffs[arr[i].buffid] = arr[i];
+GameEngine.prototype.loadBuffs = function(d){
+    for (var i = 0; i < d['items'].length;i++){
+        self.buffs[d['items'][i].buffid] = d['items'][i];
     }
-    console.log('loaded ' + arr.length + ' Buffs from file');
+    console.log('loaded ' + d['items'].length + ' Buffs from file');
 }
-GameEngine.prototype.loadFactions = function(arr){
-    for (var i = 0; i < arr.length;i++){
-        self.buffs[arr[i].buffid] = arr[i];
+GameEngine.prototype.loadFactions = function(d){
+    for (var i = 0; i < d['items'].length;i++){
+        self.buffs[d['items'][i].buffid] = d['items'][i];
     }
-    console.log('loaded ' + arr.length + ' Buffs from file');
+    console.log('loaded ' + d['items'].length + ' Buffs from file');
 }
 
 //Player functions
@@ -584,16 +376,16 @@ GameEngine.prototype.newConnection = function(socket) {
         p.init({socket:socket});
         //sned down initial client data
         var data = {}
-        data[self.enums.ID] = p.id;
-        data[self.enums.CLASSES] = {};
+        data[Enums.ID] = p.id;
+        data[Enums.CLASSES] = {};
         for (var i in self.classes){
-            data[self.enums.CLASSES][i] = self.classes[i].getClientObj();
+            data[Enums.CLASSES][i] = self.classes[i].getClientObj();
         }
-        data[self.enums.RACES] = {};
+        data[Enums.RACES] = {};
         for (var i in self.races){
-            data[self.enums.RACES][i] = self.races[i].getClientObj();
+            data[Enums.RACES][i] = self.races[i].getClientObj();
         }
-        self.queuePlayer(p,self.enums.CONNINFO, data);
+        self.queuePlayer(p,Enums.CONNINFO, data);
         self.addPlayer(p);
     }
 }
@@ -655,5 +447,6 @@ GameEngine.prototype.debug = function(id,e,d) {
         }
     }
 }
+
 
 exports.GameEngine = GameEngine;

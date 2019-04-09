@@ -1,5 +1,6 @@
 
 var utils = require('./utils.js').Utils,
+    Enums = require('./enums.js').Enums,
     Utils = new utils();
 
 //attribute.js
@@ -64,15 +65,15 @@ Attribute.prototype.set = function(updateClient){
     this.next(updateClient);
     if (pVal != this.value){
         var clientData = {};
-        clientData[this.engine.enums.UNIT] = this.owner.id;
-        clientData[this.engine.enums.STAT] = this.id;
-        clientData[this.engine.enums.VALUE] = this.value;
-        clientData[this.engine.enums.MOD] = Math.round(this.value)-Math.round(this.base);
+        clientData[Enums.UNIT] = this.owner.id;
+        clientData[Enums.STAT] = this.id;
+        clientData[Enums.VALUE] = this.value;
+        clientData[Enums.MOD] = Math.round(this.value)-Math.round(this.base);
         if (updateClient && this.updateClient && this.owner.owner){
-            this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETUNITSTAT,clientData);
+            this.engine.queuePlayer(this.owner.owner,Enums.SETUNITSTAT,clientData);
         }else if (updateClient && this.updateAll){
             for (var i in this.owner.pToUpdate){
-                this.engine.queuePlayer(this.owner.pToUpdate[i].owner,this.engine.enums.SETUNITSTAT,clientData);
+                this.engine.queuePlayer(this.owner.pToUpdate[i].owner,Enums.SETUNITSTAT,clientData);
             }
         }
     }

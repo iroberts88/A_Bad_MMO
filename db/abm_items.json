@@ -1,922 +1,608 @@
-{ 
-    "_id" : ObjectId("5bd9e3e1b16cbc2db05eba74"), 
-    "itemid" : "w_worn_qstaff", 
-    "name" : "Worn Quarterstaff", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 8.0
-    }, 
-    "resource" : "w_qstaff", 
-    "bludgeon" : [
-        4.0, 
-        2.5, 
-        100.0
-    ], 
-    "slots" : [
-        "main"
-    ], 
-    "twoHanded" : true, 
-    "onEquip" : {
+{
+	"items":
+	[
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+		{
+			"itemid":"w_worn_qstaff",
+			"name":"Worn Quarterstaff",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":1.0,
+			"y":8.0},
+			"resource":"w_qstaff",
+			"bludgeon":[4.0,
+				2.5,
+				100.0
+			],
+			"slots":["main"],
+			"twoHanded":true,
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"value":18.0,
+			"weight":7.5,
+			"flavorText":""
+		},
+		{
+			"itemid":"w_rusty_dagger",
+			"name":"Rusty Dagger",
+			"info":"",
+			"magic":false,
+			"soulbound":false,
+			"lore":false,
+			"scale":{"x":1.0,
+			"y":2.0},
+			"resource":"w_dagger",
+			"pierce":[3.0,
+				1.9,
+				100.0
+			],
+			"slots":["main",
+			"secondary"],
+			"2h":false,
+			"onEquip":{},
+			"classes":{"thief":true},
+			"races":{"all":true},
+			"onUse":{},
+			"value":5.0,
+			"weight":1.9,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "value" : 18.0, 
-    "weight" : 7.5, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5bdb0f08b16cbc2db05eba75"), 
-    "itemid" : "w_rusty_dagger", 
-    "name" : "Rusty Dagger", 
-    "info" : "", 
-    "magic" : false, 
-    "soulbound" : false, 
-    "lore" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "w_dagger", 
-    "pierce" : [
-        3.0, 
-        1.9, 
-        100.0
-    ], 
-    "slots" : [
-        "main", 
-        "secondary"
-    ], 
-    "2h" : false, 
-    "onEquip" : {
+			"itemid":"bone_shards",
+			"name":"Bone Shards",
+			"info":"",
+			"lore":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"i_bone_shards",
+			"value":1.0,
+			"weight":0.1,
+			"flavorText":"",
+			"stack":10.0
+		},
+		{
+			"itemid":"ectoplasm",
+			"name":"Ectoplasm",
+			"info":"",
+			"lore":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"i_ectoplasm",
+			"value":100.0,
+			"flavorText":"",
+			"stack":10.0,
+			"weight":0.3
+		},
+		{
+			"itemid":"w_shortbow",
+			"name":"Shortbow",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"w_bow",
+			"pierce":[5.0,
+				2.9,
+				100.0
+			],
+			"range":[50.0,
+				300.0
+			],
+			"slots":["ranged"],
+			"classes":{"thief":true,
+			"fighter":true},
+			"races":{"all":true},
+			"onEquip":{},
+			"onUse":{},
+			"value":32.0,
+			"weight":4.5,
+			"flavorText":""
 
-    }, 
-    "classes" : {
-        "thief" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+		},
+		{
 
-    }, 
-    "value" : 5.0, 
-    "weight" : 1.9, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5bdb0f9eb16cbc2db05eba76"), 
-    "itemid" : "bone_shards", 
-    "name" : "Bone Shards", 
-    "info" : "", 
-    "lore" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "i_bone_shards", 
-    "value" : 1.0, 
-    "weight" : 0.1, 
-    "flavorText" : "", 
-    "stack" : 10.0
-}
-{ 
-    "_id" : ObjectId("5bdb0fccb16cbc2db05eba77"), 
-    "itemid" : "ectoplasm", 
-    "name" : "Ectoplasm", 
-    "info" : "", 
-    "lore" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "i_ectoplasm", 
-    "value" : 100.0, 
-    "flavorText" : "", 
-    "stack" : 10.0, 
-    "weight" : 0.3
-}
-{ 
-    "_id" : ObjectId("5bdc5330b16cbc2db05eba83"), 
-    "itemid" : "w_shortbow", 
-    "name" : "Shortbow", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "w_bow", 
-    "pierce" : [
-        5.0, 
-        2.9, 
-        100.0
-    ], 
-    "range" : [
-        50.0, 
-        300.0
-    ], 
-    "slots" : [
-        "ranged"
-    ], 
-    "classes" : {
-        "thief" : true, 
-        "fighter" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onEquip" : {
+			"itemid":"w_apocalypse",
+			"name":"Apocalypse",
+			"info":"Derp derp derp",
+			"lore":true,
+			"magic":true,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":5.0},
+			"resource":"w_apocalypse",
+			"slash":[15.0,
+				2.5,
+				80.0
+			],
+			"pierce":[24.0,
+				4.0,
+				10.0
+			],
+			"bludgeon":[6.0,
+				1.5,
+				10.0
+			],
+			"slots":["main",
+			"secondary"],
+			"classes":{"fighter":true,
+			"thief":true},
+			"races":{"all":true},
+			"onEquip":{},
+			"onUse":{},
+			"stats":{"strength":20.0,
+			"agility":15.0,
+			"dexterity":10.0,
+			"perception":20.0,
+			"intelligence":-10.0},
+			"value":300000.0,
+			"weight":2.5,
+			"flavorText":"A sword with the power to end the world."
+		},
+		{
+			"itemid":"w_abyssal_blood_gem",
+			"name":"Abyssal Blood Gem",
+			"info":"",
+			"lore":true,
+			"magic":true,
+			"soulbound":true,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"i_blood_gem",
+			"onUse":{},
+			"value":2e+07,
+			"weight":1.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "onUse" : {
+			"itemid":"e_gold_earring",
+			"name":"Gold Earring",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"e_ear2",
+			"slots":["ear"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":0.0,
+			"value":300.0,
+			"weight":0.2,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "value" : 32.0, 
-    "weight" : 4.5, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5bdc54ecb16cbc2db05eba84"), 
-    "itemid" : "w_apocalypse", 
-    "name" : "Apocalypse", 
-    "info" : "Derp derp derp", 
-    "lore" : true, 
-    "magic" : true, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 5.0
-    }, 
-    "resource" : "w_apocalypse", 
-    "slash" : [
-        15.0, 
-        2.5, 
-        80.0
-    ], 
-    "pierce" : [
-        24.0, 
-        4.0, 
-        10.0
-    ], 
-    "bludgeon" : [
-        6.0, 
-        1.5, 
-        10.0
-    ], 
-    "slots" : [
-        "main", 
-        "secondary"
-    ], 
-    "classes" : {
-        "fighter" : true, 
-        "thief" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onEquip" : {
+			"itemid":"e_gold_ring",
+			"name":"Gold Ring",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"e_finger2",
+			"slots":["finger"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":0.0,
+			"value":300.0,
+			"weight":0.2,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "onUse" : {
+			"itemid":"e_cloth_headband",
+			"name":"Cloth Headband",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_head3",
+			"slots":["head"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":3.0,
+			"value":8.0,
+			"weight":1.5,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "stats" : {
-        "strength" : 20.0, 
-        "agility" : 15.0, 
-        "dexterity" : 10.0, 
-        "perception" : 20.0, 
-        "intelligence" : -10.0
-    }, 
-    "value" : 300000.0, 
-    "weight" : 2.5, 
-    "flavorText" : "A sword with the power to end the world."
-}
-{ 
-    "_id" : ObjectId("5be32db8b16cbc2db05eba8b"), 
-    "itemid" : "w_abyssal_blood_gem", 
-    "name" : "Abyssal Blood Gem", 
-    "info" : "", 
-    "lore" : true, 
-    "magic" : true, 
-    "soulbound" : true, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "i_blood_gem", 
-    "onUse" : {
+			"itemid":"e_cloth_mask",
+			"name":"Cloth Mask",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_face1",
+			"slots":["face"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":5,
+			"weight":1.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "value" : 20000000.0, 
-    "weight" : 1.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004242bb153e423cc23bf3"), 
-    "itemid" : "e_gold_earring", 
-    "name" : "Gold Earring", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_ear2", 
-    "slots" : [
-        "ear"
-    ], 
-    "onEquip" : {
+			"itemid":"e_cloth_armwraps",
+			"name":"Cloth Armwraps",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_arms1",
+			"slots":["arms"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":6,
+			"weight":1.6,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_cloth_shirt",
+			"name":"Cloth Shirt",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":3.0},
+			"resource":"e_chest1",
+			"slots":["chest"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":4,
+			"value":10,
+			"weight":1.5,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : 0.0, 
-    "value" : 300.0, 
-    "weight" : 0.2, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004260bb153e423cc23bf4"), 
-    "itemid" : "e_gold_ring", 
-    "name" : "Gold Ring", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_finger2", 
-    "slots" : [
-        "finger"
-    ], 
-    "onEquip" : {
+			"itemid":"e_cloth_gloves",
+			"name":"Cloth Gloves",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_hands3",
+			"slots":["hands"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":8,
+			"weight":0.8,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_cloth_cord",
+			"name":"Cloth Cord",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":1.0},
+			"resource":"e_waist2",
+			"slots":["waist"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":3,
+			"weight":0.4,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : 0.0, 
-    "value" : 300.0, 
-    "weight" : 0.2, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c0042dabb153e423cc23bf5"), 
-    "itemid" : "e_cloth_headband", 
-    "name" : "Cloth Headband", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_head3", 
-    "slots" : [
-        "head"
-    ], 
-    "onEquip" : {
+			"itemid":"e_cloth_band",
+			"name":"Cloth Band",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_wrist2",
+			"slots":["wrist"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":1,
+			"value":2,
+			"weight":0.4,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_cloth_pants",
+			"name":"Cloth Pants",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":3.0},
+			"resource":"e_legs1",
+			"slots":["legs"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":3,
+			"value":9,
+			"weight":1.8,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : 3.0, 
-    "value" : 8.0, 
-    "weight" : 1.5, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004507bb153e423cc23bf8"), 
-    "itemid" : "e_cloth_mask", 
-    "name" : "Cloth Mask", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_face1", 
-    "slots" : [
-        "face"
-    ], 
-    "onEquip" : {
+			"itemid":"e_cloth_sandals",
+			"name":"Cloth Sandals",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_feet11",
+			"slots":["feet"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":5,
+			"weight":1.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_lucky_charm",
+			"name":"A Lucky Charm",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"e_trinket3",
+			"slots":["trinket"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"stats":{"luck":1},
+			"ac":0,
+			"value":75,
+			"weight":1.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(5), 
-    "weight" : 1.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bf9"), 
-    "itemid" : "e_cloth_armwraps", 
-    "name" : "Cloth Armwraps", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_arms1", 
-    "slots" : [
-        "arms"
-    ], 
-    "onEquip" : {
+			"itemid":"e_backpack",
+			"name":"Backpack",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"i_pack1",
+			"slots":["bag"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"bagSize":[6.0,
+				6.0
+			],
+			"value":500,
+			"weight":3.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_cloth_amice",
+			"name":"Cloth Amice",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_shoulders1",
+			"slots":["shoulders"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":8.0,
+			"weight":1.8,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(6), 
-    "weight" : 1.6, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bfa"), 
-    "itemid" : "e_cloth_shirt", 
-    "name" : "Cloth Shirt", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 3.0
-    }, 
-    "resource" : "e_chest1", 
-    "slots" : [
-        "chest"
-    ], 
-    "onEquip" : {
+			"itemid":"e_cloth_cape",
+			"name":"Cloth Cape",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_back1",
+			"slots":["back"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":2,
+			"value":32,
+			"weight":2.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"e_gold_necklace",
+			"name":"Gold Necklace",
+			"info":"",
+			"lore":false,
+			"magic":false,
+			"soulbound":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"e_neck1",
+			"slots":["neck"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":0.0,
+			"value":400.0,
+			"weight":0.5,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : NumberInt(4), 
-    "value" : NumberInt(10), 
-    "weight" : 1.5, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bfb"), 
-    "itemid" : "e_cloth_gloves", 
-    "name" : "Cloth Gloves", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_hands3", 
-    "slots" : [
-        "hands"
-    ], 
-    "onEquip" : {
+			"itemid":"e_shield",
+			"name":"Wooden Shield",
+			"info":"",
+			"magic":false,
+			"soulbound":false,
+			"lore":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"e_wooden_shield",
+			"slots":["secondary"],
+			"onEquip":{},
+			"classes":{"fighter":true},
+			"races":{"all":true},
+			"onUse":{},
+			"ac":9.0,
+			"value":45.0,
+			"weight":6.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
+			"itemid":"i_darkmatter",
+			"name":"Dark Matter",
+			"info":"",
+			"magic":true,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"i_darkmatter",
+			"onUse":{},
+			"value":2e+07,
+			"weight":5.0,
+			"flavorText":""
+		},
+		{
 
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(8), 
-    "weight" : 0.8, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bfc"), 
-    "itemid" : "e_cloth_cord", 
-    "name" : "Cloth Cord", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_waist2", 
-    "slots" : [
-        "waist"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(3), 
-    "weight" : 0.4, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bfd"), 
-    "itemid" : "e_cloth_band", 
-    "name" : "Cloth Band", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_wrist2", 
-    "slots" : [
-        "wrist"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(1), 
-    "value" : NumberInt(2), 
-    "weight" : 0.4, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bfe"), 
-    "itemid" : "e_cloth_pants", 
-    "name" : "Cloth Pants", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 3.0
-    }, 
-    "resource" : "e_legs1", 
-    "slots" : [
-        "legs"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(3), 
-    "value" : NumberInt(9), 
-    "weight" : 1.8, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23bff"), 
-    "itemid" : "e_cloth_sandals", 
-    "name" : "Cloth Sandals", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_feet11", 
-    "slots" : [
-        "feet"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(5), 
-    "weight" : 1.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23c00"), 
-    "itemid" : "e_lucky_charm", 
-    "name" : "A Lucky Charm", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_trinket3", 
-    "slots" : [
-        "trinket"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "stats" : {
-        "luck" : NumberInt(1)
-    }, 
-    "ac" : NumberInt(0), 
-    "value" : NumberInt(75), 
-    "weight" : 1.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c004508bb153e423cc23c01"), 
-    "itemid" : "e_backpack", 
-    "name" : "Backpack", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "i_pack1", 
-    "slots" : [
-        "bag"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "bagSize" : [
-        6.0, 
-        6.0
-    ], 
-    "value" : NumberInt(500), 
-    "weight" : 3.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c014ae7bb153e423cc23c09"), 
-    "itemid" : "e_cloth_amice", 
-    "name" : "Cloth Amice", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_shoulders1", 
-    "slots" : [
-        "shoulders"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : 8.0, 
-    "weight" : 1.8, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c093e07853b442ddccf98e1"), 
-    "itemid" : "e_cloth_cape", 
-    "name" : "Cloth Cape", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_back1", 
-    "slots" : [
-        "back"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : NumberInt(2), 
-    "value" : NumberInt(32), 
-    "weight" : 2.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c093eee853b442ddccf98e2"), 
-    "itemid" : "e_gold_necklace", 
-    "name" : "Gold Necklace", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : false, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_neck1", 
-    "slots" : [
-        "neck"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : 0.0, 
-    "value" : 400.0, 
-    "weight" : 0.5, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c093fa5853b442ddccf98e3"), 
-    "itemid" : "e_shield", 
-    "name" : "Wooden Shield", 
-    "info" : "", 
-    "magic" : false, 
-    "soulbound" : false, 
-    "lore" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "e_wooden_shield", 
-    "slots" : [
-        "secondary"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "fighter" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "ac" : 9.0, 
-    "value" : 45.0, 
-    "weight" : 6.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c117a7e8dafca3594568b8d"), 
-    "itemid" : "i_darkmatter", 
-    "name" : "Dark Matter", 
-    "info" : "", 
-    "magic" : true, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "i_darkmatter", 
-    "onUse" : {
-
-    }, 
-    "value" : 20000000.0, 
-    "weight" : 5.0, 
-    "flavorText" : ""
-}
-{ 
-    "_id" : ObjectId("5c117c698dafca3594568b8e"), 
-    "itemid" : "pack", 
-    "name" : "Ian's Backpack of Holding Shit", 
-    "info" : "", 
-    "lore" : false, 
-    "magic" : true, 
-    "soulbound" : false, 
-    "scale" : {
-        "x" : 2.0, 
-        "y" : 2.0
-    }, 
-    "resource" : "i_pack1", 
-    "slots" : [
-        "bag"
-    ], 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "bagSize" : [
-        25.0, 
-        25.0
-    ], 
-    "value" : NumberInt(5000000), 
-    "weight" : 0.1, 
-    "flavorText" : "Holds all of the shit"
-}
-{ 
-    "_id" : ObjectId("5c17ba9c8dafca2198a3f4c5"), 
-    "itemid" : "w_arrow", 
-    "name" : "Arrow", 
-    "info" : "", 
-    "magic" : false, 
-    "soulbound" : false, 
-    "lore" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 1.0
-    }, 
-    "resource" : "e_arrow", 
-    "slots" : [
-        "ammo"
-    ], 
-    "2h" : false, 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "all" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "value" : NumberInt(1), 
-    "weight" : 0.1, 
-    "flavorText" : "", 
-    "stack" : 200.0
-}
-{ 
-    "_id" : ObjectId("5c2a2b988dafca3bdc8d86e8"), 
-    "itemid" : "w_branch", 
-    "name" : "Ancient Petrified Branch", 
-    "info" : "", 
-    "magic" : true, 
-    "soulbound" : false, 
-    "lore" : false, 
-    "scale" : {
-        "x" : 1.0, 
-        "y" : 3.0
-    }, 
-    "resource" : "w_qstaff", 
-    "bludgeon" : [
-        3.0, 
-        0.5, 
-        100.0
-    ], 
-    "slots" : [
-        "main", 
-        "secondary"
-    ], 
-    "2h" : false, 
-    "onEquip" : {
-
-    }, 
-    "classes" : {
-        "fighter" : true, 
-        "monk" : true
-    }, 
-    "races" : {
-        "all" : true
-    }, 
-    "onUse" : {
-
-    }, 
-    "value" : 400.0, 
-    "weight" : 0.1, 
-    "flavorText" : ""
+			"itemid":"pack",
+			"name":"Ian's Backpack of Holding Shit",
+			"info":"",
+			"lore":false,
+			"magic":true,
+			"soulbound":false,
+			"scale":{"x":2.0,
+			"y":2.0},
+			"resource":"i_pack1",
+			"slots":["bag"],
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"bagSize":[25.0,
+				25.0
+			],
+			"value":5000000,
+			"weight":0.1,
+			"flavorText":"Holds all of the shit"
+		},
+		{
+			"itemid":"w_arrow",
+			"name":"Arrow",
+			"info":"",
+			"magic":false,
+			"soulbound":false,
+			"lore":false,
+			"scale":{"x":1.0,
+			"y":1.0},
+			"resource":"e_arrow",
+			"slots":["ammo"],
+			"2h":false,
+			"onEquip":{},
+			"classes":{"all":true},
+			"races":{"all":true},
+			"onUse":{},
+			"value":1,
+			"weight":0.1,
+			"flavorText":"",
+			"stack":200.0
+		},
+		{
+			"itemid":"w_branch",
+			"name":"Ancient Petrified Branch",
+			"info":"",
+			"magic":true,
+			"soulbound":false,
+			"lore":false,
+			"scale":{"x":1.0,
+			"y":3.0},
+			"resource":"w_qstaff",
+			"bludgeon":[3.0,
+				0.5,
+				100.0
+			],
+			"slots":["main",
+			"secondary"],
+			"2h":false,
+			"onEquip":{},
+			"classes":{"fighter":true,
+			"monk":true},
+			"races":{"all":true},
+			"onUse":{},
+			"value":400.0,
+			"weight":0.1,
+			"flavorText":""
+		}
+	]
 }

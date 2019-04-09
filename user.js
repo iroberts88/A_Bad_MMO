@@ -5,6 +5,7 @@
 
 var AWS = require("aws-sdk"),
     ng = require('./namegenerator.js').NameGenerator,
+    Enums = require('./enums.js').Enums,
     Character = require('./character.js').Character;
 AWS.config.update({
   region: "us-east-1",
@@ -62,15 +63,21 @@ function User() {
                 var data = {};
                 var classes = ['priest','fighter','thief','mage'];
                 var cl = classes[Math.floor(Math.random()*classes.length)]
-                data.slot = 1;
+                data['slot'] = 1;
                 data.scale = 2;
                 var sex = Math.round(Math.random()) ? 'male' : 'female';
-                data.sex = sex.substring(0,1);
-                data.name = ng.generateName(sex);
-                data.race = 'human';
-                data.class = 'fighter';
-                data.classid = 'fighter';
+                data['sex'] = sex.substring(0,1);
+                data['name'] = ng.generateName(sex);
+                data['race'] = 'human';
+                data['class'] = 'fighter';
+                data['classid'] = 'fighter';
                 newChar.init(data);
+                newChar.setRace();
+                newChar.setClass();
+                newChar.currentHealth.value = newChar.maxHealth.value;
+                newChar.currentHealth.set();
+                newChar.currentMana.value = newChar.maxMana.value;
+                newChar.currentMana.set();
                 this.characters[1] = newChar;
                 this.userData = {
                     username: d.username,
@@ -86,7 +93,7 @@ function User() {
             this.characters[slot] = character;
             //get char info and send to player
             var data = character.getClientData();
-            this.owner.engine.queuePlayer(this.owner,this.owner.engine.enums.ADDCHARACTER, data);
+            this.owner.engine.queuePlayer(this.owner,Enums.ADDCHARACTER, data);
         },
         lock: function(){
             this.userData.loggedin = true;
@@ -144,9 +151,9 @@ function User() {
         },
         getClientData: function(){
             var data = {};
-            data[this.owner.engine.enums.CHARACTERS] = {};
+            data[Enums.CHARACTERS] = {};
             for (var i in this.characters){
-                data[this.owner.engine.enums.CHARACTERS][this.characters[i].slot] = this.characters[i].getClientData(false);
+                data[Enums.CHARACTERS][this.characters[i].slot] = this.characters[i].getClientData(false);
             }
             return data;
         },

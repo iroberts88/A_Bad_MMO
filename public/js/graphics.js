@@ -476,15 +476,17 @@
         },
 
         fitText: function(text,width,height){
-            //resize a text object to the given size
+            //resize a text object to the given size=
             while(text.width > width){
                 var s = parseInt(text.style.fontSize);
                 text.style.fontSize = (s-1) + 'px';
+                if (s < 8){break;}
             }
             if (typeof height != 'undefined'){
                 while(text.height > height){
                     var s = parseInt(text.style.fontSize);
                     text.style.fontSize = (s-1) + 'px';
+                    if (s < 8){break;}
                 }
             }
             return text;

@@ -1,5 +1,6 @@
 var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
+    Enums = require('./enums.js').Enums,
     Utils = new utils(),
     Attribute = require('./attribute.js').Attribute;
 var P = SAT.Polygon;

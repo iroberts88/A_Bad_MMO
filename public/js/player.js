@@ -18,9 +18,9 @@
         init: function(data){
         	this.userData = data;
             this.characters = {};
-            if (typeof data.characters != 'undefined'){
-                for (var i in data.characters){
-                    this.addCharacter(data.characters[i]);
+            if (typeof data[Enums.CHARACTERS] != 'undefined'){
+                for (var i in data[Enums.CHARACTERS]){
+                    this.addCharacter(data[Enums.CHARACTERS][i]);
                 }
             }
             this.mapLoc = new SAT.Vector(0,0);

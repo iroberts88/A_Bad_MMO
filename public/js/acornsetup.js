@@ -30,9 +30,8 @@
             Acorn.Net.on(Enums.CONNINFO, function (data) {
                 console.log('Connected to server: Info Received');
                 console.log(data);
-                mainObj.id = data[Enums.ID];
-                NewChar.raceInfo = data[Enums.RACES];
-                NewChar.classInfo = data[Enums.CLASSES];
+                Player.id = data[Enums.ID];
+                NewChar.setRaceClassInfo(data);
                 Acorn.Net.ready = true;
                 checkReady();
             });
@@ -75,17 +74,18 @@
                 Game.bagWindow.removeItem(item);
                 item.position = data[Enums.SLOT];
                 item.setOnSlot();
+                console.log(item);
                 if (typeof data[Enums.BAG1] != 'undefined'){
-                    Game.bagWindow.bag1 = data[Enums.BAG1];
+                    Game.bagWindow.bag1 = Game.bagWindow.createBag(data[Enums.BAG1]);
                 }
                 if (typeof data[Enums.BAG2] != 'undefined'){
-                    Game.bagWindow.bag2 = data[Enums.BAG2];
+                    Game.bagWindow.bag2 = Game.bagWindow.createBag(data[Enums.BAG2]);
                 }
                 if (typeof data[Enums.BAG3] != 'undefined'){
-                    Game.bagWindow.bag3 = data[Enums.BAG3];
+                    Game.bagWindow.bag3 = Game.bagWindow.createBag(data[Enums.BAG3]);
                 }
                 if (typeof data[Enums.BAG4] != 'undefined'){
-                    Game.bagWindow.bag4 = data[Enums.BAG4];
+                    Game.bagWindow.bag4 = Game.bagWindow.createBag(data[Enums.BAG4]);
                 }
                 Game.bagWindow.draw();
             });
@@ -246,7 +246,6 @@
             });
             Acorn.Net.on(Enums.MISSED, function (data) {
                 //you have been missed
-
                 //you have missed your target
                 var d = {};
                 d[Enums.MESSAGETYPE] = 'combatMiss';

@@ -2,6 +2,8 @@
 //race.js
 //----------------------------------------------------------------
 
+var Enums = require('./enums.js').Enums;
+
 var Race = function(ge) {
 
     this.engine = ge;
@@ -14,21 +16,21 @@ var Race = function(ge) {
 }
 
 Race.prototype.init = function (data) {
-    this.raceid = data.raceid;
-    this.name = data.name;
-    this.description = data.description;
-    this.attributes = data.attributes;
-    this.availableClasses = data.availableClasses;
+    this.raceid = data['raceid'];
+    this.name = data['name'];
+    this.description = data['description'];
+    this.attributes = data['attributes'];
+    this.availableClasses = data['availableClasses'];
 };
 
 Race.prototype.getClientObj = function (data) {
     //control what info about the character race is sent to the client
     var data = {}
-    data[this.engine.enums.RACEID] = this.raceid;
-    data[this.engine.enums.NAME] = this.name;
-    data[this.engine.enums.ATTRIBUTES] = this.attributes;
-    data[this.engine.enums.AVAILABLECLASSES] = this.availableClasses;
-    data[this.engine.enums.DESCRIPTION] = this.description;
+    data[Enums.RACEID] = this.raceid;
+    data[Enums.NAME] = this.name;
+    data[Enums.ATTRIBUTES] = this.attributes;
+    data[Enums.AVAILABLECLASSES] = this.availableClasses;
+    data[Enums.DESCRIPTION] = this.description;
     return data;
 };
 

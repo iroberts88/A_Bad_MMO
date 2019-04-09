@@ -1,57 +1,59 @@
-{ 
-    "_id" : ObjectId("5bd06e34f1c020323031e307"), 
-    "classid" : "priest", 
-    "name" : "Priest", 
-    "description" : "This is a description of the PRIEST class", 
-    "statMods" : {
-        "wisdom" : 40.0, 
-        "charisma" : 30.0, 
-        "stamina" : 15.0, 
-        "luck" : 15.0, 
-        "perception" : -10.0, 
-        "strength" : -10.0
-    }
+{
+	"items": [
+		{
+			"classid":"thief",
+			"name":"Thief",
+			"description":"This is a description of the THIEF class.",
+			"statMods":{
+				"agility":30.0,
+				"perception":20.0,
+				"luck":15.0,
+				"strength":15.0,
+				"dexterity":10.0,
+				"intelligence":10.0
+			}
+		},
+		{
+			"classid":"mage",
+			"name":"Mage",
+			"description":"This is a description of the MAGE class",
+			"statMods":{
+				"intelligence":45.0,
+				"perception":20.0,
+				"wisdom":15.0,
+				"dexterity":10.0,
+				"agility":10.0,
+				"strength":-10.0
+			}
+		},
+		{
+			"classid":"priest",
+			"name":"Priest",
+			"description":"This is a description of the PRIEST class",
+			"statMods":{
+				"wisdom":40.0,
+				"charisma":30.0,
+				"stamina":15.0,
+				"luck":15.0,
+				"perception":-10.0,
+				"strength":-10.0
+			}
+		},
+		{
+			"classid":"fighter",
+			"name":"Fighter",
+			"description":"This is a description of the FIGHTER class",
+			"statMods":{
+				"strength":35.0,
+				"stamina":30.0,
+				"agility":25.0,
+				"dexterity":15.0,
+				"perception":10.0,
+				"intelligence":-15.0,
+				"wisdom":-15.0
+			}
+		}
+	]
 }
-{ 
-    "_id" : ObjectId("5bd06e34f1c020323031e305"), 
-    "classid" : "thief", 
-    "name" : "Thief", 
-    "description" : "This is a description of the THIEF class.", 
-    "statMods" : {
-        "agility" : 30.0, 
-        "perception" : 20.0, 
-        "luck" : 15.0, 
-        "strength" : 15.0, 
-        "dexterity" : 10.0, 
-        "intelligence" : 10.0
-    }
-}
-{ 
-    "_id" : ObjectId("5bd06e34f1c020323031e306"), 
-    "classid" : "mage", 
-    "name" : "Mage", 
-    "description" : "This is a description of the MAGE class", 
-    "statMods" : {
-        "intelligence" : 45.0, 
-        "perception" : 20.0, 
-        "wisdom" : 15.0, 
-        "dexterity" : 10.0, 
-        "agility" : 10.0, 
-        "strength" : -10.0
-    }
-}
-{ 
-    "_id" : ObjectId("5bd06e34f1c020323031e308"), 
-    "classid" : "fighter", 
-    "name" : "Fighter", 
-    "description" : "This is a description of the FIGHTER class", 
-    "statMods" : {
-        "strength" : 35.0, 
-        "stamina" : 30.0, 
-        "agility" : 25.0, 
-        "dexterity" : 15.0, 
-        "perception" : 10.0, 
-        "intelligence" : -15.0, 
-        "wisdom" : -15.0
-    }
-}
+
+

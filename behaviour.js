@@ -1,25 +1,31 @@
 var utils = require('./utils.js').Utils;
 var Utils = new utils();
 var SAT = require('./SAT.js'); //SAT POLYGON COLLISSION1
-var Behaviour = require('./behaviour.js').Behaviour;
+var Behaviour = require('./behaviour.js').Behaviour,
+    Enums = require('./enums.js').Enums;
 
 var V = SAT.Vector;
 var P = SAT.Polygon;
 var C = SAT.Circle;
-
+var TILE_SIZE = 48;
 //Assign to enemies for Enemy AI
 
-var Behaviour = function() {};
+var Behaviour = function() {
+    this.V = SAT.Vector;
+    this.P = SAT.Polygon;
+    this.C = SAT.Circle;
+    this.TILE_SIZE = 48;
+    this.behaviourEnums = {
+        TestBehaviour: 'TestBehaviour',
 
-var behaviourEnums = {
-    TestBehaviour: 'TestBehaviour',
+        BasicAttack: 'basicAttack',
 
-    BasicAttack: 'basicAttack',
+        SearchInRadius: 'searchInRadius',
 
-    SearchInRadius: 'searchInRadius',
+        Wander: 'wander',
+    }
+};
 
-    Wander: 'wander',
-}
 
 //--------------------------------------------------------
 //Basic Actions for use in behaviours
@@ -36,7 +42,11 @@ Behaviour.prototype.basicAttack = function(unit,dt,data){
     var Behaviour = require('./behaviour.js').Behaviour;
     //move into melee attack range
     //check if path to target is blocked!!!
-    if (unit.currentZone.checkPathBlocked(unit,unit.currentTarget)){
+    if (Math.abs(unit.currentTarget.currentSector.x-unit.currentSector.x) > 1 || Math.abs(unit.currentTarget.currentSector.y-unit.currentSector.y) > 1){
+        console.log("clearing target");
+        unit.clearTarget();
+    }
+    if (unit.currentZone.checkPathBlocked(unit.hb.pos,unit.currentTarget.hb.pos)){
         //path is blocked, use A* move
         if (unit.stickToTarget){
             unit.setStick(false); //unstick
@@ -52,7 +62,7 @@ Behaviour.prototype.basicAttack = function(unit,dt,data){
             data.currentPath.shift();
 
         }
-        Behaviour.aStarMoveToNode(unit,dt,data);
+        this.aStarMoveToNode(unit,dt,data);
         return;
     }else{
         if (!unit.stickToTarget){
@@ -61,7 +71,7 @@ Behaviour.prototype.basicAttack = function(unit,dt,data){
     }
 
     var distance = Math.sqrt(Math.pow(unit.hb.pos.x-unit.currentTarget.meleeHitbox.pos.x,2)+Math.pow(unit.hb.pos.y-unit.currentTarget.meleeHitbox.pos.y,2));
-    if (distance > 50){
+    if (distance > (unit.meleeHitbox.r+unit.currentTarget.meleeHitbox.r)){
         unit.setMoveVector(unit.currentTarget.hb.pos.x-unit.hb.pos.x,unit.currentTarget.hb.pos.y-unit.hb.pos.y,false);
     }else{
         if (unit.moveVector.x || unit.moveVector.y){
@@ -87,7 +97,7 @@ Behaviour.prototype.basicAttackInit = function(unit,data){
 Behaviour.prototype.wander = function(unit,dt,data){
     var Behaviour = require('./behaviour.js').Behaviour;
     if (!data.currentPath.length){
-        data.currentPath = Behaviour.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),data.openNodes[Math.floor(Math.random()*data.openNodes.length)]);
+        data.currentPath = this.astar(unit.currentZone.map,unit.currentZone.getTile(unit.hb.pos.x,unit.hb.pos.y),data.openNodes[Math.floor(Math.random()*data.openNodes.length)]);
         if (!data.currentPath.length){
             return null;
         }
@@ -99,7 +109,7 @@ Behaviour.prototype.wander = function(unit,dt,data){
             data.waiting = false;
         }
     }else{
-        Behaviour.aStarMoveToNode(unit,dt,data);
+        this.aStarMoveToNode(unit,dt,data);
         if (!data.currentPath.length){
             data.nextPosition = null;
             data.waiting = true;
@@ -199,8 +209,7 @@ Behaviour.prototype.astar = function(map,start,end){
     //start = starting coordinates [x,y];
     //end = ending coordinates [x,y];
     //returns empty array if no path exists
-    //returns path array if path exists [node,node,node,...]
-    var Behaviour = require('./behaviour.js').Behaviour;
+    //returns path array if path exists [node,node,node,...]=
 
     var openList   = [];
     var closedList = [];
@@ -230,11 +239,11 @@ Behaviour.prototype.astar = function(map,start,end){
             for (var i = 0; i < closedList.length;i++){
                 closedList[i].searchInit();
             }
-            return arr;
+            return this.trimExcessNodes(map,arr);
         }
 
         // Normal case -- move currentNode from open to closed, process each of its neighbors
-        Behaviour.removeGraphNode(openList,currentNode);
+        this.removeGraphNode(openList,currentNode);
         closedList.push(currentNode);
 
         //get neighbors
@@ -277,7 +286,7 @@ Behaviour.prototype.astar = function(map,start,end){
 
         for(var i=0; i<neighbors.length;i++) {
             var neighbor = neighbors[i];
-            if(Behaviour.findGraphNode(closedList,neighbor) || !neighbor.open) {
+            if(this.findGraphNode(closedList,neighbor) || !neighbor.open) {
                 // not a valid node to process, skip to next neighbor
                 continue;
             }
@@ -287,7 +296,7 @@ Behaviour.prototype.astar = function(map,start,end){
             var gScore = currentNode.g + 1; // 1 is the distance from a node to it's neighbor
             var gScoreIsBest = false;
 
-            if(!Behaviour.findGraphNode(openList,neighbor)) {
+            if(!this.findGraphNode(openList,neighbor)) {
                 // This the the first time we have arrived at this node, it must be the best
 
                 gScoreIsBest = true;
@@ -323,6 +332,42 @@ Behaviour.prototype.astar = function(map,start,end){
     return [];
 }
 
+Behaviour.prototype.trimExcessNodes = function(map,arr){
+    //check path blocked between1 locations
+    if (arr.length <=2){return arr;}
+    var startNode = arr[0];
+    for (var i = 1; i < arr.length;i++){
+    }
+    return arr;
+};
+Behaviour.prototype.checkPathBlocked = function(map,u1,u2){
+    //check path blocked between1 locations
+    var mVec = new V(u2.x-u1.x,u2.y-u1.y);
+    if (this.getTile(u1.x,u1.y) == this.getTile(u2.x,u2.y)){
+        return false;
+    }
+    var hyp = Math.sqrt((mVec.x*mVec.x) + (mVec.y*mVec.y));
+    mVec.normalize();
+    var tile;
+    for (var i = 1; i <= Math.abs((mVec.x*mVec.y)/this.TILE_SIZE);i++){
+        tile = this.getTile(map,u1.x+this.TILE_SIZE*mVec.x*i,u1.y+this.TILE_SIZE*mVec.y*i);
+        if (!tile){return true;}
+        if (!tile.open){
+            return true;
+        }
+    }
+    return false;
+};
+Behaviour.prototype.getTile = function(map,x,y){
+    //console.log('Getting Tile:   ' +  x + ', ' + y);
+    //get sector by position
+    if (typeof map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)] != 'undefined'){
+        return map[Math.floor(x/this.TILE_SIZE)][Math.floor(y/this.TILE_SIZE)];
+    }else{
+        return null;
+    }
+}
+
 Behaviour.prototype.findGraphNode = function(arr,node){
     //for use in astar
     //searches array 'arr' for node 'node'
@@ -348,44 +393,42 @@ Behaviour.prototype.removeGraphNode = function(arr,node){
 
 Behaviour.prototype.executeBehaviour = function(actionStr,unit,dt,data){
     //return a behaviour based on passed id
-    var Behaviour = require('./behaviour.js').Behaviour;
     switch(actionStr) {
-        case behaviourEnums.TestBehaviour:
-            return Behaviour.testBehaviour(unit,dt,data);
+        case this.behaviourEnums.TestBehaviour:
+            return this.testBehaviour(unit,dt,data);
             break;
-        case behaviourEnums.BasicAttack:
-            return Behaviour.basicAttack(unit,dt,data);
+        case this.behaviourEnums.BasicAttack:
+            return this.basicAttack(unit,dt,data);
             break;
-        case behaviourEnums.Wander:
-            return Behaviour.wander(unit,dt,data);
+        case this.behaviourEnums.Wander:
+            return this.wander(unit,dt,data);
             break;
-        case behaviourEnums.SearchInRadius:
-            return Behaviour.searchInRadius(unit,dt,data);
+        case this.behaviourEnums.SearchInRadius:
+            return this.searchInRadius(unit,dt,data);
             break;
         default:
-            return Behaviour.testBehaviour(unit,dt,data);
+            return this.testBehaviour(unit,dt,data);
             break;
     }
 }
 
 Behaviour.prototype.initBehaviour = function(actionStr,unit,data){
     //initialize a behaviour data object
-    var Behaviour = require('./behaviour.js').Behaviour;
     switch(actionStr) {
-        case behaviourEnums.TestBehaviour:
-            return Behaviour.testBehaviourInit(unit,data);
+        case this.behaviourEnums.TestBehaviour:
+            return this.testBehaviourInit(unit,data);
             break;
-        case behaviourEnums.BasicAttack:
-            return Behaviour.basicAttackInit(unit,data);
+        case this.behaviourEnums.BasicAttack:
+            return this.basicAttackInit(unit,data);
             break;
-        case behaviourEnums.Wander:
-            return Behaviour.wanderInit(unit,data);
+        case this.behaviourEnums.Wander:
+            return this.wanderInit(unit,data);
             break;
-        case behaviourEnums.SearchInRadius:
-            return Behaviour.searchInRadiusInit(unit,data);
+        case this.behaviourEnums.SearchInRadius:
+            return this.searchInRadiusInit(unit,data);
             break;
         default:
-            return Behaviour.testBehaviourInit(unit,data);
+            return this.testBehaviourInit(unit,data);
             break;
     }
 }

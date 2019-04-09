@@ -5,13 +5,12 @@
         var bagWindow = new UiElement();
         bagWindow.init = function(data){
             this._init(data);
-
             this.currentBag = 0;
-            this.bag0 = data.sData[Enums.BAG];
-            this.bag1 = data.sData[Enums.BAG1];
-            this.bag2 = data.sData[Enums.BAG2];
-            this.bag3 = data.sData[Enums.BAG3];
-            this.bag4 = data.sData[Enums.BAG4];
+            this.bag0 = this.createBag(data.sData[Enums.BAG]);
+            this.bag1 = this.createBag(data.sData[Enums.BAG1]);
+            this.bag2 = this.createBag(data.sData[Enums.BAG2]);
+            this.bag3 = this.createBag(data.sData[Enums.BAG3]);
+            this.bag4 = this.createBag(data.sData[Enums.BAG4]);
 
             this.items = {};//data.sData[Enums.ITEMS];
 
@@ -151,6 +150,7 @@
             console.log('setting bag to ' + num)
             if (this.getBag(num) == null){return;}
             this.currentBag = num;
+            var setToBag = this.getBag(num);
             if (num == 0){
                 this.name = "Inventory - Main Bag";
             }else if (num == 1){
@@ -166,8 +166,8 @@
             this.container.removeChildren();
             this.itemContainer.removeChildren();
             //set width/height ect based on bag size
-            this.width = Math.max(450,this['bag'+num].x*this.tileSize+34);
-            this.height = Math.max(this.cBh+this.nBh+58*5,this['bag'+num].y*this.tileSize+10+this.cBh+this.nBh);
+            this.width = Math.max(450,setToBag.x*this.tileSize+34);
+            this.height = Math.max(this.cBh+this.nBh+58*5,setToBag.y*this.tileSize+10+this.cBh+this.nBh);
             this.nameBarSize = [this.width,this.nBh];
             this.moveRect.hitArea = new PIXI.Rectangle(this.nameBarSize[1],0,this.nameBarSize[0]-this.nameBarSize[1],this.nameBarSize[1]);
 
@@ -319,9 +319,9 @@
             }
 
             this.gridtextures = {};
-            for (var i = 0; i < this['bag'+num][Enums.X];i++){
+            for (var i = 0; i < setToBag.x;i++){
                 this.gridTextures[i] = {};
-                for (var j = 0; j < this['bag'+num][Enums.Y];j++){
+                for (var j = 0; j < setToBag.y;j++){
                     this.gridTextures[i][j] = new PIXI.Sprite(this.gridTexture);
                     this.gridTextures[i][j].position.x = 29+i*this.tileSize;
                     this.gridTextures[i][j].position.y = 5+this.nBh+this.cBh+j*this.tileSize;
@@ -338,7 +338,7 @@
             //add items!
             for (var i in this.items){
                 var item = this.items[i];
-                if (item.bag[Enums.BAG] != num){
+                if (item.bag.bag != num){
                     continue;
                 }
                 item.sprite.position.x = 29+item.position[0]*32;
@@ -477,7 +477,7 @@
 
             var xSize = item.flipped ? item.size[1] : item.size[0];
             var ySize = item.flipped ? item.size[0] : item.size[1];
-            if (item.bag[Enums.BAG] == this.currentBag){
+            if (item.bag.bag == this.currentBag){
                 item.sprite.position.x = 29+item.position[0]*32;
                 item.sprite.position.y = 5+this.nBh+this.cBh+item.position[1]*32;
                 this.itemContainer.addChild(item.sprite);
@@ -507,7 +507,7 @@
                 return null;
             }
             var item = new Item();
-            item.init(data.item);
+            item.init(data[Enums.ITEM]);
             item.setFlipped(data[Enums.FLIPPED]);
             item.setPosition(data[Enums.POSITION]);
             item.setBag(bag);
@@ -522,8 +522,6 @@
                     //TODO try to swap items?
                     return;
                 }
-                console.log(e.data);
-                console.log(e.data.button)
                 if(e.data.button == 2){
                     for (var i in Game.characterWindow.itemSlots){
                         if (item.isEquipable(Game.characterWindow.itemSlots[i].id,false)){
@@ -594,6 +592,17 @@
                     break;
             }
             return null;
+        };
+        bagWindow.createBag = function(data){
+            console.log(data);
+            if (!data){return null;}
+            var bag = {};
+            bag.bag = data[Enums.BAG];
+            bag.grid = data[Enums.GRID];
+            bag.x = data[Enums.X]; 
+            bag.y = data[Enums.Y]; 
+            console.log(bag);
+            return bag;
         };
         bagWindow.checkEmpty = function(n){
             var bag = this.getBag(n);

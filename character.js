@@ -3,6 +3,7 @@ var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     Item = require('./inventory.js').Item,
+    Enums = require('./enums.js').Enums,
     Unit = require('./unit.js').Unit,
     Attribute = require('./attribute.js').Attribute;
 var P = SAT.Polygon,
@@ -24,13 +25,26 @@ Character = function(){
         this.classInfo = null;
         this.spellBook = null;
         this.statistics = null;
-        this.slot = data[this.engine.enums.SLOT];
-        this.class = data[this.engine.enums.CLASS];
-        this.race = data[this.engine.enums.RACE];
+        this.slot = data['slot'];
+        this.class = data['class'];
+        this.race = data['race'];
         this.zoneid = 'test1';
-        this.meleeHitbox = new C(new V(this.hb.pos.x,this.hb.pos.y),16);
+        this.meleeHitbox = new C(new V(this.hb.pos.x,this.hb.pos.y),24);
     }
-
+    character.setRace = function(){
+        var race = this.engine.races[this.race];
+        for (var i in race.attributes){
+            this.setStat({stat:i,value:race.attributes[i]},false)
+        }
+    }
+    character.setClass = function(){
+        console.log(this.class);
+        console.log(this.engine.classes);
+        var c = this.engine.classes[this.class];
+        for (var i in c.statMods){
+            this.modStat({stat:i,value:c.statMods[i]},false)
+        }
+    }
     character.update = function(deltaTime){
     	this._update(deltaTime);
         //update weapons
@@ -101,20 +115,20 @@ Character = function(){
         this.currentEnergy.set(true);
     }
 
-    character.getClientData = function(less){
+    character.getClientData = function(less = false){
     	var data = this._getClientData(less);
-        data[this.engine.enums.SLOT] = this.slot;
-        data[this.engine.enums.CLASS] = this.class;
-        data[this.engine.enums.RACE] = this.race;
-        data[this.engine.enums.OWNER] = this.owner.id;
+        data[Enums.SLOT] = this.slot;
+        data[Enums.CLASS] = this.class;
+        data[Enums.RACE] = this.race;
+        data[Enums.OWNER] = this.owner.id;
     	return data;
     }
 
     character.getLessClientData = function(){
         var data = this._getLessClientData();
-        data[this.engine.enums.CLASS] = this.class;
-        data[this.engine.enums.RACE] = this.race;
-        data[this.engine.enums.OWNER] = this.owner.id;
+        data[Enums.CLASS] = this.class;
+        data[Enums.RACE] = this.race;
+        data[Enums.OWNER] = this.owner.id;
         return data;
     }
 

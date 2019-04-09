@@ -1,54 +1,37 @@
-{ 
-    "_id" : ObjectId("5bd211f4f1c020323031e329"), 
-    "spawnid" : "testspawn", 
-    "t" : 3.0, 
-    "def" : "zombie", 
-    "enemies" : [
-        "zombie", 
-        "ghost", 
-        "skeleton"
-    ], 
-    "chances" : [
-        30.0, 
-        30.0, 
-        30.0
-    ]
-}
-{ 
-    "_id" : ObjectId("5c24ee5d8dafca3bdc8d86c3"), 
-    "spawnid" : "testspawn2", 
-    "t" : 10.0, 
-    "def" : "dragon", 
-    "enemies" : [
-        "dragon"
-    ], 
-    "chances" : [
-        100.0
-    ]
-}
-{ 
-    "_id" : ObjectId("5c26809c8dafca3bdc8d86d7"), 
-    "spawnid" : "testspawn3", 
-    "t" : 3.0, 
-    "def" : "madman", 
-    "enemies" : [
-        "madwoman", 
-        "madman"
-    ], 
-    "chances" : [
-        50.0, 
-        50.0
-    ]
-}
-{ 
-    "_id" : ObjectId("5c3384288dafca3bdc8d8703"), 
-    "spawnid" : "spawn_marinn", 
-    "t" : 360.0, 
-    "def" : "marinn", 
-    "enemies" : [
-        "marinn"
-    ], 
-    "chances" : [
-        100.0
-    ]
+{
+	"items": [
+
+{"spawnid":"testspawn",
+"t":3.0,
+"def":"zombie",
+"enemies":["zombie",
+"ghost",
+"skeleton"],
+"chances":[30.0,
+30.0,
+30.0]},
+{"spawnid":"testspawn2",
+"t":10.0,
+"def":"dragon",
+"enemies":["dragon"],
+"chances":[100.0]},
+{"spawnid":"testspawn3",
+"t":3.0,
+"def":"madman",
+"enemies":["madwoman",
+"madman"],
+"chances":[50.0,
+50.0]},
+{"spawnid":"spawn_marinn",
+"t":360.0,
+"def":"marinn",
+"enemies":["marinn"],
+"chances":[100.0]},
+{"spawnid":"spawn_marr_guard",
+"t":360.0,
+"def":"marr_guard",
+"enemies":["marr_guard"],
+"chances":[100.0]}
+
+	]
 }

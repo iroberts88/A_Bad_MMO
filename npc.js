@@ -2,9 +2,9 @@
 var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
     Utils = new utils(),
+    Enums = require('./enums.js').Enums,
     Item = require('./inventory.js').Item,
     Unit = require('./unit.js').Unit,
-    Behaviour = require('./behaviour.js').Behaviour,
     Attribute = require('./attribute.js').Attribute;
 var P = SAT.Polygon,
 	V = SAT.Vector,
@@ -23,10 +23,10 @@ NPC = function(){
         this.idleBehaviour = Utils.uniqueCopy(data['idleBehaviour']);
         this.combatBehaviour = Utils.uniqueCopy(data['combatBehaviour']);
 
-        this.dIdleBehaviour = Behaviour.initBehaviour(this.dIdleBehaviour['name'],this,this.dIdleBehaviour);
-        this.dCombatBehaviour = Behaviour.initBehaviour(this.dCombatBehaviour['name'],this,this.dCombatBehaviour);
-        this.idleBehaviour = Behaviour.initBehaviour(this.idleBehaviour['name'],this,this.idleBehaviour);
-        this.combatBehaviour = Behaviour.initBehaviour(this.combatBehaviour['name'],this,this.combatBehaviour);
+        this.dIdleBehaviour = this.engine.behaviour.initBehaviour(this.dIdleBehaviour['name'],this,this.dIdleBehaviour);
+        this.dCombatBehaviour = this.engine.behaviour.initBehaviour(this.dCombatBehaviour['name'],this,this.dCombatBehaviour);
+        this.idleBehaviour = this.engine.behaviour.initBehaviour(this.idleBehaviour['name'],this,this.idleBehaviour);
+        this.combatBehaviour = this.engine.behaviour.initBehaviour(this.combatBehaviour['name'],this,this.combatBehaviour);
 
 
         this.defaultWeapon = new Item();
@@ -38,8 +38,8 @@ NPC = function(){
 
         this.acquireTarget = Utils.uniqueCopy(data['acquireTarget']);
         this.dAcquireTarget = Utils.uniqueCopy(data['acquireTarget']);
-        this.acquireTarget = Behaviour.initBehaviour(this.acquireTarget['name'],this,this.acquireTarget);
-        this.dAcquireTarget = Behaviour.initBehaviour(this.dAcquireTarget['name'],this,this.dAcquireTarget);
+        this.acquireTarget = this.engine.behaviour.initBehaviour(this.acquireTarget['name'],this,this.acquireTarget);
+        this.dAcquireTarget = this.engine.behaviour.initBehaviour(this.dAcquireTarget['name'],this,this.dAcquireTarget);
 
         this.resource = data['resource'];
         this.hb.pos.x = this.spawn.tile.x*this.spawn.zone.TILE_SIZE+this.spawn.zone.TILE_SIZE/2;
@@ -76,17 +76,17 @@ NPC = function(){
         }
         if (this.currentTarget){
             //do behavoiur
-            Behaviour.executeBehaviour(this.combatBehaviour['name'],this,deltaTime,this.combatBehaviour);
+            this.engine.behaviour.executeBehaviour(this.combatBehaviour['name'],this,deltaTime,this.combatBehaviour);
         }else{
-            Behaviour.executeBehaviour(this.acquireTarget['name'],this,deltaTime,this.acquireTarget);
-            Behaviour.executeBehaviour(this.idleBehaviour['name'],this,deltaTime,this.idleBehaviour);
+            this.engine.behaviour.executeBehaviour(this.acquireTarget['name'],this,deltaTime,this.acquireTarget);
+            this.engine.behaviour.executeBehaviour(this.idleBehaviour['name'],this,deltaTime,this.idleBehaviour);
         }
     	this._update(deltaTime);
     }
 
-    character.getClientData = function(less){
+    character.getClientData = function(less = false){
         var data = this._getClientData(less);
-        data[this.engine.enums.RESOURCE] = this.resource;
+        data[Enums.RESOURCE] = this.resource;
         return data;
     }
     character.getLessClientData = function(){

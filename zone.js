@@ -5,6 +5,7 @@
 var Player = require('./player.js').Player,
     NPC = require('./npc.js').NPC,
     Character = require('./character.js').Character,
+    Enums = require('./enums.js').Enums,
     utils = require('./utils.js').Utils,
     Utils = new utils(),
     fs = require('fs'),
@@ -72,27 +73,27 @@ Zone.prototype.init = function (data) {
         }
     }
     this.mapData = {};
-    this.mapData[this.engine.enums.MAPDATA] = {};
-    this.mapData[this.engine.enums.MAPNAME] = data.mapname;
+    this.mapData[Enums.MAPDATA] = {};
+    this.mapData[Enums.MAPNAME] = data.mapname;
     for (var i in data.mapData){
-        this.mapData[this.engine.enums.MAPDATA][i] = {};
-        this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES] = [];
+        this.mapData[Enums.MAPDATA][i] = {};
+        this.mapData[Enums.MAPDATA][i][Enums.TILES] = [];
         for (var j = 0; j < data.mapData[i].tiles.length;j++){
-            this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j] = [];
+            this.mapData[Enums.MAPDATA][i][Enums.TILES][j] = [];
             for (var k = 0; k < data.mapData[i].tiles[j].length;k++){
-                this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k] = {};
+                this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k] = {};
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].resource)){
-                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.RESOURCE] = data.mapData[i].tiles[j][k].resource;
+                    this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k][Enums.RESOURCE] = data.mapData[i].tiles[j][k].resource;
                 }
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].overlayResource)){
-                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OVERLAYRESOURCE] = data.mapData[i].tiles[j][k].overlayResource;
-                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OVERLAYTYPE] = data.mapData[i].tiles[j][k].oType;
+                    this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k][Enums.OVERLAYRESOURCE] = data.mapData[i].tiles[j][k].overlayResource;
+                    this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k][Enums.OVERLAYTYPE] = data.mapData[i].tiles[j][k].oType;
                 }
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].open)){
-                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.OPEN] = data.mapData[i].tiles[j][k].open;
+                    this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k][Enums.OPEN] = data.mapData[i].tiles[j][k].open;
                 }
                 if (!Utils._udCheck(data.mapData[i].tiles[j][k].triggers)){
-                    this.mapData[this.engine.enums.MAPDATA][i][this.engine.enums.TILES][j][k][this.engine.enums.TRIGGERS] = data.mapData[i].tiles[j][k].triggers;
+                    this.mapData[Enums.MAPDATA][i][Enums.TILES][j][k][Enums.TRIGGERS] = data.mapData[i].tiles[j][k].triggers;
                 }
             }
         }
@@ -113,15 +114,15 @@ Zone.prototype.say = function(p,text){
     var xDist = 0;
     var yDist = 0;
     var data = {};
-    data[this.engine.enums.ID] = p.id;
-    data[this.engine.enums.NAME] = p.name;
-    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.SAY;
-    data[this.engine.enums.TEXT] = text;
+    data[Enums.ID] = p.id;
+    data[Enums.NAME] = p.name;
+    data[Enums.MESSAGETYPE] = Enums.SAY;
+    data[Enums.TEXT] = text;
     for (var i = 0; i <players.length;i++){
         xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
         yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
         if (Math.sqrt(xDist*xDist + yDist*yDist) < this.sayDistance){
-            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+            this.engine.queuePlayer(players[i].owner,Enums.MESSAGE,data);
         }
     }
 }
@@ -131,15 +132,15 @@ Zone.prototype.whisper = function(p,text){
     var xDist = 0;
     var yDist = 0;
     var data = {};
-    data[this.engine.enums.ID] = p.id;
-    data[this.engine.enums.NAME] = p.name;
-    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.WHISPER;
-    data[this.engine.enums.TEXT] = text;
+    data[Enums.ID] = p.id;
+    data[Enums.NAME] = p.name;
+    data[Enums.MESSAGETYPE] = Enums.WHISPER;
+    data[Enums.TEXT] = text;
     for (var i = 0; i <players.length;i++){
         xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
         yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
         if (Math.sqrt(xDist*xDist + yDist*yDist) < this.whisperDistance){
-            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+            this.engine.queuePlayer(players[i].owner,Enums.MESSAGE,data);
         }
     }
 }
@@ -148,15 +149,15 @@ Zone.prototype.shout = function(p,text){
     var xDist = 0;
     var yDist = 0;
     var data = {};
-    data[this.engine.enums.ID] = p.id;
-    data[this.engine.enums.NAME] = p.name;
-    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.SHOUT;
-    data[this.engine.enums.TEXT] = text;
+    data[Enums.ID] = p.id;
+    data[Enums.NAME] = p.name;
+    data[Enums.MESSAGETYPE] = Enums.SHOUT;
+    data[Enums.TEXT] = text;
     for (var i = 0; i <players.length;i++){
         xDist = Math.abs(players[i].hb.pos.x-p.hb.pos.x);
         yDist = Math.abs(players[i].hb.pos.y-p.hb.pos.y);
         if (Math.sqrt(xDist*xDist + yDist*yDist) < this.shoutDistance){
-            this.engine.queuePlayer(players[i].owner,this.engine.enums.MESSAGE,data);
+            this.engine.queuePlayer(players[i].owner,Enums.MESSAGE,data);
         }
     }
 }
@@ -164,14 +165,14 @@ Zone.prototype.msg = function(p,text){
     var xDist = 0;
     var yDist = 0;
     var data = {};
-    data[this.engine.enums.ID] = p.id;
-    data[this.engine.enums.NAME] = p.name;
-    data[this.engine.enums.MESSAGETYPE] = this.engine.enums.ZONE;
-    data[this.engine.enums.TEXT] = text;
+    data[Enums.ID] = p.id;
+    data[Enums.NAME] = p.name;
+    data[Enums.MESSAGETYPE] = Enums.ZONE;
+    data[Enums.TEXT] = text;
     for (var i in this.players){
         xDist = Math.abs(this.players[i].hb.pos.x-p.hb.pos.x);
         yDist = Math.abs(this.players[i].hb.pos.y-p.hb.pos.y);
-        this.engine.queuePlayer(this.players[i].owner,this.engine.enums.MESSAGE,data);
+        this.engine.queuePlayer(this.players[i].owner,Enums.MESSAGE,data);
     }
 }
 Zone.prototype.getSectorXY = function(string){
@@ -237,15 +238,16 @@ Zone.prototype.collideUnit = function(unit,dt){
     }
 };
 Zone.prototype.checkPathBlocked = function(u1,u2){
-    var mVec = new V(u2.hb.pos.x-u1.hb.pos.x,u2.hb.pos.y-u1.hb.pos.y);
-    if (u1.getTile() == u2.getTile()){
+    //check path blocked between1 locations
+    var mVec = new V(u2.x-u1.x,u2.y-u1.y);
+    if (this.getTile(u1.x,u1.y) == this.getTile(u2.x,u2.y)){
         return false;
     }
     var hyp = Math.sqrt((mVec.x*mVec.x) + (mVec.y*mVec.y));
     mVec.normalize();
     var tile;
-    for (var i = 1; i <= Math.ceil(hyp/this.TILE_SIZE);i++){
-        tile = this.getTile(u1.hb.pos.x+this.TILE_SIZE*mVec.x*i,u1.hb.pos.y+this.TILE_SIZE*mVec.y*i);
+    for (var i = 1; i <= Math.abs((mVec.x*mVec.y)/this.TILE_SIZE);i++){
+        tile = this.getTile(u1.x+this.TILE_SIZE*mVec.x*i,u1.y+this.TILE_SIZE*mVec.y*i);
         if (!tile){return true;}
         if (!tile.open){
             return true;
@@ -323,11 +325,11 @@ Zone.prototype.changeSector = function(p,sector){
                 //every player in new sector, add new PC and NPC
                 var player = addList[i].players[pl];
                 if (isNPC){
-                    this.engine.queuePlayer(player.owner,this.engine.enums.ADDNPC,p.getLessClientData());
+                    this.engine.queuePlayer(player.owner,Enums.ADDNPC,p.getLessClientData());
                     continue;
                 }
-                this.engine.queuePlayer(player.owner,this.engine.enums.ADDPC,p.getLessClientData());
-                this.engine.queuePlayer(p.owner,this.engine.enums.ADDPC,player.getLessClientData());
+                this.engine.queuePlayer(player.owner,Enums.ADDPC,p.getLessClientData());
+                this.engine.queuePlayer(p.owner,Enums.ADDPC,player.getLessClientData());
             }
             for (var n in addList[i].npcs){
                 if (p != addList[i].npcs[n]){
@@ -340,7 +342,7 @@ Zone.prototype.changeSector = function(p,sector){
             if(!isNPC){
                 for (var n in addList[i].npcs){
                     addList[i].npcs[n].pToUpdate[p.id] = p;
-                    this.engine.queuePlayer(p.owner,this.engine.enums.ADDNPC,addList[i].npcs[n].getLessClientData());
+                    this.engine.queuePlayer(p.owner,Enums.ADDNPC,addList[i].npcs[n].getLessClientData());
                 }
             }
         }catch(e){
@@ -353,15 +355,15 @@ Zone.prototype.changeSector = function(p,sector){
             for (var pl in removeList[i].players){
                 var player = removeList[i].players[pl];
                 var d = {};
-                d[this.engine.enums.ID] = p.id;
+                d[Enums.ID] = p.id;
                 if (isNPC){
-                    this.engine.queuePlayer(player.owner,this.engine.enums.REMOVENPC,d);
+                    this.engine.queuePlayer(player.owner,Enums.REMOVENPC,d);
                     continue;
                 }
-                this.engine.queuePlayer(player.owner,this.engine.enums.REMOVEPC,d);
+                this.engine.queuePlayer(player.owner,Enums.REMOVEPC,d);
                 var d = {};
-                d[this.engine.enums.ID] = player.id;
-                this.engine.queuePlayer(p.owner,this.engine.enums.REMOVEPC,d);
+                d[Enums.ID] = player.id;
+                this.engine.queuePlayer(p.owner,Enums.REMOVEPC,d);
             }
 
             for (var n in removeList[i].npcs){
@@ -376,8 +378,8 @@ Zone.prototype.changeSector = function(p,sector){
                         delete removeList[i].npcs[n].pToUpdate[p.id];
                     }
                     var d = {};
-                    d[this.engine.enums.ID] = removeList[i].npcs[n].id;
-                    this.engine.queuePlayer(p.owner,this.engine.enums.REMOVENPC,d);
+                    d[Enums.ID] = removeList[i].npcs[n].id;
+                    this.engine.queuePlayer(p.owner,Enums.REMOVENPC,d);
                 }
             }
         }catch(e){
@@ -486,7 +488,7 @@ Zone.prototype.addPlayer = function(p){
     var players = this.getPlayers(sector);
     var npcs = this.getNPCS(sector);
     for (var i = 0; i < players.length;i++){
-        this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDPC,p.getLessClientData());
+        this.engine.queuePlayer(players[i].owner,Enums.ADDPC,p.getLessClientData());
         players[i].pToUpdate[p.id] = p;
     }
     for (var i = 0; i < npcs.length;i++){
@@ -507,11 +509,11 @@ Zone.prototype.removePlayer = function(p){
     var npcs = this.getNPCS(this.sectors[cid]);
     for (var i = 0; i < players.length;i++){
         var data = {};
-        data[this.engine.enums.ID] = p.id;
+        data[Enums.ID] = p.id;
         if (players[i].pToUpdate[p.id]){
             delete players[i].pToUpdate[p.id];
         }
-        this.engine.queuePlayer(players[i].owner,this.engine.enums.REMOVEPC,data);
+        this.engine.queuePlayer(players[i].owner,Enums.REMOVEPC,data);
     }
     for (var i = 0; i < npcs.length;i++){
         if (npcs[i].pToUpdate[p.id]){
@@ -532,7 +534,7 @@ Zone.prototype.addNPC = function(n){
     var sector = this.getSector(n.hb.pos.x,n.hb.pos.y);
     var players = this.getPlayers(sector);
     for (var i = 0; i < players.length;i++){
-        this.engine.queuePlayer(players[i].owner,this.engine.enums.ADDNPC,n.getLessClientData());
+        this.engine.queuePlayer(players[i].owner,Enums.ADDNPC,n.getLessClientData());
     }
     sector.addNPC(n);
     n.getPToUpdate();
@@ -552,8 +554,8 @@ Zone.prototype.removeNPC = function(n){
     var players = this.getPlayers(this.sectors[cid]);
     for (var i in n.pToUpdate){
         var data = {};
-        data[this.engine.enums.ID] = n.id;
-        this.engine.queuePlayer(n.pToUpdate[i].owner,this.engine.enums.REMOVENPC,data);
+        data[Enums.ID] = n.id;
+        this.engine.queuePlayer(n.pToUpdate[i].owner,Enums.REMOVENPC,data);
     }
     //remove npc from nearby npc unit lists
     for (var i in n.nearbyUnits){
@@ -586,10 +588,10 @@ Zone.prototype.sendMapDataTo = function(character) {
         }
         //TODO also get NPC's
         var data = {}
-        data[that.engine.enums.PLAYERS] = that.getPlayerData(character.currentSector);
-        data[that.engine.enums.NPCS] = that.getNPCData(character.currentSector);
-        data[that.engine.enums.MAPDATA] = that.mapData;
-        that.engine.queuePlayer(character.owner,that.engine.enums.NEWMAP,data);
+        data[Enums.PLAYERS] = that.getPlayerData(character.currentSector);
+        data[Enums.NPCS] = that.getNPCData(character.currentSector);
+        data[Enums.MAPDATA] = that.mapData;
+        that.engine.queuePlayer(character.owner,Enums.NEWMAP,data);
     });
 }
 

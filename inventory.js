@@ -1,6 +1,7 @@
 // Inventory
 var utils = require('./utils.js').Utils,
     Utils = new utils(),
+    Enums = require('./enums.js').Enums,
     Attribute = require('./attribute.js').Attribute,
     Actions = require('./actions.js').Actions;
 
@@ -59,7 +60,7 @@ Inventory.prototype.init = function(data){
 
     this.currentWeight = new Attribute();
     this.currentWeight.init({
-        id: this.engine.enums.CURRENTWEIGHT,
+        id: Enums.CURRENTWEIGHT,
         owner: this.owner,
         value: 0,
         min: 0,
@@ -75,7 +76,7 @@ Inventory.prototype.init = function(data){
     this.currentWeight.set();
     this.carryWeight = new Attribute();
     this.carryWeight.init({
-        id: this.engine.enums.CARRYWEIGHT,
+        id: Enums.CARRYWEIGHT,
         owner: this.owner,
         value: 0,
         min: 1,
@@ -99,9 +100,9 @@ Inventory.prototype.changeWeight = function(amt){
 Inventory.prototype.moveItem = function(data){
     //move an item from one slot to another..
     console.log(data);
-    var bag = this.getBag(data[this.engine.enums.BAG]);
+    var bag = this.getBag(data[Enums.BAG]);
     if (!bag){return;}
-    var pos = data[this.engine.enums.POSITION];
+    var pos = data[Enums.POSITION];
     if (!Array.isArray(pos)){
         console.log('ERROR - incorrect data pos');
         return;
@@ -109,12 +110,12 @@ Inventory.prototype.moveItem = function(data){
         console.log('ERROR - incorrect data pos2');
         return;
     }
-    var flip = data[this.engine.enums.FLIPPED];
+    var flip = data[Enums.FLIPPED];
     if (typeof flip != 'boolean'){
         console.log('ERROR - incorrect data');
         return;
     }
-    var id = data[this.engine.enums.ID];
+    var id = data[Enums.ID];
     var item = this.getItem(id);
     if (!item){
         console.log('ERROR - no item found');
@@ -147,22 +148,22 @@ Inventory.prototype.moveItem = function(data){
         if (typeof item.position == 'string'){
             //unequip!
             switch (item.position){
-                case this.engine.enums.BAG1:
+                case Enums.BAG1:
                     if (bag.bag == 1){
                         console.log('bag within bag error!');
                         return false;
                     }
-                case this.engine.enums.BAG2:
+                case Enums.BAG2:
                     if (bag.bag == 2){
                         console.log('bag within bag error!');
                         return false;
                     }
-                case this.engine.enums.BAG3:
+                case Enums.BAG3:
                     if (bag.bag == 3){
                         console.log('bag within bag error!');
                         return false;
                     }
-                case this.engine.enums.BAG4:
+                case Enums.BAG4:
                     if (bag.bag == 4){
                         console.log('bag within bag error!');
                         return false;
@@ -231,22 +232,24 @@ Inventory.prototype.equipItem = function(slot,item){
         }
         if (itemToMove.item.bagSize){
             //equip a new bag!!!!
-            switch(slot){
-                case this.engine.enums.BAG1:
+            switch(parseInt(slot)){
+                case Enums.BAG1:
+                    console.log('wtf')
                     this.grid1 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,1);
-                    clientData[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+                    clientData[Enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+                    console.log(clientData)
                     break;
-                case this.engine.enums.BAG2:
+                case Enums.BAG2:
                     this.grid2 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,2);
-                    clientData[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+                    clientData[Enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
                     break;
-                case this.engine.enums.BAG3:
+                case Enums.BAG3:
                     this.grid3 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,3);
-                    clientData[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+                    clientData[Enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
                     break;
-                case this.engine.enums.BAG4:
+                case Enums.BAG4:
                     this.grid4 = new Grid(itemToMove.item.bagSize[0],itemToMove.item.bagSize[1],this,4);
-                    clientData[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+                    clientData[Enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
                     break;
             }
         }
@@ -269,9 +272,9 @@ Inventory.prototype.equipItem = function(slot,item){
             this.owner.currentRanged = itemToMove.item;
         }
         //send down client command to successfully equip the item
-        clientData[this.engine.enums.ITEM] = item;
-        clientData[this.engine.enums.SLOT] = slot;
-        this.engine.queuePlayer(this.owner.owner,this.engine.enums.EQUIPITEM,clientData);
+        clientData[Enums.ITEM] = item;
+        clientData[Enums.SLOT] = slot;
+        this.engine.queuePlayer(this.owner.owner,Enums.EQUIPITEM,clientData);
     }
 }
 
@@ -286,16 +289,16 @@ Inventory.prototype.unEquipItem = function(slot){
     var bagCheck = true;
     //if replacing a bag, make sure it's empty!
     switch(slot){
-        case this.engine.enums.BAG1:
+        case Enums.BAG1:
             bagCheck = this.grid1.isEmpty();
             break;
-        case this.engine.enums.BAG2:
+        case Enums.BAG2:
             bagCheck = this.grid2.isEmpty();
             break;
-        case this.engine.enums.BAG3:
+        case Enums.BAG3:
             bagCheck = this.grid3.isEmpty();
             break;
-        case this.engine.enums.BAG4:
+        case Enums.BAG4:
             bagCheck = this.grid4.isEmpty();
             break;
     }
@@ -323,21 +326,21 @@ Inventory.prototype.unEquipItem = function(slot){
     if (itemToMove.item.bagSize){
         //equip a new bag!!!!
         switch(slot){
-            case this.engine.enums.BAG1:
+            case Enums.BAG1:
                 this.grid1 = null;
-                clientData[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+                clientData[Enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
                 break;
-            case this.engine.enums.BAG2:
+            case Enums.BAG2:
                 this.grid2 = null;
-                clientData[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+                clientData[Enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
                 break;
-            case this.engine.enums.BAG3:
+            case Enums.BAG3:
                 this.grid3 = null;
-                clientData[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+                clientData[Enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
                 break;
-            case this.engine.enums.BAG4:
+            case Enums.BAG4:
                 this.grid4 = null;
-                clientData[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+                clientData[Enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
                 break;
         }
     }
@@ -352,9 +355,9 @@ Inventory.prototype.unEquipItem = function(slot){
         this.owner.currentRanged = null;
     }
     //send down client command to successfully unequip the item
-    clientData[this.engine.enums.ITEM] = itemToMove.id;
-    clientData[this.engine.enums.SLOT] = slot;
-    this.engine.queuePlayer(this.owner.owner,this.engine.enums.UNEQUIPITEM,clientData);
+    clientData[Enums.ITEM] = itemToMove.id;
+    clientData[Enums.SLOT] = slot;
+    this.engine.queuePlayer(this.owner.owner,Enums.UNEQUIPITEM,clientData);
     this.slots[slot] = null;
     return true;
 }
@@ -490,11 +493,11 @@ Inventory.prototype._addItem = function(data){
     this.changeWeight(this.items[itemid].item.weight);
     //data.grid.print();
     var d = {};
-    d[this.engine.enums.ITEM] = data.pitem.getClientData();
-    d[this.engine.enums.FLIPPED] = this.flip;
-    d[this.engine.enums.POSITION] = [data.x,data.y];
-    d[this.engine.enums.BAG] = data.grid.bag;
-    this.engine.queuePlayer(this.owner.owner,this.engine.enums.ADDITEM,d);
+    d[Enums.ITEM] = data.pitem.getClientData();
+    d[Enums.FLIPPED] = this.flip;
+    d[Enums.POSITION] = [data.x,data.y];
+    d[Enums.BAG] = data.grid.bag;
+    this.engine.queuePlayer(this.owner.owner,Enums.ADDITEM,d);
 }
 Inventory.prototype.removeItemByIndex = function(itemIndex,amount){
 
@@ -537,20 +540,20 @@ Inventory.prototype.getItem = function(id){
 }
 Inventory.prototype.getClientData = function(){
     var data = {};
-    data[this.engine.enums.ITEMS] = {};
+    data[Enums.ITEMS] = {};
     for (var i in this.items){
-        data[this.engine.enums.ITEMS][i] = this.items.getClientData();
+        data[Enums.ITEMS][i] = this.items.getClientData();
     }
-    data[this.engine.enums.BAG] = this.grid0.getClientData();
-    data[this.engine.enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
-    data[this.engine.enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
-    data[this.engine.enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
-    data[this.engine.enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
+    data[Enums.BAG] = this.grid0.getClientData();
+    data[Enums.BAG1] = this.grid1 ? this.grid1.getClientData() : null;
+    data[Enums.BAG2] = this.grid2 ? this.grid2.getClientData() : null;
+    data[Enums.BAG3] = this.grid3 ? this.grid3.getClientData() : null;
+    data[Enums.BAG4] = this.grid4 ? this.grid4.getClientData() : null;
 
-    data[this.engine.enums.COPPER] = this.owner.copper;
-    data[this.engine.enums.SILVER] = this.owner.silver;
-    data[this.engine.enums.GOLD] = this.owner.gold;
-    data[this.engine.enums.PLATINUM] = this.owner.platinum;
+    data[Enums.COPPER] = this.owner.copper;
+    data[Enums.SILVER] = this.owner.silver;
+    data[Enums.GOLD] = this.owner.gold;
+    data[Enums.PLATINUM] = this.owner.platinum;
     return data;
 }
 Inventory.prototype.getDBObj = function(){
@@ -582,23 +585,23 @@ PlayerItem.prototype.init = function(data){
 }
 PlayerItem.prototype.getClientData = function(){
     var data = this.item.getClientData();
-    var e = this.owner.engine.enums;
-    data[e.QUANTITY] = this.quantity;
-    data[e.ID] = this.id;
+    var e = Enums;
+    data[Enums.QUANTITY] = this.quantity;
+    data[Enums.ID] = this.id;
     return data;
 }
 PlayerItem.prototype.setQuantity = function(amt){
     this.quantity = amt;
-    this.clientData[this.owner.engine.enums.QUANTITY] = this.quantity;
-    this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
+    this.clientData[Enums.QUANTITY] = this.quantity;
+    this.engine.queuePlayer(this.owner.owner,Enums.SETITEMQUANTITY,data);
 }
 PlayerItem.prototype.addQuantity = function(amt){
     this.quantity += amt;
-    this.clientData[this.owner.engine.enums.QUANTITY] = this.quantity;
+    this.clientData[Enums.QUANTITY] = this.quantity;
     var data = {};
-    data[this.engine.enums.QUANTITY] = this.quantity;
-    data[this.engine.enums.ID] = this.id;
-    this.engine.queuePlayer(this.owner.owner,this.engine.enums.SETITEMQUANTITY,data);
+    data[Enums.QUANTITY] = this.quantity;
+    data[Enums.ID] = this.id;
+    this.engine.queuePlayer(this.owner.owner,Enums.SETITEMQUANTITY,data);
 }
 PlayerItem.prototype.checkSlot = function(itemSlot,slot){
     if (this.engine.slotEnums2[itemSlot] == slot){
@@ -652,7 +655,7 @@ PlayerItem.prototype.isEquipable = function(s){
         return false;
     }
     //test 2handed
-    if (s == this.engine.enums.SECONDARY){
+    if (s == Enums.SECONDARY){
         if (this.owner.inventory.slots['main']){
             if (this.owner.inventory.slots['main'].item.twoHanded){
                 console.log('usingbothhands....')
@@ -660,7 +663,7 @@ PlayerItem.prototype.isEquipable = function(s){
             }
         }
     }
-    if (s == this.engine.enums.MAIN && this.owner.inventory.slots['secondary']){
+    if (s == Enums.MAIN && this.owner.inventory.slots['secondary']){
         if (this.item.twoHanded){
             console.log('iteminsecondary....')
             return false;
@@ -695,16 +698,16 @@ Item.prototype.init = function(data){
             if (!data['classes'][i]){continue;}
             switch (i){
                 case 'fighter':
-                    this.classes[this.engine.enums.FIGHTER] = true;
+                    this.classes['Fighter'] = true;
                     break;
                 case 'all':
-                    this.classes[this.engine.enums.ALL] = true;
+                    this.classes['All'] = true;
                     break;
                 case 'thief':
-                    this.classes[this.engine.enums.THIEF] = true;
+                    this.classes['Thief'] = true;
                     break;
                 case 'mage':
-                    this.classes[this.engine.enums.MAGE] = true;
+                    this.classes['Mage'] = true;
                     break;
             }
         }
@@ -714,19 +717,19 @@ Item.prototype.init = function(data){
             if (!data['races'][i]){continue;}
             switch (i){
                 case 'human':
-                    this.races[this.engine.enums.HUMAN] = true;
+                    this.races['Human'] = true;
                     break;
                 case 'all':
-                    this.races[this.engine.enums.ALL] = true;
+                    this.races['All'] = true;
                     break;
                 case 'elf':
-                    this.races[this.engine.enums.ELF] = true;
+                    this.races['Elf'] = true;
                     break;
                 case 'dwarf':
-                    this.races[this.engine.enums.DWARF] = true;
+                    this.races['Dwarf'] = true;
                     break;
                 case 'gnome':
-                    this.races[this.engine.enums.GNOME] = true;
+                    this.races['Gnome'] = true;
                     break;
             }
         }
@@ -746,81 +749,58 @@ Item.prototype.init = function(data){
     this.ac = Utils.udCheck(data['ac'],null,data['ac']);
     this.bagSize = Utils.udCheck(data['bagSize'],null,data['bagSize']);
 
+    this.clientData = this._getClientData();
 };
 
 Item.prototype.getClientData = function(){
-    var data = {};
-    var e = this.engine.enums;
+    //add additional info that may differ per item??
+    return this.clientData;
+}
 
-    data[e.ITEMID] = this.itemid;
-    data[e.NAME] = this.name;
-    data[e.LORE] = this.lore;
-    data[e.MAGIC] = this.magic;
-    data[e.TWOHANDED] = this.twoHanded;
-    data[e.RESOURCE] = this.resource;
-    data[e.VALUE] = this.value;
-    data[e.STACK] = this.stack;
-    data[e.SIZE] = [this.xSize,this.ySize];
-    data[e.WEIGHT] = this.weight;
-    data[e.FLAVORTEXT] = this.flavorText;
+Item.prototype._getClientData = function(){
+    var data = {};
+    var e = Enums;
+
+    data[Enums.ITEMID] = this.itemid;
+    data[Enums.NAME] = this.name;
+    data[Enums.LORE] = this.lore;
+    data[Enums.MAGIC] = this.magic;
+    data[Enums.TWOHANDED] = this.twoHanded;
+    data[Enums.RESOURCE] = this.resource;
+    data[Enums.VALUE] = this.value;
+    data[Enums.STACK] = this.stack;
+    data[Enums.SIZE] = [this.xSize,this.ySize];
+    data[Enums.WEIGHT] = this.weight;
+    data[Enums.FLAVORTEXT] = this.flavorText;
     if (this.slots){
         //this is an equippable item...
-        data[e.CLASSES] = [];
-        data[e.RACES] = [];
+        data[Enums.CLASSES] = [];
+        data[Enums.RACES] = [];
         for (var i in this.classes){
             if (!this.classes[i]){continue;}
-            switch (i){
-                case this.engine.enums.FIGHTER:
-                    data[e.CLASSES].push('Fighter');
-                    break;
-                case this.engine.enums.ALL:
-                    data[e.CLASSES].push('All');
-                    break;
-                case this.engine.enums.THIEF:
-                    data[e.CLASSES].push('Thief');
-                    break;
-                case this.engine.enums.MAGE:
-                    data[e.CLASSES].push('Mage');
-                    break;
-            }
+            data[Enums.CLASSES].push(i);
         }
 
         for (var i in this.races){
             if (!this.races[i]){continue;}
-            switch (i){
-                case this.engine.enums.HUMAN:
-                    data[e.RACES].push('Human');
-                    break;
-                case this.engine.enums.ALL:
-                    data[e.RACES].push('All');
-                    break;
-                case this.engine.enums.ELF:
-                    data[e.RACES].push('Elf');
-                    break;
-                case this.engine.enums.DWARF:
-                    data[e.RACES].push('Dwarf');
-                    break;
-                case this.engine.enums.GNOME:
-                    data[e.RACES].push('Gnome');
-                    break;
-            }
+            data[Enums.RACES].push(i);
         }
 
-        data[e.SLOTS] = [];
+        data[Enums.SLOTS] = [];
         for (var i = 0; i < this.slots.length;i++){
-            data[e.SLOTS].push(this.slots[i]);
+            data[Enums.SLOTS].push(this.slots[i]);
         }
-        data[e.PIERCE] = this.pierce;
-        data[e.SLASH] = this.slash;
-        data[e.BLUDGEON] = this.bludgeon;
-        data[e.RANGE] = this.range;
-        data[e.ONEQUIPTEXT] = this.onEquipText;
-        data[e.AC] = this.ac;
-        data[e.BAGSIZE] = this.bagSize;
+        data[Enums.PIERCE] = this.pierce;
+        data[Enums.SLASH] = this.slash;
+        data[Enums.BLUDGEON] = this.bludgeon;
+        data[Enums.RANGE] = this.range;
+        data[Enums.ONEQUIPTEXT] = this.onEquipText;
+        data[Enums.AC] = this.ac;
+        data[Enums.BAGSIZE] = this.bagSize;
         if (this.stats){
-            data[e.STATS] = {};
+            data[Enums.STATS] = {};
             for (var i in this.stats){
-                data[e.STATS][i] = this.stats[i];
+                data[Enums.STATS][i] = this.stats[i];
             }
         }
     }
@@ -846,14 +826,14 @@ var Grid = function (x,y,inventory,bag) {
 }
 Grid.prototype.getClientData = function(){
     var data = {}
-    data[this.i.engine.enums.X] = this.x;
-    data[this.i.engine.enums.Y] = this.y;
-    data[this.i.engine.enums.GRID] = {};
-    data[this.i.engine.enums.BAG] = this.bag;
+    data[Enums.X] = this.x;
+    data[Enums.Y] = this.y;
+    data[Enums.GRID] = {};
+    data[Enums.BAG] = this.bag;
     for (var i in this.arr){
-        data[this.i.engine.enums.GRID][i] = {};
+        data[Enums.GRID][i] = {};
         for (var j in this.arr[i]){
-            data[this.i.engine.enums.GRID][i][j] = this.arr[i][j];
+            data[Enums.GRID][i][j] = this.arr[i][j];
         }
     }
     return data;

@@ -34,6 +34,86 @@ function init() {
     rc.ready();
     rc.require('dbMaps','dbClasses','dbRaces','dbUsers','dbEnemies','dbBuffs','dbSpawns','dbItems','dbFactions');
 
+    fs.readFile( './db/abm_races.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_races", err );
+            process.exit( 1 );
+        } 
+        ge.loadRaces(JSON.parse(data));
+        rc.ready('dbRaces');
+    });
+    fs.readFile( './db/abm_classes.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_classes", err );
+            process.exit( 1 );
+        } 
+        ge.loadClasses(JSON.parse(data));
+        rc.ready('dbClasses');
+    });
+    fs.readFile( './db/abm_items.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_items", err );
+            process.exit( 1 );
+        } 
+        ge.loadItems(JSON.parse(data));
+        rc.ready('dbItems');
+    });
+    fs.readFile( './db/abm_buffs.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_buffs", err );
+            process.exit( 1 );
+        } 
+        //ge.loadBuffs(JSON.parse(data));
+        rc.ready('dbBuffs');
+    });
+    fs.readFile( './db/abm_factions.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_factions", err );
+            process.exit( 1 );
+        } 
+        ge.loadFactions(JSON.parse(data));
+        rc.ready('dbFactions');
+    });
+    //load enemies
+    fs.readFile( './db/abm_enemies.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_enemies", err );
+            process.exit( 1 );
+        } 
+        ge.loadEnemies(JSON.parse(data));
+        rc.ready('dbEnemies');
+
+        fs.readFile( './public/img/sprites.json', function( err, data ) {
+            if( err ) {
+                console.error( "Could not list the directory. - enemy dimensions", err );
+                process.exit( 1 );
+            }
+            ge.getEnemyDimensions(JSON.parse(data));
+            rc.ready('dbEnemies');
+        });
+    });
+    //Load spawn points and maps
+    fs.readFile( './db/abm_spawns.json', function( err, data ) {
+        if( err ) {
+            console.error( "Could not list the directory. - abm_spawns", err );
+            process.exit( 1 );
+        } 
+        ge.loadSpawns(JSON.parse(data));
+        rc.ready('dbSpawns');
+
+        fs.readdir( './mapgen_tool/maps', function( err, files ) {
+            if( err ) {
+                console.error( "Could not list the directory.", err );
+                process.exit( 1 );
+            } 
+            ge.mapCount = files.length;
+            ge.loadMaps(files);
+            rc.ready('dbMaps');
+        });
+    });
+
+
+/*
     // ---- Load Classes/races/enemies from MONGODB ----
     var MongoClient = require('mongodb').MongoClient;
     var url = "mongodb://127.0.0.1:27017/lithiumAve";
@@ -50,7 +130,7 @@ function init() {
 
       dbo.collection("abm_classes").find().toArray(function(err, result) {
         if (err) throw err;
-        ge.loadRaces(result);
+        ge.loadClasses(result);
         rc.ready('dbClasses');
         db.close();
       });
@@ -108,7 +188,7 @@ function init() {
         db.close();
       });
     });
-
+*/
 
     // ---- Load Userbase from Dynamodb----
     docClient.scan({TableName: 'users'}, function(err, data) {

@@ -24,4 +24,16 @@ Utils.prototype.uniqueCopy = function(obj){
 	return newObj;
 }
 
+Utils.prototype.createClientData = function(){
+    //Iterates through arguments given and returns a client data object
+    //arg1 = object key
+    //arg2 = data from arg1
+    //e.g. createClientData(arg1,arg2,arg1,arg2...)
+    var data = {};
+    for (var i = 0; i < arguments.length;i+=2){
+        data[arguments[i]] = arguments[i+1];
+    }
+    return data;
+}
+
 exports.Utils = Utils;

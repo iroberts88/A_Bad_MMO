@@ -43,8 +43,14 @@ var P = SAT.Polygon,
                 del: 0.02,
                 c: 1,
                 c1: 0xFFFFFF,
-                c2: 0x91d1ff,
+                c2: 0x309bff,
                 c3: 0xFF7777
+            },
+
+            nameFont:  {
+                font: '14px Lato',
+                fill: 0xFFFFFF,
+                align: 'left'
             },
 
             stickToTarget: false,
@@ -53,9 +59,11 @@ var P = SAT.Polygon,
 
 
             _init: function(data){
+                console.log(data);
                 this.enemy = false;
                 this.id = data[Enums.ID];
                 this.name = data[Enums.NAME];
+                this.owner = data[Enums.OWNER];
                 this.currentHealth = typeof data[Enums.CURRENTHEALTH] == 'undefined' ? null : data[Enums.CURRENTHEALTH];
                 this.maxHealth = typeof data[Enums.MAXHEALTH] == 'undefined' ? null : data[Enums.MAXHEALTH];
                 this.currentMana = typeof data[Enums.CURRENTMANA] == 'undefined' ? null : data[Enums.CURRENTMANA];
@@ -119,12 +127,12 @@ var P = SAT.Polygon,
                 this.spriteMask.position.y = this.sprite2.position.y - this.sprite2.width*0.6;
                 this.sprite2.mask = this.spriteMask;
 
-                var nameFont =  {
-                    font: '14px Lato',
-                    fill: 0x91d1ff,
-                    align: 'left'
-                };
-                this.nameTag = new PIXI.Text(this.name, nameFont);
+                
+                var n = this.name;
+                if (this.owner != Player.id){
+                    n += '  L. ' + this.level;
+                }
+                this.nameTag = new PIXI.Text(n, this.nameFont);
                 this.nameTag.position.x = Math.round(this.sprite.position.x);
                 this.nameTag.anchor.x = 0.5;
                 this.nameTag.anchor.y = 1;
@@ -278,10 +286,7 @@ var P = SAT.Polygon,
             },
             _updateStats: function(data){
                 for (var i in data){
-                    var stat = this.setStat(i,data[i]);
-                    if (stat != 'undefined'){
-                        stat = data[i];
-                    }
+                    this.setStat(i,data[i]);
                 }
 
             },
@@ -301,135 +306,136 @@ var P = SAT.Polygon,
             },
 
             setStat: function(e,val){
-                switch(e){
-                    case  Enums.AC:
+                switch(parseInt(e)){
+                    case Enums.AC:
                         this.ac = val;
                         break;
-                    case  Enums.AGILITY:
+                    case Enums.AGILITY:
+                        console.log("setting agilityds to " + val)
                         this.agility = val;
                         break;
-                    case  Enums.ARCANERES:
+                    case Enums.ARCANERES:
                         this.arcaneRes = val;
                         break;
-                    case  Enums.CHARISMA:
+                    case Enums.CHARISMA:
                         this.charisma = val;
                         break; 
-                    case  Enums.CURRENTHEALTH:
+                    case Enums.CURRENTHEALTH:
                         this.currentHealth = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.HEALTHPERCENT:
+                    case Enums.HEALTHPERCENT:
                         this.healthPercent = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.MAXHEALTH:
+                    case Enums.MAXHEALTH:
                         this.maxHealth = val;
                         this.checkTargetStatus();
                         break;
-                    case  Enums.DEXTERITY:
+                    case Enums.DEXTERITY:
                         this.dexterity = val;
                         break; 
-                    case  Enums.DISEASERES:
+                    case Enums.DISEASERES:
                         this.diseaseRes = val;
                         break; 
-                    case  Enums.EARTHRES:
+                    case Enums.EARTHRES:
                         this.earthRes = val;
                         break; 
-                    case  Enums.FIRERES:
+                    case Enums.FIRERES:
                         this.fireRes = val;
                         break; 
-                    case  Enums.FROSTRES:
+                    case Enums.FROSTRES:
                         this.frostRes = val;
                         break; 
-                    case  Enums.HOLYRES:
+                    case Enums.HOLYRES:
                         this.holyRes = val;
                         break; 
-                    case  Enums.LUCK:
+                    case Enums.LUCK:
                         this.luck = val;
                         break; 
-                    case  Enums.MAXENERGY:
+                    case Enums.MAXENERGY:
                         this.maxEnergy = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.CURRENTENERGY:
+                    case Enums.CURRENTENERGY:
                         this.currentEnergy = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.MAXMANA:
+                    case Enums.MAXMANA:
                         this.maxMana = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.CURRENTMANA:
+                    case Enums.CURRENTMANA:
                         this.currentMana = val;
                         this.checkTargetStatus();
                         break; 
-                    case  Enums.CURRENTEXP:
+                    case Enums.CURRENTEXP:
                         this.currentExp = val;
                         break; 
-                    case  Enums.POISONRES:
+                    case Enums.POISONRES:
                         this.poisonRes = val;
                         break; 
-                    case  Enums.PERCEPTION:
+                    case Enums.PERCEPTION:
                         this.perception = val;
                         break; 
-                    case  Enums.RANGEDPOWER:
+                    case Enums.RANGEDPOWER:
                         this.rangedPower = val;
                         break; 
-                    case  Enums.MELEEPOWER:
+                    case Enums.MELEEPOWER:
                         this.meleePower = val;
                         break; 
-                    case  Enums.SPELLPOWER:
+                    case Enums.SPELLPOWER:
                         this.spellPower = val;
                         break; 
-                    case  Enums.HEALINGPOWER:
+                    case Enums.HEALINGPOWER:
                         this.healingPower = val;
                         break;
-                    case  Enums.SHADOWRES:
+                    case Enums.SHADOWRES:
                         this.shadowRes = val;
                         break; 
-                    case  Enums.SHOCKRES:
+                    case Enums.SHOCKRES:
                         this.shockRes = val;
                         break; 
-                    case  Enums.SPEED:
+                    case Enums.SPEED:
                         this.speed = val;
                         break;
-                    case  Enums.SPIRIT:
+                    case Enums.SPIRIT:
                         this.spirit = val;
                         break;
-                    case  Enums.STRENGTH:
+                    case Enums.STRENGTH:
                         this.strength = val;
                         break; 
-                    case  Enums.STAMINA:
+                    case Enums.STAMINA:
                         this.stamina = val;
                         break; 
-                    case  Enums.WINDRES:
+                    case Enums.WINDRES:
                         this.windRes = val;
                         break;
-                    case  Enums.WISDOM:
+                    case Enums.WISDOM:
                         this.wisdom = val;
                         break; 
-                    case  Enums.CURRENTWEIGHT:
+                    case Enums.CURRENTWEIGHT:
                         this.currentWeight = val;
                         if (Game.bagWindow){
                             Game.bagWindow.draw();
                         }
                         break;
-                    case  Enums.CARRYWEIGHT:
+                    case Enums.CARRYWEIGHT:
                         this.carryWeight = val;
                         if (Game.bagWindow){
                             Game.bagWindow.draw();
                         }
                         break;
-                    case  Enums.INTELLIGENCE:
+                    case Enums.INTELLIGENCE:
                         this.intelligence = val;
                         break; 
-                    case  Enums.JUMPSPEED:
+                    case Enums.JUMPSPEED:
                         this.jumpSpeed = val;
                         break; 
-                    case  Enums.JUMPTIME:
+                    case Enums.JUMPTIME:
                         this.jumpTime = val;
                         break;
-                    case  Enums.LEVEL:
+                    case Enums.LEVEL:
                         this.level = val;
                         this.checkTargetStatus();
                         try{

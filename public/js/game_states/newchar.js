@@ -150,8 +150,8 @@
                     }
                     Graphics.uiPrimitives2.clear();
                     NewChar.currentRace = b.raceid;
-                    if (typeof NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES][NewChar.currentClass] == 'undefined'){
-                        for (var i in NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES]){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace].availableClasses[NewChar.currentClass] == 'undefined'){
+                        for (var i in NewChar.raceInfo[NewChar.currentRace].availableClasses){
                             NewChar.currentClass = i;
                             break;
                         }
@@ -189,7 +189,7 @@
                     if (NewChar.currentRace == b.raceid){
                         return;
                     }
-                    if (typeof NewChar.raceInfo[NewChar.currentRace][Enums.AVAILABLECLASSES][b.classid] == 'undefined'){
+                    if (typeof NewChar.raceInfo[NewChar.currentRace].availableClasses[b.classid] == 'undefined'){
                         return;
                     }
                     Graphics.uiPrimitives2.clear();
@@ -211,10 +211,10 @@
         reDraw: function(){
             var bX = 100;
             var bY = 32;
-            this.classDescText.text = this.classInfo[this.currentClass][Enums.NAME] + '\n' + this.classInfo[this.currentClass][Enums.DESCRIPTION];
-            this.raceDescText.text = this.raceInfo[this.currentRace][Enums.NAME] + '\n' + this.raceInfo[this.currentRace][Enums.DESCRIPTION];
+            this.classDescText.text = this.classInfo[this.currentClass].name + '\n' + this.classInfo[this.currentClass].description;
+            this.raceDescText.text = this.raceInfo[this.currentRace].name + '\n' + this.raceInfo[this.currentRace].description;
             for (var i in this.classInfo){
-                if (typeof this.raceInfo[this.currentRace][Enums.AVAILABLECLASSES][this.classInfo[i][Enums.CLASSID]] == 'undefined'){
+                if (typeof this.raceInfo[this.currentRace].availableClasses[this.classInfo[i].classid] == 'undefined'){
                     var cButton = this.classInfo[i].button;
                     Graphics.uiPrimitives2.lineStyle(2,0xFF0000,1);
                     Graphics.uiPrimitives2.drawRoundedRect(cButton.position.x - bX/2,cButton.position.y-cButton.height/2,bX,bY,12);
@@ -260,7 +260,29 @@
                     this.enterWorldButton.visible = false;
                 }
             }
+        },
+
+        setRaceClassInfo: function(data){
+            this.classInfo = {};
+            this.raceInfo = {};
+            for (var i in data[Enums.RACES]){
+                this.raceInfo[i] = {};
+                this.raceInfo[i].availableClasses = data[Enums.RACES][i][Enums.AVAILABLECLASSES];
+                this.raceInfo[i].description = data[Enums.RACES][i][Enums.DESCRIPTION];
+                this.raceInfo[i].name = data[Enums.RACES][i][Enums.NAME];
+                this.raceInfo[i].raceid = data[Enums.RACES][i][Enums.RACEID];
+                this.raceInfo[i].attributes = data[Enums.RACES][i][Enums.ATTRIBUTES];
+
+            }
+            for (var i in data[Enums.CLASSES]){
+                this.classInfo[i] = {};
+                this.classInfo[i].description = data[Enums.CLASSES][i][Enums.DESCRIPTION];
+                this.classInfo[i].name = data[Enums.CLASSES][i][Enums.NAME];
+                this.classInfo[i].classid = data[Enums.CLASSES][i][Enums.CLASSID];
+                this.classInfo[i].attributes = data[Enums.CLASSES][i][Enums.ATTRIBUTES];
+            }
         }
+
 
     }
     window.NewChar = NewChar;

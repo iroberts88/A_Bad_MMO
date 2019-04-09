@@ -1,6 +1,7 @@
 var SAT = require('./SAT.js'), //SAT POLYGON COLLISSION1
     utils = require('./utils.js').Utils,
     Utils = new utils(),
+    Enums = require('./enums.js').Enums,
     Inventory = require('./inventory.js').Inventory,
     Attribute = require('./attribute.js').Attribute;
 
@@ -24,6 +25,7 @@ function Unit() {
         intelligence: null, //spell power, skill increase chance, maximum mana
         perception: null, //hit chance, crit chance, dodge, stealth detection
         charisma: null, //buy/sell prices, healing recieved
+        spirit: null,
         luck: null, //slightly effects all actions
 
         maxHealth: null,
@@ -105,6 +107,7 @@ function Unit() {
             this.name = data['name'];
 
             this.sex = data['sex'];
+            this.slot = data['slot'];
             this.scale = data['scale'];
             this.moveVector = new V(0,0);
 
@@ -125,7 +128,7 @@ function Unit() {
 
             this.jumpSpeed = new Attribute();
             this.jumpSpeed.init({
-                id: this.engine.enums.JUMPSPEED,
+                id: Enums.JUMPSPEED,
                 owner: this,
                 value: 1.75,
                 min: 0.25,
@@ -134,7 +137,7 @@ function Unit() {
 
             this.jumpTime = new Attribute();
             this.jumpTime.init({
-                id: this.engine.enums.JUMPTIME,
+                id: Enums.JUMPTIME,
                 owner: this,
                 value: 1.0,
                 min: 0.25,
@@ -144,10 +147,10 @@ function Unit() {
 
             this.level = new Attribute();
             this.level.init({
-                id: this.engine.enums.LEVEL,
+                id: Enums.LEVEL,
                 owner: this,
                 updateAll: true,
-                value: Utils.udCheck(data[this.engine.enums.LEVEL],1,data[this.engine.enums.LEVEL]),
+                value: Utils.udCheck(data[Enums.LEVEL],1,data[Enums.LEVEL]),
                 min: 1,
                 max: 100,
                 formula: function(){
@@ -158,7 +161,7 @@ function Unit() {
 
             this.speed = new Attribute();
             this.speed.init({
-                id: this.engine.enums.SPEED,
+                id: Enums.SPEED,
                 owner: this,
                 value: Utils.udCheck(data.speed,75,data.speed),
                 min: 0,
@@ -168,7 +171,7 @@ function Unit() {
                     var inv = this.owner.inventory;
                     var weightMod = Math.max(1,(inv.currentWeight.value/inv.carryWeight.value))
                     this.base = (85+(this.owner.agility.value*(this.owner.level.value/1200)))/(weightMod*weightMod);
-                    return 300//Math.round(this.base*this.pMod+this.nMod);
+                    return Math.round(this.base*this.pMod+this.nMod);
                 }
             });
 
@@ -184,11 +187,12 @@ function Unit() {
             //OPTIONAL DATA VARIABLES
             this.strength = new Attribute();
             this.strength.init({
-                id: this.engine.enums.STRENGTH,
+                id: Enums.STRENGTH,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.STRENGTH],10,data[this.engine.enums.STRENGTH]),
+                value: Utils.udCheck(data[Enums.STRENGTH],50,data[Enums.STRENGTH]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.meleePower.set(u);
                     this.owner.inventory.carryWeight.set(u);
@@ -196,33 +200,36 @@ function Unit() {
             });
             this.stamina = new Attribute();
             this.stamina.init({
-                id: this.engine.enums.STAMINA,
+                id: Enums.STAMINA,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.STAMINA],10,data[this.engine.enums.STAMINA]),
+                value: Utils.udCheck(data[Enums.STAMINA],50,data[Enums.STAMINA]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.maxHealth.set(u);
                 }
             });
             this.dexterity = new Attribute();
             this.dexterity.init({
-                id: this.engine.enums.DEXTERITY,
+                id: Enums.DEXTERITY,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.DEXTERITY],10,data[this.engine.enums.DEXTERITY]),
+                value: Utils.udCheck(data[Enums.DEXTERITY],50,data[Enums.DEXTERITY]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.rangedPower.set(u);
                 }
             });
             this.agility = new Attribute();
             this.agility.init({
-                id: this.engine.enums.AGILITY,
+                id: Enums.AGILITY,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.AGILITY],10,data[this.engine.enums.AGILITY]),
+                value: Utils.udCheck(data[Enums.AGILITY],50,data[Enums.AGILITY]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.speed.set(u);
                     this.owner.ac.set(u);
@@ -230,11 +237,12 @@ function Unit() {
             });
             this.wisdom = new Attribute();
             this.wisdom.init({
-                id: this.engine.enums.WISDOM,
+                id: Enums.WISDOM,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.WISDOM],10,data[this.engine.enums.WISDOM]),
+                value: Utils.udCheck(data[Enums.WISDOM],50,data[Enums.WISDOM]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.healingPower.set(u);
                     this.owner.maxMana.set(u);
@@ -242,11 +250,12 @@ function Unit() {
             });
             this.intelligence = new Attribute();
             this.intelligence.init({
-                id: this.engine.enums.INTELLIGENCE,
+                id: Enums.INTELLIGENCE,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.INTELIIGENCE],10,data[this.engine.enums.INTELIIGENCE]),
+                value: Utils.udCheck(data[Enums.INTELIIGENCE],50,data[Enums.INTELIIGENCE]),
                 min: 1,
-                max: 99,
+                max: 9999,
+
                 next: function(u){
                     this.owner.spellPower.set(u);
                     this.owner.maxMana.set(u);
@@ -254,58 +263,58 @@ function Unit() {
             });
             this.perception = new Attribute();
             this.perception.init({
-                id: this.engine.enums.PERCEPTION,
+                id: Enums.PERCEPTION,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.PERCEPTION],10,data[this.engine.enums.PERCEPTION]),
+                value: Utils.udCheck(data[Enums.PERCEPTION],50,data[Enums.PERCEPTION]),
                 min: 1,
-                max: 99
+                max: 9999
             });
             this.charisma = new Attribute();
             this.charisma.init({
-                id: this.engine.enums.CHARISMA,
+                id: Enums.CHARISMA,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.CHARISMA],10,data[this.engine.enums.CHARISMA]),
+                value: Utils.udCheck(data[Enums.CHARISMA],50,data[Enums.CHARISMA]),
                 min: 1,
-                max: 99
+                max: 9999
             });
             this.luck = new Attribute();
             this.luck.init({
-                id: this.engine.enums.LUCK,
+                id: Enums.LUCK,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.LUCK],10,data[this.engine.enums.LUCK]),
+                value: Utils.udCheck(data[Enums.LUCK],50,data[Enums.LUCK]),
                 min: 1,
-                max: 99
+                max: 9999
             });
             this.spirit = new Attribute();
             this.spirit.init({
-                id: this.engine.enums.SPIRIT,
+                id: Enums.SPIRIT,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.SPIRIT],10,data[this.engine.enums.SPIRIT]),
+                value: Utils.udCheck(data[Enums.SPIRIT],50,data[Enums.SPIRIT]),
                 min: 1,
-                max: 99
+                max: 9999
             });
 
             this.ac = new Attribute();
             this.ac.init({
-                id: this.engine.enums.AC,
+                id: Enums.AC,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.AC],0,data[this.engine.enums.AC]),
+                value: Utils.udCheck(data[Enums.AC],0,data[Enums.AC]),
                 min: 0,
                 max: 99999,
                 formula: function(){
                     if (this.owner.isEnemy){
                         this.base = (10+this.owner.level.value/2)*(1+this.owner.level.value/2);
-                        return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/10));
+                        return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
                     }
                     this.base = 14 + this.owner.level.value;
-                    return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/10));
+                    return Math.round(((this.base*this.pMod)+this.nMod)*(this.owner.agility.value/100));
                 }
             });
 
             //only gained from gear/buffs?!
             this.frostRes = new Attribute();
             this.frostRes.init({
-                id: this.engine.enums.FROSTRES,
+                id: Enums.FROSTRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -313,7 +322,7 @@ function Unit() {
             });
             this.fireRes = new Attribute();
             this.fireRes.init({
-                id: this.engine.enums.FIRERES,
+                id: Enums.FIRERES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -321,7 +330,7 @@ function Unit() {
             });
             this.earthRes = new Attribute();
             this.earthRes.init({
-                id: this.engine.enums.EARTHRES,
+                id: Enums.EARTHRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -329,7 +338,7 @@ function Unit() {
             });
             this.windRes = new Attribute();
             this.windRes.init({
-                id: this.engine.enums.WINDRES,
+                id: Enums.WINDRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -337,7 +346,7 @@ function Unit() {
             });
             this.shockRes = new Attribute();
             this.shockRes.init({
-                id: this.engine.enums.SHOCKRES,
+                id: Enums.SHOCKRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -345,7 +354,7 @@ function Unit() {
             });
             this.poisonRes = new Attribute();
             this.poisonRes.init({
-                id: this.engine.enums.POISONRES,
+                id: Enums.POISONRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -353,7 +362,7 @@ function Unit() {
             });
             this.diseaseRes = new Attribute();
             this.diseaseRes.init({
-                id: this.engine.enums.DISEASERES,
+                id: Enums.DISEASERES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -361,7 +370,7 @@ function Unit() {
             });
             this.shadowRes = new Attribute();
             this.shadowRes.init({
-                id: this.engine.enums.SHADOWRES,
+                id: Enums.SHADOWRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -369,7 +378,7 @@ function Unit() {
             });
             this.holyRes = new Attribute();
             this.holyRes.init({
-                id: this.engine.enums.HOLYRES,
+                id: Enums.HOLYRES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -377,7 +386,7 @@ function Unit() {
             });
             this.arcaneRes = new Attribute();
             this.arcaneRes.init({
-                id: this.engine.enums.ARCANERES,
+                id: Enums.ARCANERES,
                 owner: this,
                 value: 0,
                 min: 0,
@@ -387,9 +396,9 @@ function Unit() {
 
             this.rangedPower = new Attribute();
             this.rangedPower.init({
-                id: this.engine.enums.RANGEDPOWER,
+                id: Enums.RANGEDPOWER,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.RANGEDPOWER],0,data[this.engine.enums.RANGEDPOWER]),
+                value: Utils.udCheck(data[Enums.RANGEDPOWER],0,data[Enums.RANGEDPOWER]),
                 min: 1,
                 max: 99999,
                 formula: function(){
@@ -399,9 +408,9 @@ function Unit() {
             });
             this.spellPower = new Attribute();
             this.spellPower.init({
-                id: this.engine.enums.SPELLPOWER,
+                id: Enums.SPELLPOWER,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.SPELLPOWER],0,data[this.engine.enums.SPELLPOWER]),
+                value: Utils.udCheck(data[Enums.SPELLPOWER],0,data[Enums.SPELLPOWER]),
                 min: 1,
                 max: 99999,
                 formula: function(){
@@ -411,9 +420,9 @@ function Unit() {
             });
             this.meleePower = new Attribute();
             this.meleePower.init({
-                id: this.engine.enums.MELEEPOWER,
+                id: Enums.MELEEPOWER,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.MELEEPOWER],0,data[this.engine.enums.MELEEPOWER]),
+                value: Utils.udCheck(data[Enums.MELEEPOWER],0,data[Enums.MELEEPOWER]),
                 min: 1,
                 max: 99999,
                 formula: function(){
@@ -423,9 +432,9 @@ function Unit() {
             });
             this.healingPower = new Attribute();
             this.healingPower.init({
-                id: this.engine.enums.HEALINGPOWER,
+                id: Enums.HEALINGPOWER,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.HEALINGPOWER],0,data[this.engine.enums.HEALINGPOWER]),
+                value: Utils.udCheck(data[Enums.HEALINGPOWER],0,data[Enums.HEALINGPOWER]),
                 min: 1,
                 max: 99999,
                 formula: function(){
@@ -436,9 +445,9 @@ function Unit() {
             //OTHER
             this.maxHealth = new Attribute();
             this.maxHealth.init({
-                id: this.engine.enums.MAXHEALTH,
+                id: Enums.MAXHEALTH,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.MAXHEALTH],30,data[this.engine.enums.MAXHEALTH]),
+                value: Utils.udCheck(data[Enums.MAXHEALTH],30,data[Enums.MAXHEALTH]),
                 min: 1,
                 max: 99999,
                 formula: function(){
@@ -452,9 +461,9 @@ function Unit() {
             });
             this.maxMana = new Attribute();
             this.maxMana.init({
-                id: this.engine.enums.MAXMANA,
+                id: Enums.MAXMANA,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.MAXMANA],30,data[this.engine.enums.MAXMANA]),
+                value: Utils.udCheck(data[Enums.MAXMANA],30,data[Enums.MAXMANA]),
                 min: 1,
                 updateAll: true,
                 max: 99999,
@@ -482,19 +491,19 @@ function Unit() {
 
             this.maxEnergy = new Attribute();
             this.maxEnergy.init({
-                id: this.engine.enums.MAXENERGY,
+                id: Enums.MAXENERGY,
                 owner: this,
                 updateAll: true,
-                value: Utils.udCheck(data[this.engine.enums.MAXENERGY],100,data[this.engine.enums.MAXENERGY]),
+                value: Utils.udCheck(data[Enums.MAXENERGY],100,data[Enums.MAXENERGY]),
                 min: 1,
                 max: 999
             });
             this.isColliding = true;
 
-            this.copper = Utils.udCheck(data[this.engine.enums.COPPER],0,data[this.engine.enums.COPPER]);
-            this.silver = Utils.udCheck(data[this.engine.enums.SILVER],0,data[this.engine.enums.SILVER]);
-            this.gold = Utils.udCheck(data[this.engine.enums.GOLD],0,data[this.engine.enums.GOLD]);
-            this.platinum = Utils.udCheck(data[this.engine.enums.PLATINUM],0,data[this.engine.enums.PLATINUM]);
+            this.copper = Utils.udCheck(data[Enums.COPPER],0,data[Enums.COPPER]);
+            this.silver = Utils.udCheck(data[Enums.SILVER],0,data[Enums.SILVER]);
+            this.gold = Utils.udCheck(data[Enums.GOLD],0,data[Enums.GOLD]);
+            this.platinum = Utils.udCheck(data[Enums.PLATINUM],0,data[Enums.PLATINUM]);
             this.inventory = new Inventory();
             this.inventory.init({
                 owner: this
@@ -506,9 +515,9 @@ function Unit() {
 
             this.currentHealth = new Attribute();
             this.currentHealth.init({
-                id: this.engine.enums.CURRENTHEALTH,
+                id: Enums.CURRENTHEALTH,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]),
+                value: Utils.udCheck(data[Enums.CURRENTHEALTH],this.maxHealth.value,data[Enums.CURRENTHEALTH]),
                 min: 0,
                 max: 99999,
                 next: function(updateClient){
@@ -520,7 +529,7 @@ function Unit() {
             });
             this.healthPercent = new Attribute();
             this.healthPercent.init({
-                id: this.engine.enums.HEALTHPERCENT,
+                id: Enums.HEALTHPERCENT,
                 owner: this,
                 updateAll: true,
                 value: this.currentHealth.value/this.maxHealth.value,
@@ -532,10 +541,10 @@ function Unit() {
             });
             this.currentMana = new Attribute();
             this.currentMana.init({
-                id: this.engine.enums.CURRENTMANA,
+                id: Enums.CURRENTMANA,
                 owner: this,
                 updateAll: true,
-                value: Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]),
+                value: Utils.udCheck(data[Enums.CURRENTMANA],this.maxMana.value,data[Enums.CURRENTMANA]),
                 min: 0,
                 max: 99999,
                 formula: function(){
@@ -544,10 +553,10 @@ function Unit() {
             });
             this.currentEnergy = new Attribute();
             this.currentEnergy.init({
-                id: this.engine.enums.CURRENTENERGY,
+                id: Enums.CURRENTENERGY,
                 owner: this,
                 updateAll: true,
-                value: Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]),
+                value: Utils.udCheck(data[Enums.CURRENTENERGY],this.maxEnergy.value,data[Enums.CURRENTENERGY]),
                 min: 0,
                 max: 99999,
                 formula: function(){
@@ -556,9 +565,9 @@ function Unit() {
             });
             this.currentExp = new Attribute();
             this.currentExp.init({
-                id: this.engine.enums.CURRENTEXP,
+                id: Enums.CURRENTEXP,
                 owner: this,
-                value: Utils.udCheck(data[this.engine.enums.CURRENTEXP],0,data[this.engine.enums.CURRENTEXP]),
+                value: Utils.udCheck(data[Enums.CURRENTEXP],0,data[Enums.CURRENTEXP]),
                 min: 0,
                 max: 99999,
                 formula: function(){
@@ -579,11 +588,12 @@ function Unit() {
                     this.statIndex[this[i].id] = this[i];
                 }
             }
-            this.currentHealth.value = Utils.udCheck(data[this.engine.enums.CURRENTHEALTH],this.maxHealth.value,data[this.engine.enums.CURRENTHEALTH]);
-            this.currentMana.value = Utils.udCheck(data[this.engine.enums.CURRENTMANA],this.maxMana.value,data[this.engine.enums.CURRENTMANA]);
-            this.currentEnergy.value = Utils.udCheck(data[this.engine.enums.CURRENTENERGY],this.maxEnergy.value,data[this.engine.enums.CURRENTENERGY]);
+            this.currentHealth.value = Utils.udCheck(data[Enums.CURRENTHEALTH],this.maxHealth.value,data[Enums.CURRENTHEALTH]);
+            this.currentMana.value = Utils.udCheck(data[Enums.CURRENTMANA],this.maxMana.value,data[Enums.CURRENTMANA]);
+            this.currentEnergy.value = Utils.udCheck(data[Enums.CURRENTENERGY],this.maxEnergy.value,data[Enums.CURRENTENERGY]);
 
             this.healthPercent.set(false);
+
 
         },
        
@@ -607,9 +617,9 @@ function Unit() {
             unit.targetOf[this.id] = this;
             for (var i in this.pToUpdate){
                 var data = {};
-                data[this.engine.enums.UNIT] = this.id;
-                data[this.engine.enums.TARGET] = unit.id;
-                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.SETTARGET,data);
+                data[Enums.UNIT] = this.id;
+                data[Enums.TARGET] = unit.id;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,Enums.SETTARGET,data);
             }
         },
 
@@ -621,8 +631,8 @@ function Unit() {
             this.currentTarget = null;
             for (var i in this.pToUpdate){
                 var data = {};
-                data[this.engine.enums.UNIT] = this.id;
-                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.CLEARTARGET,data);
+                data[Enums.UNIT] = this.id;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,Enums.CLEARTARGET,data);
             }
         },
 
@@ -638,10 +648,10 @@ function Unit() {
             if (updateClient && (prevX != this.moveVector.x || prevY != this.moveVector.y)){
                 for (var i in this.pToUpdate){
                     var d = {};
-                    d[this.engine.enums.ID] = this.id;
-                    d[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
-                    d[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y]
-                    this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.POSUPDATE, d);
+                    d[Enums.ID] = this.id;
+                    d[Enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
+                    d[Enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y]
+                    this.engine.queuePlayer(this.pToUpdate[i].owner,Enums.POSUPDATE, d);
                 }
             }
         },
@@ -649,9 +659,9 @@ function Unit() {
             this.stickToTarget = bool;
             for (var i in this.pToUpdate){
                 var d = {};
-                d[this.engine.enums.ID] = this.id;
-                d[this.engine.enums.BOOL] = bool;
-                this.engine.queuePlayer(this.pToUpdate[i].owner,this.engine.enums.STICK, d);
+                d[Enums.ID] = this.id;
+                d[Enums.BOOL] = bool;
+                this.engine.queuePlayer(this.pToUpdate[i].owner,Enums.STICK, d);
             }
         },
 
@@ -670,7 +680,7 @@ function Unit() {
                     //make a pierce attack
                     arr = weapon.pierce;
                 }
-                var type = this.engine.enums.PIERCE;
+                var type = Enums.PIERCE;
             }
             if (weapon.slash && !arr){
                 c += weapon.slash[2];
@@ -678,7 +688,7 @@ function Unit() {
                     //make a slash attack
                     arr = weapon.slash;
                 }
-                var type = this.engine.enums.SLASH;
+                var type = Enums.SLASH;
             }
             if (weapon.bludgeon && !arr){
                 c += weapon.bludgeon[2];
@@ -686,7 +696,7 @@ function Unit() {
                     //make a bludgeon attack
                     arr = weapon.bludgeon;
                 }
-                var type = this.engine.enums.BLUDGEON;
+                var type = Enums.BLUDGEON;
             }
 
             var acrandom = Math.random();
@@ -704,21 +714,21 @@ function Unit() {
                 })
             }else if (!this.isEnemy){
                 var cData = {};
-                cData[this.engine.enums.UNIT] = target.id;
-                cData[this.engine.enums.BOOL] = false;
-                this.engine.queuePlayer(this.owner,this.engine.enums.MISSED,cData);
+                cData[Enums.UNIT] = target.id;
+                cData[Enums.BOOL] = false;
+                this.engine.queuePlayer(this.owner,Enums.MISSED,cData);
                 if (!target.isEnemy){
                     var cData = {};
-                    cData[this.engine.enums.UNIT] = this.name;
-                    cData[this.engine.enums.BOOL] = true;
-                    this.engine.queuePlayer(target.owner,this.engine.enums.MISSED,cData);
+                    cData[Enums.UNIT] = this.name;
+                    cData[Enums.BOOL] = true;
+                    this.engine.queuePlayer(target.owner,Enums.MISSED,cData);
                 }
             }else{
                 if (!target.isEnemy){
                     var cData = {};
-                    cData[this.engine.enums.UNIT] = this.name;
-                    cData[this.engine.enums.BOOL] = true;
-                    this.engine.queuePlayer(target.owner,this.engine.enums.MISSED,cData);
+                    cData[Enums.UNIT] = this.name;
+                    cData[Enums.BOOL] = true;
+                    this.engine.queuePlayer(target.owner,Enums.MISSED,cData);
                 }
             }
             for (var i in this.pToUpdate){
@@ -742,18 +752,18 @@ function Unit() {
             if (!this.isEnemy){
                 //player is being damaged
                 var cData = {};
-                cData[this.engine.enums.UNIT] = data.source.name;
-                cData[this.engine.enums.STAT] = this.currentHealth.value;
-                cData[this.engine.enums.VALUE] = data.value;
-                cData[this.engine.enums.TYPE] = data.type;
-                this.engine.queuePlayer(this.owner,this.engine.enums.DEALTDAMAGE,cData);
+                cData[Enums.UNIT] = data.source.name;
+                cData[Enums.STAT] = this.currentHealth.value;
+                cData[Enums.VALUE] = data.value;
+                cData[Enums.TYPE] = data.type;
+                this.engine.queuePlayer(this.owner,Enums.DEALTDAMAGE,cData);
             }
             if (!data.source.isEnemy){
                 var cData = {};
-                cData[this.engine.enums.UNIT] = this.id;
-                cData[this.engine.enums.VALUE] = data.value;
-                cData[this.engine.enums.TYPE] = data.type;
-                this.engine.queuePlayer(data.source.owner,this.engine.enums.DEALDAMAGE,cData);
+                cData[Enums.UNIT] = this.id;
+                cData[Enums.VALUE] = data.value;
+                cData[Enums.TYPE] = data.type;
+                this.engine.queuePlayer(data.source.owner,Enums.DEALDAMAGE,cData);
             }
             if (this.currentHealth.value <= 0){
                 this.kill();
@@ -820,129 +830,143 @@ function Unit() {
             //return the current map tile
             return this.currentZone.getTile(this.hb.pos.x,this.hb.pos.y);
         },
-        _getClientData: function(less){
+        _getClientData: function(less = false){
 
             var data = {};
-            data[this.engine.enums.NAME] = this.name;
-            data[this.engine.enums.ID] = this.id;
-            data[this.engine.enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
-            data[this.engine.enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
-            data[this.engine.enums.SPEED] = this.speed.value;
-            data[this.engine.enums.SCALE] = this.scale;
-            data[this.engine.enums.HEALTHPERCENT] = this.healthPercent.value;
-            data[this.engine.enums.MAXMANA] = this.maxMana.value;
-            data[this.engine.enums.CURRENTMANA] = this.currentMana.value;
-            data[this.engine.enums.CURRENTENERGY] = this.currentEnergy.value;
-            data[this.engine.enums.MAXENERGY] = this.maxEnergy.value;
-            data[this.engine.enums.JUMPSPEED] = this.jumpSpeed.value;
-            data[this.engine.enums.JUMPTIME] = this.jumpTime.value;
-            data[this.engine.enums.LEVEL] = this.level.value;
-            data[this.engine.enums.SEX] = this.sex;
-            data[this.engine.enums.TARGET] = this.currentTarget ? this.currentTarget.id : null;
-            data[this.engine.enums.STICK] = this.stickToTarget;
+            data[Enums.NAME] = this.name;
+            data[Enums.ID] = this.id;
+            if (this.owner){
+                data[Enums.OWNER] = this.owner.id;
+            }
+            data[Enums.POSITION] = [this.hb.pos.x,this.hb.pos.y];
+            data[Enums.MOVEVECTOR] = [this.moveVector.x,this.moveVector.y];
+            data[Enums.SPEED] = this.speed.value;
+            data[Enums.SCALE] = this.scale;
+            data[Enums.HEALTHPERCENT] = this.healthPercent.value;
+            data[Enums.MAXMANA] = this.maxMana.value;
+            data[Enums.CURRENTMANA] = this.currentMana.value;
+            data[Enums.CURRENTENERGY] = this.currentEnergy.value;
+            data[Enums.MAXENERGY] = this.maxEnergy.value;
+            data[Enums.JUMPSPEED] = this.jumpSpeed.value;
+            data[Enums.JUMPTIME] = this.jumpTime.value;
+            data[Enums.LEVEL] = this.level.value;
+            data[Enums.SEX] = this.sex;
+            data[Enums.TARGET] = this.currentTarget ? this.currentTarget.id : null;
+            data[Enums.STICK] = this.stickToTarget;
 
-            if (less && typeof less != 'undefined'){return data;}
-            data[this.engine.enums.CURRENTHEALTH] = this.currentHealth.value;
-            data[this.engine.enums.MAXHEALTH] = this.maxHealth.value;
-            data[this.engine.enums.STRENGTH] = this.strength.value;
-            data[this.engine.enums.STAMINA] = this.stamina.value;
-            data[this.engine.enums.INTELLIGENCE] = this.intelligence.value;
-            data[this.engine.enums.WISDOM] = this.wisdom.value;
-            data[this.engine.enums.AGILITY] = this.agility.value;
-            data[this.engine.enums.DEXTERITY] = this.dexterity.value;
-            data[this.engine.enums.CHARISMA] = this.charisma.value;
-            data[this.engine.enums.PERCEPTION] = this.perception.value;
-            data[this.engine.enums.LUCK] = this.luck.value;
-            data[this.engine.enums.SPIRIT] = this.spirit.value;
-            data[this.engine.enums.AC] = this.ac.value;
-            data[this.engine.enums.MELEEPOWER] = this.meleePower.value;
-            data[this.engine.enums.HEALINGPOWER] = this.healingPower.value;
-            data[this.engine.enums.RANGEDPOWER] = this.rangedPower.value;
-            data[this.engine.enums.SPELLPOWER] = this.spellPower.value;
-            data[this.engine.enums.CURRENTEXP] = this.currentExp.value;
-            data[this.engine.enums.FROSTRES] = this.frostRes.value;
-            data[this.engine.enums.FIRERES] = this.fireRes.value;
-            data[this.engine.enums.WINDRES] = this.windRes.value;
-            data[this.engine.enums.EARTHRES] = this.earthRes.value;
-            data[this.engine.enums.POISONRES] = this.poisonRes.value;
-            data[this.engine.enums.SHOCKRES] = this.shockRes.value;
-            data[this.engine.enums.HOLYRES] = this.holyRes.value;
-            data[this.engine.enums.SHADOWRES] = this.shadowRes.value;
-            data[this.engine.enums.ARCANERES] = this.arcaneRes.value;
-            data[this.engine.enums.DISEASERES] = this.diseaseRes.value;
-            data[this.engine.enums.CURRENTWEIGHT] = this.inventory.currentWeight.value;
-            data[this.engine.enums.CARRYWEIGHT] = this.inventory.carryWeight.value;
+            if (less){return data;}
+            data[Enums.CURRENTHEALTH] = this.currentHealth.value;
+            data[Enums.MAXHEALTH] = this.maxHealth.value;
+            data[Enums.STRENGTH] = this.strength.value;
+            data[Enums.STAMINA] = this.stamina.value;
+            data[Enums.INTELLIGENCE] = this.intelligence.value;
+            data[Enums.WISDOM] = this.wisdom.value;
+            data[Enums.AGILITY] = this.agility.value;
+            data[Enums.DEXTERITY] = this.dexterity.value;
+            data[Enums.CHARISMA] = this.charisma.value;
+            data[Enums.PERCEPTION] = this.perception.value;
+            data[Enums.LUCK] = this.luck.value;
+            data[Enums.SPIRIT] = this.spirit.value;
+            data[Enums.AC] = this.ac.value;
+            data[Enums.MELEEPOWER] = this.meleePower.value;
+            data[Enums.HEALINGPOWER] = this.healingPower.value;
+            data[Enums.RANGEDPOWER] = this.rangedPower.value;
+            data[Enums.SPELLPOWER] = this.spellPower.value;
+            data[Enums.CURRENTEXP] = this.currentExp.value;
+            data[Enums.FROSTRES] = this.frostRes.value;
+            data[Enums.FIRERES] = this.fireRes.value;
+            data[Enums.WINDRES] = this.windRes.value;
+            data[Enums.EARTHRES] = this.earthRes.value;
+            data[Enums.POISONRES] = this.poisonRes.value;
+            data[Enums.SHOCKRES] = this.shockRes.value;
+            data[Enums.HOLYRES] = this.holyRes.value;
+            data[Enums.SHADOWRES] = this.shadowRes.value;
+            data[Enums.ARCANERES] = this.arcaneRes.value;
+            data[Enums.DISEASERES] = this.diseaseRes.value;
+            data[Enums.CURRENTWEIGHT] = this.inventory.currentWeight.value;
+            data[Enums.CARRYWEIGHT] = this.inventory.carryWeight.value;
 
             return data;
         },
         _getLessClientData: function(){
             return this._getClientData(true);
         },
-
-        modStat: function(data, updateClient = true){
-            //data.stat = the stat to be modded
-            //data.set = if true, set stat to value instead of adding
-            //data.value = the value to modify the stat
-            if (typeof data.set == 'undefined'){data.set = false}
+        setStat: function(data,updateClient = true){
+            var stat = this.getStat(data.stat);
+            console.log(data.value);
+            if (!stat){return;}
+            stat.base = parseInt(data.value);
+            stat.set(updateClient);
+        },
+        modStat: function(data,updateClient = true){
+            var stat = this.getStat(data.stat);
+            console.log(data.value);
+            if (!stat){return;}
+            if (data.isPMod){
+                stat.pMod += parseInt(data.value);
+            }else{
+                stat.nMod = parseInt(data.value);
+            }
+            stat.set(updateClient);
+        },
+        getStat: function(stat){
+            console.log(stat);
             try{
                 //ALL ALTERABLE STATS HERE
-                switch (data.stat){
+                switch (stat){
                     case 'maxWeight':
-                        this.inventory.maxWeight.nMod += data.value;
-                        this.inventory.maxWeight.set(updateClient);
+                        return this.inventory.maxWeight;
                         break;
                     case 'ac':
-                        this.ac.nMod += data.value;
-                        this.ac.set(updateClient);
+                        return this.ac;
                         break;
                     case 'maxHealth':
-                        this.maxHealth.nMod += data.value;
-                        this.maxHealth.set(updateClient);
+                        return this.maxHealth;
+                        break;
+                    case 'maxEnergy':
+                        return this.maxHealth;
+                        break;
+                    case 'maxMana':
+                        return this.maxMana;
                         break;
                     case 'strength':
-                        this.strength.nMod += data.value;
-                        this.strength.set(updateClient);
+                        return this.strength;
                         break;
                     case 'stamina':
-                        this.stamina.nMod += data.value;
-                        this.stamina.set(updateClient);
+                        return this.stamina;
                         break;
                     case 'speed':
-                        this.speed.nMod += data.value;
-                        this.speed.set(updateClient);
+                        return this.speed;
                         break;
                     case 'agility':
-                        this.agility.nMod += data.value;
-                        this.agility.set(updateClient);
+                        return this.agility;
                         break;
                     case 'dexterity':
-                        this.dexterity.nMod += data.value;
-                        this.dexterity.set(updateClient);
+                        return this.dexterity;
                         break;
                     case 'intelligence':
-                        this.intelligence.nMod += data.value;
-                        this.intelligence.set(updateClient);
+                        return this.intelligence;
                         break;
-                    case 'willpower':
-                        this.willpower.nMod += data.value;
-                        this.willpower.set(updateClient);
+                    case 'wisdom':
+                        return this.wisdom;
+                        break;
+                    case 'spirit':
+                        return this.spirit;
                         break;
                     case 'charisma':
-                        this.charisma.nMod += data.value;
-                        this.charisma.set(updateClient);
+                        return this.charisma;
                         break;
                     case 'perception':
-                        this.perception.nMod += data.value;
-                        this.perception.set(updateClient);
+                        return this.perception;
                         break;
                     case 'luck':
-                        this.luck.nMod += data.value;
-                        this.luck.set(updateClient);
+                        return this.luck;
                         break;
+                    default:
+                        return null;
                 }
             }catch(e){
                 console.log('unable to set attribute');
-                console.log(data);
                 console.log(e.stack);
             }
         },

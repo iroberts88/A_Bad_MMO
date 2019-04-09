@@ -351,9 +351,9 @@
         loopSound: function(sound){
             sound.onended = function(s) {
                 //TODO this needs to loop at the corrent time for each song....
-                s.currentTarget.play()
+                //s.currentTarget.play()
             };
-            sound.play();
+            //sound.play();
         }
 
     };
